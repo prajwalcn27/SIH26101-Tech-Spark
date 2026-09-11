@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Employee Dashboard | Tech Spark</title>
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../css/dashboard.css"
+    >
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-brand">
+                <div class="brand-mark">TS</div>
+
+                <div>
+                    <h2>Tech Spark</h2>
+                    <span>Competency Intelligence</span>
+                </div>
+            </div>
+
+
+            <nav class="sidebar-nav">
+
+                <a href="#" class="nav-item active">
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">◎</span>
+                    <span>My Competencies</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">▣</span>
+                    <span>Learning</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span>Assessments</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">◈</span>
+                    <span>Progress</span>
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <div class="sidebar-help">
+                    <div class="help-icon">?</div>
+
+                    <div>
+                        <strong>Need help?</strong>
+                        <p>Ask your learning assistant.</p>
+                    </div>
+                </div>
+
+                <button
+                    class="logout-btn"
+                    onclick="logout()"
+                >
+                    <span>↪</span>
+                    Logout
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <main class="dashboard-main">
+
+            <!-- TOP HEADER -->
+
+            <header class="dashboard-header">
+
+                <div>
+                    <p class="eyebrow">EMPLOYEE LEARNING HUB</p>
+
+                    <h1>
+                        Good morning,
+                        <span id="employeeName">
+                            Ruchitha
+                        </span> 👋
+                    </h1>
+
+                    <p class="header-subtitle">
+                        Here’s your personalised competency overview.
+                    </p>
+                </div>
+
+
+                <div class="header-profile">
+
+                    <div class="notification">
+                        🔔
+                        <span></span>
+                    </div>
+
+                    <div class="profile-avatar">
+                        R
+                    </div>
+
+                    <div class="profile-info">
+                        <strong id="profileName">
+                            Ruchitha
+                        </strong>
+
+                        <small>
+                            Statistical Officer
+                        </small>
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- ================= HEALTH OVERVIEW ================= -->
+
+            <section class="overview-grid">
+
+                <!-- Competency Health -->
+
+                <div class="health-card">
+
+                    <div class="card-top">
+
+                        <div>
+                            <p class="card-label">
+                                OVERALL COMPETENCY HEALTH
+                            </p>
+
+                            <h2>68%</h2>
+
+                            <p class="positive-text">
+                                ↑ 6% improvement this month
+                            </p>
+                        </div>
+
+
+                        <div class="health-circle">
+
+                            <div class="circle-inner">
+                                <strong>68</strong>
+                                <span>/ 100</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="health-progress">
+                        <div style="width: 68%;"></div>
+                    </div>
+
+
+                    <div class="health-footer">
+                        <span>4 competencies tracked</span>
+                        <span>Good progress</span>
+                    </div>
+
+                </div>
+
+
+                <!-- Priority Gap -->
+
+                <div class="gap-card">
+
+                    <div class="gap-header">
+
+                        <div class="gap-icon">
+                            !
+                        </div>
+
+                        <div>
+                            <p class="card-label">
+                                PRIORITY GAP
+                            </p>
+
+                            <h3>Data Cleaning</h3>
+                        </div>
+
+                        <span class="gap-score">
+                            42%
+                        </span>
+
+                    </div>
+
+
+                    <p class="gap-description">
+                        Your recent assessment shows that
+                        <strong>Data Cleaning</strong> is currently
+                        your biggest competency gap.
+                    </p>
+
+
+                    <button
+                        class="primary-action"
+                        onclick="scrollToLearning()"
+                    >
+                        View targeted learning
+                        <span>→</span>
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= AI INSIGHT ================= -->
+
+            <section class="ai-insight-card">
+
+                <div class="ai-insight-icon">
+                    ✦
+                </div>
+
+                <div class="ai-insight-content">
+
+                    <div class="ai-label">
+                        AI LEARNING INSIGHT
+                    </div>
+
+                    <h3>
+                        Your gap is more specific than the score suggests.
+                    </h3>
+
+                    <p>
+                        Your assessment indicates that the main
+                        difficulty is not Data Cleaning as a whole.
+                        You need more practice with
+                        <strong>missing values</strong>,
+                        <strong>duplicate records</strong>, and
+                        <strong>data formatting</strong>.
+                    </p>
+
+                </div>
+
+
+                <div class="insight-tag">
+                    Topic-level analysis
+                </div>
+
+            </section>
+
+
+            <!-- ================= COMPETENCIES ================= -->
+
+            <section class="section-block">
+
+                <div class="section-heading">
+
+                    <div>
+                        <p class="eyebrow">
+                            YOUR SKILL PROFILE
+                        </p>
+
+                        <h2>
+                            Competency overview
+                        </h2>
+                    </div>
+
+                    <button class="text-button">
+                        View detailed profile →
+                    </button>
+
+                </div>
+
+
+                <div class="competency-grid">
+
+
+                    <!-- Excel -->
+
+                    <div class="competency-card">
+
+                        <div class="competency-title">
+
+                            <div class="competency-icon excel">
+                                EX
+                            </div>
+
+                            <div>
+                                <h3>Excel</h3>
+                                <span>Strong</span>
+                            </div>
+
+                            <strong>78%</strong>
+
+                        </div>
+
+                        <div class="skill-bar">
+                            <div style="width: 78%;"></div>
+                        </div>
+
+                        <div class="competency-bottom">
+                            <span>↑ 8% this month</span>
+                            <span>Good</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Statistics -->
+
+                    <div class="competency-card">
+
+                        <div class="competency-title">
+
+                            <div class="competency-icon statistics">
+                                ST
+                            </div>
+
+                            <div>
+                                <h3>Statistics</h3>
+                                <span>Developing</span>
+                            </div>
+
+                            <strong>65%</strong>
+
+                        </div>
+
+                        <div class="skill-bar">
+                            <div style="width: 65%;"></div>
+                        </div>
+
+                        <div class="competency-bottom">
+                            <span>↑ 4% this month</span>
+                            <span>Developing</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Data Interpretation -->
+
+                    <div class="competency-card">
+
+                        <div class="competency-title">
+
+                            <div class="competency-icon interpretation">
+                                DI
+                            </div>
+
+                            <div>
+                                <h3>Data Interpretation</h3>
+                                <span>Good</span>
+                            </div>
+
+                            <strong>72%</strong>
+
+                        </div>
+
+                        <div class="skill-bar">
+                            <div style="width: 72%;"></div>
+                        </div>
+
+                        <div class="competency-bottom">
+                            <span>↑ 5% this month</span>
+                            <span>Good</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Data Cleaning -->
+
+                    <div class="competency-card priority">
+
+                        <div class="competency-title">
+
+                            <div class="competency-icon cleaning">
+                                DC
+                            </div>
+
+                            <div>
+                                <h3>Data Cleaning</h3>
+                                <span>Needs attention</span>
+                            </div>
+
+                            <strong>42%</strong>
+
+                        </div>
+
+                        <div class="skill-bar">
+                            <div style="width: 42%;"></div>
+                        </div>
+
+                        <div class="competency-bottom">
+                            <span>Priority skill</span>
+                            <span>Focus here</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= TOPIC ANALYSIS ================= -->
+
+            <section class="analysis-grid">
+
+                <div class="topic-card">
+
+                    <div class="section-heading compact">
+
+                        <div>
+                            <p class="eyebrow">
+                                GAP DEEP DIVE
+                            </p>
+
+                            <h2>
+                                Data Cleaning breakdown
+                            </h2>
+                        </div>
+
+                        <span class="topic-score">
+                            42%
+                        </span>
+
+                    </div>
+
+
+                    <div class="topic-list">
+
+                        <div class="topic-row">
+
+                            <div>
+                                <strong>Missing values</strong>
+                                <span>Needs practice</span>
+                            </div>
+
+                            <div class="topic-progress">
+                                <div style="width: 32%;"></div>
+                            </div>
+
+                            <b>32%</b>
+
+                        </div>
+
+
+                        <div class="topic-row">
+
+                            <div>
+                                <strong>Duplicate records</strong>
+                                <span>Needs practice</span>
+                            </div>
+
+                            <div class="topic-progress">
+                                <div style="width: 38%;"></div>
+                            </div>
+
+                            <b>38%</b>
+
+                        </div>
+
+
+                        <div class="topic-row">
+
+                            <div>
+                                <strong>Data formatting</strong>
+                                <span>Developing</span>
+                            </div>
+
+                            <div class="topic-progress">
+                                <div style="width: 51%;"></div>
+                            </div>
+
+                            <b>51%</b>
+
+                        </div>
+
+
+                        <div class="topic-row">
+
+                            <div>
+                                <strong>Data validation</strong>
+                                <span>Developing</span>
+                            </div>
+
+                            <div class="topic-progress">
+                                <div style="width: 59%;"></div>
+                            </div>
+
+                            <b>59%</b>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Learning Recommendation -->
+
+                <div
+                    class="recommendation-card"
+                    id="learningSection"
+                >
+
+                    <div class="recommendation-badge">
+                        ✦ AI RECOMMENDATION
+                    </div>
+
+                    <h2>
+                        Clean Data with Confidence
+                    </h2>
+
+                    <p>
+                        A targeted learning module selected
+                        specifically for your Data Cleaning gap.
+                    </p>
+
+
+                    <div class="material-info">
+
+                        <div class="material-icon">
+                            PDF
+                        </div>
+
+                        <div>
+                            <strong>
+                                Data Cleaning Fundamentals
+                            </strong>
+
+                            <span>
+                                Approved learning material
+                                • 24 min
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="recommendation-reason">
+
+                        <span>Why this?</span>
+
+                        <p>
+                            Matches your weakest topics:
+                            missing values and duplicate records.
+                        </p>
+
+                    </div>
+
+
+                    <button class="primary-action full">
+                        Start learning
+                        <span>→</span>
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= LEARNING JOURNEY ================= -->
+
+            <section class="journey-section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <p class="eyebrow">
+                            CONTINUOUS LEARNING LOOP
+                        </p>
+
+                        <h2>
+                            Your learning journey
+                        </h2>
+                    </div>
+
+                    <span class="journey-status">
+                        ● Active
+                    </span>
+
+                </div>
+
+
+                <div class="journey-track">
+
+                    <div class="journey-step completed">
+
+                        <div class="step-number">
+                            ✓
+                        </div>
+
+                        <strong>Assessment</strong>
+
+                        <span>
+                            Completed
+                        </span>
+
+                    </div>
+
+
+                    <div class="journey-line completed-line"></div>
+
+
+                    <div class="journey-step completed">
+
+                        <div class="step-number">
+                            ✓
+                        </div>
+
+                        <strong>Gap detected</strong>
+
+                        <span>
+                            Data Cleaning
+                        </span>
+
+                    </div>
+
+
+                    <div class="journey-line active-line"></div>
+
+
+                    <div class="journey-step active">
+
+                        <div class="step-number">
+                            3
+                        </div>
+
+                        <strong>Learn</strong>
+
+                        <span>
+                            Current step
+                        </span>
+
+                    </div>
+
+
+                    <div class="journey-line"></div>
+
+
+                    <div class="journey-step">
+
+                        <div class="step-number">
+                            4
+                        </div>
+
+                        <strong>AI Quiz</strong>
+
+                        <span>
+                            Upcoming
+                        </span>
+
+                    </div>
+
+
+                    <div class="journey-line"></div>
+
+
+                    <div class="journey-step">
+
+                        <div class="step-number">
+                            5
+                        </div>
+
+                        <strong>Improve</strong>
+
+                        <span>
+                            Update score
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= RECENT ACTIVITY ================= -->
+
+            <section class="activity-section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <p class="eyebrow">
+                            RECENT ACTIVITY
+                        </p>
+
+                        <h2>
+                            Your progress
+                        </h2>
+                    </div>
+
+                    <button class="text-button">
+                        View all →
+                    </button>
+
+                </div>
+
+
+                <div class="activity-grid">
+
+                    <div class="activity-card">
+
+                        <div class="activity-icon">
+                            ✓
+                        </div>
+
+                        <div>
+                            <strong>
+                                Initial competency assessment
+                            </strong>
+
+                            <span>
+                                Completed • 4 competencies
+                            </span>
+                        </div>
+
+                        <b>
+                            68%
+                        </b>
+
+                    </div>
+
+
+                    <div class="activity-card">
+
+                        <div class="activity-icon">
+                            ↑
+                        </div>
+
+                        <div>
+                            <strong>
+                                Excel competency improved
+                            </strong>
+
+                            <span>
+                                Increased from 70% → 78%
+                            </span>
+                        </div>
+
+                        <b>
+                            +8%
+                        </b>
+
+                    </div>
+
+
+                    <div class="activity-card">
+
+                        <div class="activity-icon">
+                            ✦
+                        </div>
+
+                        <div>
+                            <strong>
+                                New learning recommended
+                            </strong>
+
+                            <span>
+                                Data Cleaning Fundamentals
+                            </span>
+                        </div>
+
+                        <b>
+                            New
+                        </b>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= FOOTER ================= -->
+
+            <footer class="dashboard-footer">
+
+                <span>
+                    Tech Spark • SIH26101
+                </span>
+
+                <span>
+                    AI-powered competency intelligence
+                </span>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script src="../../js/auth.js"></script>
+
+    <script>
+
+        // Protect employee dashboard
+        const currentUser = requireLogin("employee");
+
+        if (currentUser) {
+
+            const name =
+                currentUser.name || "Ruchitha";
+
+            const employeeName =
+                document.getElementById("employeeName");
+
+            const profileName =
+                document.getElementById("profileName");
+
+            if (employeeName) {
+                employeeName.textContent = name;
+            }
+
+            if (profileName) {
+                profileName.textContent = name;
+            }
+        }
+
+
+        function scrollToLearning() {
+
+            const section =
+                document.getElementById("learningSection");
+
+            if (section) {
+
+                section.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
