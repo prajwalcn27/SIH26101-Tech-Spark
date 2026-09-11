@@ -18,9 +18,12 @@
 
     <main class="login-container">
 
-        <!-- Left Side -->
+        <!-- =========================================
+             LEFT SIDE - INFORMATION
+        ========================================== -->
         <section class="login-info">
 
+            <!-- Brand -->
             <a href="../index.html" class="login-brand">
 
                 <div class="brand-mark">
@@ -35,6 +38,7 @@
             </a>
 
 
+            <!-- Main Message -->
             <div class="login-message">
 
                 <div class="login-badge">
@@ -53,8 +57,10 @@
                 </p>
 
 
+                <!-- Highlights -->
                 <div class="login-highlights">
 
+                    <!-- Highlight 01 -->
                     <div class="highlight">
 
                         <div class="highlight-icon">
@@ -63,6 +69,7 @@
 
                         <div>
                             <strong>Detect gaps</strong>
+
                             <p>
                                 Find competency and topic-level weaknesses.
                             </p>
@@ -71,6 +78,7 @@
                     </div>
 
 
+                    <!-- Highlight 02 -->
                     <div class="highlight">
 
                         <div class="highlight-icon">
@@ -79,6 +87,7 @@
 
                         <div>
                             <strong>Learn smarter</strong>
+
                             <p>
                                 Get targeted recommendations for your gaps.
                             </p>
@@ -87,6 +96,7 @@
                     </div>
 
 
+                    <!-- Highlight 03 -->
                     <div class="highlight">
 
                         <div class="highlight-icon">
@@ -95,6 +105,7 @@
 
                         <div>
                             <strong>Keep improving</strong>
+
                             <p>
                                 Your competency profile evolves with every quiz.
                             </p>
@@ -107,6 +118,7 @@
             </div>
 
 
+            <!-- Footer -->
             <div class="login-footer-text">
                 SIH26101 · Smart India Hackathon 2026
             </div>
@@ -114,23 +126,36 @@
         </section>
 
 
-        <!-- Right Side -->
+
+        <!-- =========================================
+             RIGHT SIDE - LOGIN FORM
+        ========================================== -->
         <section class="login-form-section">
 
             <div class="login-card">
 
+
+                <!-- Mobile Brand -->
                 <div class="mobile-brand">
+
                     <div class="brand-mark">
                         TS
                     </div>
 
-                    <strong>Tech Spark</strong>
+                    <strong>
+                        Tech Spark
+                    </strong>
+
                 </div>
 
 
+
+                <!-- Form Heading -->
                 <div class="form-heading">
 
-                    <span>WELCOME BACK</span>
+                    <span>
+                        WELCOME BACK
+                    </span>
 
                     <h2>
                         Sign in to your account
@@ -143,15 +168,20 @@
                 </div>
 
 
-                <!-- Role Selection -->
+
+                <!-- =====================================
+                     ROLE SELECTION
+                ====================================== -->
                 <div class="role-section">
 
                     <label>
                         Sign in as
                     </label>
 
+
                     <div class="role-selector">
 
+                        <!-- Employee -->
                         <button
                             type="button"
                             class="role-option active"
@@ -169,6 +199,7 @@
                         </button>
 
 
+                        <!-- Admin -->
                         <button
                             type="button"
                             class="role-option"
@@ -190,9 +221,16 @@
                 </div>
 
 
-                <!-- Login Form -->
-                <form id="loginForm" onsubmit="handleLogin(event)">
 
+                <!-- =====================================
+                     LOGIN FORM
+                ====================================== -->
+                <form
+                    id="loginForm"
+                    onsubmit="handleLogin(event)">
+
+
+                    <!-- Selected Role -->
                     <input
                         type="hidden"
                         id="selectedRole"
@@ -200,6 +238,8 @@
                     >
 
 
+
+                    <!-- Email -->
                     <div class="form-group">
 
                         <label for="email">
@@ -209,13 +249,17 @@
                         <input
                             type="email"
                             id="email"
+                            name="email"
                             placeholder="you@example.com"
+                            autocomplete="email"
                             required
                         >
 
                     </div>
 
 
+
+                    <!-- Password -->
                     <div class="form-group">
 
                         <div class="password-label">
@@ -224,22 +268,31 @@
                                 Password
                             </label>
 
-                            <a href="#" onclick="return false;">
+                            <a
+                                href="#"
+                                onclick="return false;">
+
                                 Forgot password?
+
                             </a>
 
                         </div>
 
+
                         <input
                             type="password"
                             id="password"
+                            name="password"
                             placeholder="Enter your password"
+                            autocomplete="current-password"
                             required
                         >
 
                     </div>
 
 
+
+                    <!-- Remember Me -->
                     <div class="remember-row">
 
                         <label class="checkbox-label">
@@ -247,6 +300,7 @@
                             <input
                                 type="checkbox"
                                 id="remember"
+                                name="remember"
                             >
 
                             <span>
@@ -258,6 +312,8 @@
                     </div>
 
 
+
+                    <!-- Login Button -->
                     <button
                         type="submit"
                         class="login-button">
@@ -275,12 +331,18 @@
                 </form>
 
 
-                <!-- Demo Access -->
+
+                <!-- =====================================
+                     DEMO LOGIN
+                ====================================== -->
                 <div class="demo-section">
 
                     <div class="demo-divider">
-                        <span>OR</span>
+                        <span>
+                            OR
+                        </span>
                     </div>
+
 
                     <button
                         type="button"
@@ -291,6 +353,7 @@
 
                     </button>
 
+
                     <p>
                         Explore the platform without an account.
                     </p>
@@ -298,15 +361,21 @@
                 </div>
 
 
+
+                <!-- Login Message -->
                 <div
                     id="loginMessage"
                     class="login-message-box">
                 </div>
 
 
+
+                <!-- Security -->
                 <div class="security-note">
 
-                    <span>✓</span>
+                    <span>
+                        ✓
+                    </span>
 
                     Secure role-based access
 
@@ -319,7 +388,10 @@
     </main>
 
 
-    <!-- Authentication JavaScript -->
+
+    <!-- =========================================
+         AUTHENTICATION JAVASCRIPT
+    ========================================== -->
     <script src="../js/auth.js"></script>
 
 </body>

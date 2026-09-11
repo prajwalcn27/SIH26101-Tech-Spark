@@ -1,284 +1,933 @@
-/* =========================================
-   TECH SPARK - AUTHENTICATION
-   SIH26101
-========================================= */
+/* =========================================================
+   TECH SPARK - AUTHENTICATION JAVASCRIPT
+   SIH26101 - Smart India Hackathon 2026
+========================================================= */
 
 
-/* -----------------------------------------
-   SELECT ROLE
------------------------------------------ */
+/* =========================================================
+   ROLE SELECTION
+========================================================= */
 
 function selectRole(role) {
 
-    // Get all role buttons
-    const roleButtons = document.querySelectorAll(".role-option");
+    const roleButtons =
+        document.querySelectorAll(".role-option");
 
-    // Remove active state
-    roleButtons.forEach(button => {
-        button.classList.remove("active");
-    });
-
-    // Add active state to selected role
-    const selectedButton =
-        document.querySelector(`[data-role="${role}"]`);
-
-    if (selectedButton) {
-        selectedButton.classList.add("active");
-    }
-
-    // Store selected role
-    const roleInput =
+    const selectedRole =
         document.getElementById("selectedRole");
 
-    if (roleInput) {
-        roleInput.value = role;
+
+    /*
+     * Update active button
+     */
+    roleButtons.forEach(function (button) {
+
+        button.classList.remove("active");
+
+        if (button.dataset.role === role) {
+            button.classList.add("active");
+        }
+
+    });
+
+
+    /*
+     * Store selected role
+     */
+    if (selectedRole) {
+        selectedRole.value = role;
     }
 
-    console.log("Selected role:", role);
+
+    /*
+     * Store temporarily
+     */
+    sessionStorage.setItem(
+        "selectedRole",
+        role
+    );
+
 }
 
 
-/* -----------------------------------------
-   HANDLE LOGIN
------------------------------------------ */
+/* =========================================================
+   LOGIN FORM
+========================================================= */
 
 function handleLogin(event) {
 
-    // Stop normal form submission
     event.preventDefault();
 
+
+    const emailInput =
+        document.getElementById("email");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const selectedRoleInput =
+        document.getElementById("selectedRole");
+
+
+    if (!emailInput || !passwordInput) {
+        return;
+    }
+
+
     const email =
-        document.getElementById("email").value.trim();
+        emailInput.value.trim();
 
     const password =
-        document.getElementById("password").value;
+        passwordInput.value;
 
     const role =
-        document.getElementById("selectedRole").value;
+        selectedRoleInput
+            ? selectedRoleInput.value
+            : "employee";
 
-    const message =
-        document.getElementById("loginMessage");
 
+    /* -----------------------------------------------------
+       Basic validation
+    ----------------------------------------------------- */
 
-    // Basic validation
-    if (!email || !password) {
+    if (!email) {
 
         showLoginMessage(
-            "Please enter your email and password.",
+            "Please enter your email address.",
             "error"
         );
+
+        emailInput.focus();
+
+        return;
+    }
+
+
+    if (!isValidEmail(email)) {
+
+        showLoginMessage(
+            "Please enter a valid email address.",
+            "error"
+        );
+
+        emailInput.focus();
+
+        return;
+    }
+
+
+    if (!password) {
+
+        showLoginMessage(
+            "Please enter your password.",
+            "error"
+        );
+
+        passwordInput.focus();
+
+        return;
+    }
+
+
+    if (password.length < 4) {
+
+        showLoginMessage(
+            "Password must contain at least 4 characters.",
+            "error"
+        );
+
+        passwordInput.focus();
 
         return;
     }
 
 
     /*
-        DEMO AUTHENTICATION
-
-        Later this will be replaced with:
-        Flask API → MySQL → Authentication
-
-        For now we store demo login information
-        in localStorage.
-    */
-
-    const user = {
-        email: email,
-        role: role
-    };
+     * Show loading state
+     */
+    const loginButton =
+        document.querySelector(".login-button");
 
 
-    localStorage.setItem(
-        "techSparkUser",
-        JSON.stringify(user)
-    );
+    if (loginButton) {
 
+        loginButton.disabled = true;
 
-    showLoginMessage(
-        "Login successful. Redirecting...",
-        "success"
-    );
+        loginButton.classList.add("loading");
 
+        const buttonText =
+            loginButton.querySelector("span:first-child");
 
-    // Redirect according to role
-    setTimeout(() => {
-
-        if (role === "admin") {
-
-            window.location.href =
-                "admin/dashboard.html";
-
-        } else {
-
-            window.location.href =
-                "employee/dashboard.html";
-
+        if (buttonText) {
+            buttonText.textContent = "Signing in...";
         }
 
+    }
+
+
+    /*
+     * Demo frontend authentication
+     *
+     * This will later be replaced with
+     * Flask + MySQL authentication.
+     */
+    setTimeout(function () {
+
+        const userName =
+            getNameFromEmail(email);
+
+
+        const user = {
+
+            name: userName,
+
+            email: email,
+
+            role: role,
+
+            loginTime: new Date().toISOString(),
+
+            remember:
+                document.getElementById("remember")
+                    ? document.getElementById("remember").checked
+                    : false
+
+        };
+
+
+        /*
+         * Save current user
+         */
+        localStorage.setItem(
+            "currentUser",
+            JSON.stringify(user)
+        );
+
+
+        /*
+         * Save role
+         */
+        localStorage.setItem(
+            "userRole",
+            role
+        );
+
+
+        /*
+         * Show success
+         */
+        showLoginMessage(
+            "Login successful. Redirecting...",
+            "success"
+        );
+
+
+        /*
+         * Redirect
+         */
+        setTimeout(function () {
+
+            redirectByRole(role);
+
+        }, 600);
+
+
     }, 700);
+
 }
 
 
-/* -----------------------------------------
+/* =========================================================
    DEMO LOGIN
------------------------------------------ */
+========================================================= */
 
 function demoLogin() {
 
+    /*
+     * Find selected role
+     */
+    const selectedRole =
+        document.getElementById("selectedRole");
+
+
     const role =
-        document.getElementById("selectedRole").value;
+        selectedRole
+            ? selectedRole.value
+            : "employee";
 
 
-    let demoUser;
+    /*
+     * Demo accounts
+     */
+    let user;
 
 
     if (role === "admin") {
 
-        demoUser = {
-            name: "Tech Spark Admin",
-            email: "admin@techspark.demo",
-            role: "admin"
+        user = {
+
+            name: "System Administrator",
+
+            email: "admin@techspark.gov.in",
+
+            role: "admin",
+
+            loginTime: new Date().toISOString(),
+
+            demo: true
+
         };
 
     } else {
 
-        demoUser = {
-            name: "Ruchitha",
-            email: "employee@techspark.demo",
-            role: "employee"
+        user = {
+
+            name: "Demo Employee",
+
+            email: "employee@techspark.gov.in",
+
+            role: "employee",
+
+            loginTime: new Date().toISOString(),
+
+            demo: true
+
         };
 
     }
 
 
-    // Save demo user
+    /*
+     * Save demo user
+     */
     localStorage.setItem(
-        "techSparkUser",
-        JSON.stringify(demoUser)
+        "currentUser",
+        JSON.stringify(user)
     );
 
 
+    localStorage.setItem(
+        "userRole",
+        role
+    );
+
+
+    /*
+     * Show message
+     */
     showLoginMessage(
-        "Demo mode activated. Opening dashboard...",
+        "Demo mode activated. Redirecting...",
         "success"
     );
 
 
-    setTimeout(() => {
+    /*
+     * Redirect
+     */
+    setTimeout(function () {
 
-        if (role === "admin") {
+        redirectByRole(role);
 
-            window.location.href =
-                "admin/dashboard.html";
+    }, 500);
 
-        } else {
-
-            window.location.href =
-                "employee/dashboard.html";
-
-        }
-
-    }, 700);
 }
 
 
-/* -----------------------------------------
-   SHOW LOGIN MESSAGE
------------------------------------------ */
+/* =========================================================
+   REDIRECT BASED ON ROLE
+========================================================= */
 
-function showLoginMessage(text, type) {
+function redirectByRole(role) {
 
-    const message =
+    if (role === "admin") {
+
+        window.location.href =
+            "admin/dashboard.html";
+
+        return;
+
+    }
+
+
+    if (role === "employee") {
+
+        window.location.href =
+            "employee/dashboard.html";
+
+        return;
+
+    }
+
+
+    /*
+     * Default
+     */
+    window.location.href =
+        "../index.html";
+
+}
+
+
+/* =========================================================
+   LOGIN MESSAGE
+========================================================= */
+
+function showLoginMessage(message, type) {
+
+    const messageBox =
         document.getElementById("loginMessage");
 
-    if (!message) {
+
+    if (!messageBox) {
         return;
     }
 
-    message.textContent = text;
 
-    message.className =
+    messageBox.textContent =
+        message;
+
+
+    messageBox.className =
         "login-message-box " + type;
+
+
+    messageBox.style.display =
+        "block";
+
+
+    /*
+     * Auto hide error messages
+     */
+    if (type === "error") {
+
+        setTimeout(function () {
+
+            messageBox.style.display =
+                "none";
+
+        }, 4000);
+
+    }
+
 }
 
 
-/* -----------------------------------------
+/* =========================================================
+   EMAIL VALIDATION
+========================================================= */
+
+function isValidEmail(email) {
+
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    return emailPattern.test(email);
+
+}
+
+
+/* =========================================================
+   GET NAME FROM EMAIL
+========================================================= */
+
+function getNameFromEmail(email) {
+
+    const username =
+        email.split("@")[0];
+
+
+    if (!username) {
+        return "User";
+    }
+
+
+    /*
+     * Convert:
+     * prajwal.cn
+     *
+     * to:
+     * Prajwal Cn
+     */
+    return username
+        .replace(/[._-]+/g, " ")
+        .replace(/\b\w/g, function (letter) {
+            return letter.toUpperCase();
+        });
+
+}
+
+
+/* =========================================================
    GET CURRENT USER
------------------------------------------ */
+========================================================= */
 
 function getCurrentUser() {
 
-    const storedUser =
-        localStorage.getItem("techSparkUser");
+    const userData =
+        localStorage.getItem("currentUser");
 
-    if (!storedUser) {
+
+    if (!userData) {
         return null;
     }
 
+
     try {
 
-        return JSON.parse(storedUser);
+        return JSON.parse(userData);
 
     } catch (error) {
 
         console.error(
-            "Unable to read user data:",
+            "Unable to read current user:",
             error
         );
 
+        localStorage.removeItem(
+            "currentUser"
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/* =========================================================
+   CHECK LOGIN STATUS
+========================================================= */
+
+function isLoggedIn() {
+
+    const user =
+        getCurrentUser();
+
+    return user !== null;
+
+}
+
+
+/* =========================================================
+   GET USER ROLE
+========================================================= */
+
+function getUserRole() {
+
+    const user =
+        getCurrentUser();
+
+
+    if (!user) {
         return null;
     }
+
+
+    return user.role || null;
+
 }
 
 
-/* -----------------------------------------
-   LOGOUT
------------------------------------------ */
+/* =========================================================
+   GET USER NAME
+========================================================= */
 
-function logout() {
+function getUserName() {
 
-    localStorage.removeItem("techSparkUser");
+    const user =
+        getCurrentUser();
 
-    window.location.href =
-        "../login.html";
+
+    if (!user) {
+        return "User";
+    }
+
+
+    return user.name || "User";
+
 }
 
 
-/* -----------------------------------------
-   PROTECT DASHBOARD
------------------------------------------ */
+/* =========================================================
+   GET USER EMAIL
+========================================================= */
 
-function requireLogin(requiredRole = null) {
+function getUserEmail() {
 
-    const user = getCurrentUser();
+    const user =
+        getCurrentUser();
 
 
-    // User is not logged in
+    if (!user) {
+        return "";
+
+    }
+
+
+    return user.email || "";
+
+}
+
+
+/* =========================================================
+   REQUIRE LOGIN
+========================================================= */
+
+function requireLogin(requiredRole) {
+
+    const user =
+        getCurrentUser();
+
+
+    /*
+     * No user logged in
+     */
     if (!user) {
 
         window.location.href =
             "../login.html";
 
-        return null;
+        return false;
+
     }
 
 
-    // Check role
+    /*
+     * Check role
+     */
     if (
         requiredRole &&
         user.role !== requiredRole
     ) {
 
-        alert(
-            "You do not have permission to access this page."
-        );
+        /*
+         * Employee trying to access admin
+         * or admin trying to access employee
+         */
+        redirectByRole(user.role);
 
-        window.location.href =
-            "../login.html";
+        return false;
 
-        return null;
     }
 
 
-    return user;
+    return true;
+
 }
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout() {
+
+    /*
+     * Remove authentication data
+     */
+    localStorage.removeItem(
+        "currentUser"
+    );
+
+    localStorage.removeItem(
+        "userRole"
+    );
+
+
+    sessionStorage.removeItem(
+        "selectedRole"
+    );
+
+
+    /*
+     * Redirect to login
+     */
+    window.location.href =
+        "../login.html";
+
+}
+
+
+/* =========================================================
+   LOAD USER INFORMATION
+========================================================= */
+
+function loadUserInformation() {
+
+    const user =
+        getCurrentUser();
+
+
+    if (!user) {
+        return;
+    }
+
+
+    /*
+     * User name
+     */
+    document
+        .querySelectorAll("[data-user-name]")
+        .forEach(function (element) {
+
+            element.textContent =
+                user.name || "User";
+
+        });
+
+
+    /*
+     * User email
+     */
+    document
+        .querySelectorAll("[data-user-email]")
+        .forEach(function (element) {
+
+            element.textContent =
+                user.email || "";
+
+        });
+
+
+    /*
+     * User role
+     */
+    document
+        .querySelectorAll("[data-user-role]")
+        .forEach(function (element) {
+
+            if (user.role === "admin") {
+
+                element.textContent =
+                    "System Administrator";
+
+            } else {
+
+                element.textContent =
+                    "Employee";
+
+            }
+
+        });
+
+
+    /*
+     * User avatar
+     */
+    document
+        .querySelectorAll("[data-user-avatar]")
+        .forEach(function (element) {
+
+            element.textContent =
+                getInitials(user.name);
+
+        });
+
+}
+
+
+/* =========================================================
+   GET USER INITIALS
+========================================================= */
+
+function getInitials(name) {
+
+    if (!name) {
+        return "U";
+    }
+
+
+    const words =
+        name.trim().split(/\s+/);
+
+
+    if (words.length === 1) {
+
+        return words[0]
+            .substring(0, 2)
+            .toUpperCase();
+
+    }
+
+
+    return (
+        words[0].charAt(0) +
+        words[words.length - 1].charAt(0)
+    ).toUpperCase();
+
+}
+
+
+/* =========================================================
+   RESTORE SELECTED ROLE
+========================================================= */
+
+function restoreSelectedRole() {
+
+    const savedRole =
+        sessionStorage.getItem(
+            "selectedRole"
+        );
+
+
+    if (!savedRole) {
+        return;
+    }
+
+
+    const roleInput =
+        document.getElementById(
+            "selectedRole"
+        );
+
+
+    if (roleInput) {
+
+        roleInput.value =
+            savedRole;
+
+    }
+
+
+    const roleButtons =
+        document.querySelectorAll(
+            ".role-option"
+        );
+
+
+    roleButtons.forEach(function (button) {
+
+        button.classList.remove("active");
+
+
+        if (
+            button.dataset.role ===
+            savedRole
+        ) {
+
+            button.classList.add("active");
+
+        }
+
+    });
+
+}
+
+
+/* =========================================================
+   PASSWORD VISIBILITY
+========================================================= */
+
+function togglePassword() {
+
+    const password =
+        document.getElementById("password");
+
+
+    if (!password) {
+        return;
+    }
+
+
+    if (password.type === "password") {
+
+        password.type = "text";
+
+    } else {
+
+        password.type = "password";
+
+    }
+
+}
+
+
+/* =========================================================
+   AUTO INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        /*
+         * Load user information
+         */
+        loadUserInformation();
+
+
+        /*
+         * Restore selected login role
+         */
+        restoreSelectedRole();
+
+
+        /*
+         * Add password toggle if
+         * a toggle button exists
+         */
+        const passwordToggle =
+            document.querySelector(
+                "[data-password-toggle]"
+            );
+
+
+        if (passwordToggle) {
+
+            passwordToggle.addEventListener(
+                "click",
+                togglePassword
+            );
+
+        }
+
+
+        /*
+         * Enter key support
+         */
+        const passwordInput =
+            document.getElementById(
+                "password"
+            );
+
+
+        if (passwordInput) {
+
+            passwordInput.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (event.key === "Enter") {
+
+                        const form =
+                            document.getElementById(
+                                "loginForm"
+                            );
+
+
+                        if (form) {
+
+                            /*
+                             * requestSubmit triggers
+                             * normal form validation
+                             */
+                            if (
+                                typeof form.requestSubmit ===
+                                "function"
+                            ) {
+
+                                form.requestSubmit();
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+);

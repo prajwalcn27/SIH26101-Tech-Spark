@@ -2,1410 +2,2917 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Tech Spark | Admin Dashboard</title>
+    <title>Admin Dashboard | Tech Spark</title>
 
-    <!-- Main Website CSS -->
+    <!-- Main CSS -->
     <link rel="stylesheet" href="../../css/style.css">
 
     <!-- Admin Dashboard CSS -->
     <link rel="stylesheet" href="../../css/admin.css">
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
+<body class="admin-dashboard">
 
-<body>
+    <!-- =========================================================
+         BACKGROUND EFFECTS
+    ========================================================== -->
 
-
-    <!-- =====================================================
-         ADMIN DASHBOARD
-         ===================================================== -->
-
-    <div class="admin-dashboard">
-
-
-        <!-- =================================================
-             SIDEBAR
-             ================================================= -->
-
-        <aside class="admin-sidebar">
+    <div class="admin-background">
+        <div class="bg-grid"></div>
+        <div class="bg-glow glow-one"></div>
+        <div class="bg-glow glow-two"></div>
+        <div class="bg-glow glow-three"></div>
+    </div>
 
 
-            <!-- Brand -->
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================== -->
 
-            <div class="admin-brand">
+    <aside class="admin-sidebar">
 
+        <!-- Brand -->
+        <div class="admin-brand">
+
+            <div class="admin-brand-icon">
+                TS
+            </div>
+
+            <div class="admin-brand-text">
                 <h2>Tech Spark</h2>
+                <p>COMPETENCY INTELLIGENCE</p>
+            </div>
 
-                <span>Competency Intelligence</span>
+        </div>
+
+
+        <!-- Navigation -->
+        <nav class="admin-nav">
+
+            <p class="nav-title">MAIN MENU</p>
+
+            <a href="#overview"
+                class="admin-nav-item active"
+                data-section="overview">
+
+                <span class="admin-nav-icon">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </span>
+
+                <span>Overview</span>
+
+            </a>
+
+
+            <a href="#employees"
+                class="admin-nav-item"
+                data-section="employees">
+
+                <span class="admin-nav-icon">
+                    <i class="fa-solid fa-users"></i>
+                </span>
+
+                <span>Employees</span>
+
+                <span class="nav-badge">
+                    248
+                </span>
+
+            </a>
+
+
+            <a href="#roles"
+                class="admin-nav-item"
+                data-section="roles">
+
+                <span class="admin-nav-icon">
+                    <i class="fa-solid fa-user-shield"></i>
+                </span>
+
+                <span>Roles & Competencies</span>
+
+            </a>
+
+
+            <p class="nav-title">LEARNING</p>
+
+
+            <a href="#materials"
+                class="admin-nav-item"
+                data-section="materials">
+
+                <span class="admin-nav-icon">
+                    <i class="fa-solid fa-book-open"></i>
+                </span>
+
+                <span>Learning Materials</span>
+
+                <span class="nav-badge">
+                    12
+                </span>
+
+            </a>
+
+
+            <a href="#quizzes"
+                class="admin-nav-item"
+                data-section="quizzes">
+
+                <span class="admin-nav-icon">
+                    <i class="fa-solid fa-brain"></i>
+                </span>
+
+                <span>AI Quiz Review</span>
+
+                <span class="nav-badge warning">
+                    08
+                </span>
+
+            </a>
+
+
+            <p class="nav-title">INSIGHTS</p>
+
+
+            <a href="#analytics"
+                class="admin-nav-item"
+                data-section="analytics">
+
+                <span class="admin-nav-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </span>
+
+                <span>Analytics</span>
+
+            </a>
+
+
+            <a href="#activity"
+                class="admin-nav-item"
+                data-section="activity">
+
+                <span class="admin-nav-icon">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </span>
+
+                <span>Activity</span>
+
+            </a>
+
+        </nav>
+
+
+        <!-- AI Promo -->
+        <div class="admin-promo">
+
+            <div class="promo-glow"></div>
+
+            <div class="promo-symbol">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+
+            <div class="promo-content">
+
+                <strong>AI Intelligence</strong>
+
+                <p>
+                    Personalized competency insights
+                    powered by AI.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Profile -->
+        <div class="admin-sidebar-bottom">
+
+            <div class="admin-profile">
+
+                <div class="admin-avatar">
+                    A
+                </div>
+
+                <div class="admin-profile-info">
+
+                    <strong data-user-name>
+                        Administrator
+                    </strong>
+
+                    <span data-user-role>
+                        System Administrator
+                    </span>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="profile-menu"
+                    onclick="logout()"
+                    title="Logout">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================== -->
+
+    <main class="admin-main">
+
+
+        <!-- =====================================================
+             HEADER
+        ====================================================== -->
+
+        <header class="admin-header">
+
+            <div class="admin-header-left">
+
+                <button
+                    class="mobile-menu-btn"
+                    type="button">
+
+                    <i class="fa-solid fa-bars"></i>
+
+                </button>
+
+                <div class="admin-welcome">
+
+                    <span class="admin-eyebrow">
+                        ADMIN CONTROL CENTER
+                    </span>
+
+                    <h1>
+                        Good morning,
+                        <span data-user-name>Administrator</span>
+                    </h1>
+
+                    <p>
+                        Monitor competency growth and manage
+                        personalized learning across your workforce.
+                    </p>
+
+                </div>
 
             </div>
 
 
-            <!-- Navigation -->
+            <div class="admin-header-right">
 
-            <nav class="admin-nav">
+                <!-- Search -->
+                <div class="admin-search">
 
+                    <i class="fa-solid fa-magnifying-glass"></i>
 
-                <div class="admin-nav-title">
-                    Administration
+                    <input
+                        type="text"
+                        id="adminSearch"
+                        placeholder="Search employees, materials...">
+
+                    <span class="search-shortcut">
+                        CTRL K
+                    </span>
+
                 </div>
 
 
-                <!-- Overview -->
+                <!-- India visual -->
+                <div class="india-visual">
 
-                <a href="#" class="active">
+                    <div class="india-building">
+                        <i class="fa-solid fa-landmark"></i>
+                    </div>
 
-                    <span class="nav-icon">
-                        ⌂
-                    </span>
+                    <div class="india-lines"></div>
 
-                    <span>
-                        Overview
-                    </span>
-
-                </a>
-
-
-                <!-- Roles -->
-
-                <a href="#roles">
-
-                    <span class="nav-icon">
-                        ◈
-                    </span>
-
-                    <span>
-                        Roles & Competencies
-                    </span>
-
-                </a>
-
-
-                <!-- Materials -->
-
-                <a href="#materials">
-
-                    <span class="nav-icon">
-                        ▣
-                    </span>
-
-                    <span>
-                        Learning Materials
-                    </span>
-
-                </a>
-
-
-                <!-- Quiz Review -->
-
-                <a href="#quiz-review">
-
-                    <span class="nav-icon">
-                        ✓
-                    </span>
-
-                    <span>
-                        AI Quiz Review
-                    </span>
-
-                </a>
-
-
-                <!-- Activity -->
-
-                <a href="#activity">
-
-                    <span class="nav-icon">
-                        ◷
-                    </span>
-
-                    <span>
-                        Recent Activity
-                    </span>
-
-                </a>
-
-
-                <div
-                    class="admin-nav-title"
-                    style="margin-top: 20px;"
-                >
-                    System
                 </div>
 
 
-                <!-- Settings -->
+                <!-- Notification -->
+                <button
+                    type="button"
+                    class="admin-notification">
 
-                <a href="#">
+                    <i class="fa-regular fa-bell"></i>
 
-                    <span class="nav-icon">
-                        ⚙
+                    <span class="notification-dot"></span>
+
+                </button>
+
+
+                <!-- Header Avatar -->
+                <div class="admin-header-avatar">
+                    A
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =====================================================
+             OVERVIEW
+        ====================================================== -->
+
+        <section
+            id="overview"
+            class="admin-section active-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        DASHBOARD OVERVIEW
                     </span>
 
-                    <span>
-                        Settings
-                    </span>
+                    <h2>
+                        Workforce Intelligence
+                    </h2>
 
-                </a>
-
-
-                <!-- Help -->
-
-                <a href="#">
-
-                    <span class="nav-icon">
-                        ?
-                    </span>
-
-                    <span>
-                        Help & Support
-                    </span>
-
-                </a>
-
-
-            </nav>
-
-
-            <!-- Sidebar User -->
-
-            <div class="admin-sidebar-footer">
-
-
-                <div class="admin-user-mini">
-
-
-                    <div class="admin-avatar">
-                        A
-                    </div>
-
-
-                    <div>
-
-                        <strong>
-                            Administrator
-                        </strong>
-
-                        <span>
-                            System Admin
-                        </span>
-
-                    </div>
-
+                    <p>
+                        A real-time view of employee competency,
+                        learning progress and AI-driven insights.
+                    </p>
 
                 </div>
 
 
                 <button
-                    class="logout-btn"
-                    onclick="logout()"
-                >
+                    type="button"
+                    class="date-button">
 
-                    ⇥ &nbsp; Logout
+                    <i class="fa-regular fa-calendar"></i>
+
+                    September 2026
+
+                    <i class="fa-solid fa-chevron-down"></i>
 
                 </button>
-
 
             </div>
 
 
-        </aside>
-
-
-
-        <!-- =================================================
-             MAIN CONTENT
-             ================================================= -->
-
-        <main class="admin-main">
-
-
             <!-- =================================================
-                 HEADER
-                 ================================================= -->
+                 STAT CARDS
+            ================================================== -->
 
-            <header class="admin-header">
+            <div class="stats-grid">
 
 
-                <div class="header-title">
+                <!-- Employees -->
+                <div class="stat-card">
 
-                    <h1>
-                        Admin Overview
-                    </h1>
+                    <div class="stat-top">
 
-                    <p>
-                        Manage competencies, learning materials
-                        and AI assessments
-                    </p>
+                        <div class="stat-icon employees-icon">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+
+                        <span class="stat-trend positive">
+                            <i class="fa-solid fa-arrow-up"></i>
+                            8.4%
+                        </span>
+
+                    </div>
+
+                    <div class="stat-content">
+
+                        <span>
+                            Total Employees
+                        </span>
+
+                        <strong>
+                            248
+                        </strong>
+
+                        <small>
+                            Active employees
+                        </small>
+
+                    </div>
+
+                    <div class="stat-decoration">
+                        <div class="mini-chart">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
 
                 </div>
 
 
-                <div class="header-right">
 
+                <!-- Competency -->
+                <div class="stat-card">
 
-                    <button
-                        class="notification"
-                        title="Notifications"
-                    >
+                    <div class="stat-top">
 
-                        🔔
+                        <div class="stat-icon competency-icon">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
 
-                        <span class="notification-dot"></span>
+                        <span class="stat-trend positive">
+                            <i class="fa-solid fa-arrow-up"></i>
+                            6.2%
+                        </span>
 
-                    </button>
+                    </div>
 
+                    <div class="stat-content">
+
+                        <span>
+                            Avg. Competency
+                        </span>
+
+                        <strong>
+                            68%
+                        </strong>
+
+                        <small>
+                            Across all roles
+                        </small>
+
+                    </div>
+
+                    <div class="stat-decoration">
+                        <div class="progress-ring">
+                            <span>68%</span>
+                        </div>
+                    </div>
 
                 </div>
 
 
-            </header>
+
+                <!-- Learning -->
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div class="stat-icon learning-icon">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+
+                        <span class="stat-trend positive">
+                            <i class="fa-solid fa-arrow-up"></i>
+                            12.7%
+                        </span>
+
+                    </div>
+
+                    <div class="stat-content">
+
+                        <span>
+                            Learning Completion
+                        </span>
+
+                        <strong>
+                            74%
+                        </strong>
+
+                        <small>
+                            This month
+                        </small>
+
+                    </div>
+
+                    <div class="stat-decoration">
+                        <div class="mini-chart">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <!-- Quizzes -->
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div class="stat-icon quiz-icon">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+
+                        <span class="stat-trend neutral">
+                            8 pending
+                        </span>
+
+                    </div>
+
+                    <div class="stat-content">
+
+                        <span>
+                            AI Quizzes
+                        </span>
+
+                        <strong>
+                            1,426
+                        </strong>
+
+                        <small>
+                            Generated this month
+                        </small>
+
+                    </div>
+
+                    <div class="stat-decoration">
+
+                        <div class="quiz-ring">
+                            <i class="fa-solid fa-sparkles"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
 
 
 
             <!-- =================================================
-                 DASHBOARD CONTENT
-                 ================================================= -->
+                 COMPETENCY + GAPS
+            ================================================== -->
 
-            <div class="admin-content">
+            <div class="two-column-grid">
 
 
-                <!-- =================================================
-                     PLATFORM OVERVIEW
-                     ================================================= -->
+                <!-- Competency Overview -->
+                <div class="admin-card competency-overview-card">
 
-                <div class="section-heading">
+                    <div class="card-heading">
+
+                        <div>
+
+                            <span class="card-label">
+                                COMPETENCY HEALTH
+                            </span>
+
+                            <h3>
+                                Workforce Performance
+                            </h3>
+
+                        </div>
+
+                        <button class="card-menu">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="employee-summary">
+
+                        <div class="employee-summary-avatar">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Overall Competency
+                            </strong>
+
+                            <span>
+                                Across 248 employees
+                            </span>
+
+                        </div>
+
+                        <div class="employee-score">
+                            68%
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-skill-list">
+
+
+                        <div class="admin-skill">
+
+                            <div class="skill-header">
+
+                                <span>
+                                    Excel & Data Tools
+                                </span>
+
+                                <strong>
+                                    78%
+                                </strong>
+
+                            </div>
+
+                            <div class="admin-skill-bar">
+                                <span style="width:78%"></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-skill">
+
+                            <div class="skill-header">
+
+                                <span>
+                                    Statistics
+                                </span>
+
+                                <strong>
+                                    65%
+                                </strong>
+
+                            </div>
+
+                            <div class="admin-skill-bar">
+                                <span style="width:65%"></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-skill">
+
+                            <div class="skill-header">
+
+                                <span>
+                                    Data Interpretation
+                                </span>
+
+                                <strong>
+                                    72%
+                                </strong>
+
+                            </div>
+
+                            <div class="admin-skill-bar">
+                                <span style="width:72%"></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-skill">
+
+                            <div class="skill-header">
+
+                                <span>
+                                    Data Cleaning
+                                </span>
+
+                                <strong class="danger-score">
+                                    42%
+                                </strong>
+
+                            </div>
+
+                            <div class="admin-skill-bar danger">
+                                <span style="width:42%"></span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="gap-alert">
+
+                        <div class="gap-alert-icon">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Priority competency gap
+                            </strong>
+
+                            <p>
+                                Data Cleaning requires attention
+                                across multiple employee groups.
+                            </p>
+
+                        </div>
+
+                        <span>
+                            42%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Gap Distribution -->
+                <div class="admin-card gap-distribution-card">
+
+                    <div class="card-heading">
+
+                        <div>
+
+                            <span class="card-label">
+                                AI GAP ANALYSIS
+                            </span>
+
+                            <h3>
+                                Competency Gaps
+                            </h3>
+
+                        </div>
+
+                        <span class="live-badge">
+                            <i class="fa-solid fa-circle"></i>
+                            LIVE
+                        </span>
+
+                    </div>
+
+
+                    <div class="gap-chart">
+
+                        <div class="gap-chart-item">
+
+                            <div class="gap-chart-label">
+
+                                <span>
+                                    Data Cleaning
+                                </span>
+
+                                <strong>
+                                    42%
+                                </strong>
+
+                            </div>
+
+                            <div class="gap-chart-bar">
+                                <span style="width:88%"></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="gap-chart-item">
+
+                            <div class="gap-chart-label">
+
+                                <span>
+                                    Statistical Analysis
+                                </span>
+
+                                <strong>
+                                    48%
+                                </strong>
+
+                            </div>
+
+                            <div class="gap-chart-bar">
+                                <span style="width:72%"></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="gap-chart-item">
+
+                            <div class="gap-chart-label">
+
+                                <span>
+                                    Data Interpretation
+                                </span>
+
+                                <strong>
+                                    55%
+                                </strong>
+
+                            </div>
+
+                            <div class="gap-chart-bar">
+                                <span style="width:60%"></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="gap-chart-item">
+
+                            <div class="gap-chart-label">
+
+                                <span>
+                                    Excel Automation
+                                </span>
+
+                                <strong>
+                                    61%
+                                </strong>
+
+                            </div>
+
+                            <div class="gap-chart-bar">
+                                <span style="width:48%"></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="gap-chart-item">
+
+                            <div class="gap-chart-label">
+
+                                <span>
+                                    Report Preparation
+                                </span>
+
+                                <strong>
+                                    67%
+                                </strong>
+
+                            </div>
+
+                            <div class="gap-chart-bar">
+                                <span style="width:35%"></span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="ai-analysis-note">
+
+                        <div class="ai-note-icon">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                AI Recommendation
+                            </strong>
+
+                            <p>
+                                Prioritize Data Cleaning Fundamentals
+                                for employees with scores below 50%.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             EMPLOYEES
+        ====================================================== -->
+
+        <section
+            id="employees"
+            class="admin-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        EMPLOYEE MANAGEMENT
+                    </span>
 
                     <h2>
-                        Platform Overview
+                        Employees
                     </h2>
 
                     <p>
-                        Current status of the competency learning ecosystem
+                        Monitor employee competency and learning progress.
                     </p>
 
                 </div>
 
+                <button class="primary-button">
+                    <i class="fa-solid fa-user-plus"></i>
+                    Add Employee
+                </button>
+
+            </div>
 
 
-                <!-- Statistics -->
+            <div class="employee-toolbar">
 
-                <div class="stats-grid">
+                <div class="filter-group">
+
+                    <button class="filter-button active">
+                        All Employees
+                    </button>
+
+                    <button class="filter-button">
+                        Needs Attention
+                    </button>
+
+                    <button class="filter-button">
+                        High Performers
+                    </button>
+
+                </div>
+
+                <button class="filter-icon-button">
+                    <i class="fa-solid fa-filter"></i>
+                    Filters
+                </button>
+
+            </div>
 
 
-                    <!-- Total Employees -->
+            <div class="admin-card employee-table-card">
 
-                    <div class="stat-card">
+                <div class="table-header">
 
-                        <div class="stat-top">
+                    <span>Employee</span>
+                    <span>Department</span>
+                    <span>Competency</span>
+                    <span>Learning</span>
+                    <span>Status</span>
+                    <span>Action</span>
 
-                            <div class="stat-icon">
-                                👥
-                            </div>
+                </div>
 
+
+                <div class="employee-row">
+
+                    <div class="employee-info">
+
+                        <div class="table-avatar">
+                            RK
                         </div>
 
+                        <div>
+                            <strong>
+                                Rahul Kumar
+                            </strong>
 
-                        <div class="stat-label">
-                            Total Employees
-                        </div>
-
-
-                        <div class="stat-value">
-                            248
-                        </div>
-
-
-                        <div class="stat-note green">
-                            ↑ 12 this month
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Active Roles -->
-
-                    <div class="stat-card">
-
-                        <div class="stat-top">
-
-                            <div class="stat-icon">
-                                ◈
-                            </div>
-
-                        </div>
-
-
-                        <div class="stat-label">
-                            Active Roles
-                        </div>
-
-
-                        <div class="stat-value">
-                            08
-                        </div>
-
-
-                        <div class="stat-note">
-                            Across statistical functions
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Learning Materials -->
-
-                    <div class="stat-card">
-
-                        <div class="stat-top">
-
-                            <div class="stat-icon">
-                                📚
-                            </div>
-
-                        </div>
-
-
-                        <div class="stat-label">
-                            Learning Materials
-                        </div>
-
-
-                        <div class="stat-value">
-                            64
-                        </div>
-
-
-                        <div class="stat-note green">
-                            58 approved
+                            <span>
+                                rahul.kumar@gov.in
+                            </span>
                         </div>
 
                     </div>
 
+                    <span>
+                        Data Analysis
+                    </span>
+
+                    <strong>
+                        82%
+                    </strong>
+
+                    <span>
+                        91%
+                    </span>
+
+                    <span class="status active">
+                        Active
+                    </span>
+
+                    <button class="row-action">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+
+                </div>
 
 
-                    <!-- Pending AI Reviews -->
+                <div class="employee-row">
 
-                    <div class="stat-card">
+                    <div class="employee-info">
 
-                        <div class="stat-top">
-
-                            <div class="stat-icon">
-                                🤖
-                            </div>
-
+                        <div class="table-avatar">
+                            AS
                         </div>
 
+                        <div>
+                            <strong>
+                                Anjali Sharma
+                            </strong>
 
-                        <div class="stat-label">
-                            Pending AI Reviews
-                        </div>
-
-
-                        <div class="stat-value">
-                            12
-                        </div>
-
-
-                        <div class="stat-note amber">
-                            Requires attention
+                            <span>
+                                anjali.sharma@gov.in
+                            </span>
                         </div>
 
                     </div>
 
+                    <span>
+                        Statistics
+                    </span>
+
+                    <strong>
+                        74%
+                    </strong>
+
+                    <span>
+                        78%
+                    </span>
+
+                    <span class="status active">
+                        Active
+                    </span>
+
+                    <button class="row-action">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+
+                </div>
+
+
+                <div class="employee-row">
+
+                    <div class="employee-info">
+
+                        <div class="table-avatar warning">
+                            MP
+                        </div>
+
+                        <div>
+                            <strong>
+                                Manoj Prasad
+                            </strong>
+
+                            <span>
+                                manoj.prasad@gov.in
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <span>
+                        Data Processing
+                    </span>
+
+                    <strong class="danger-score">
+                        43%
+                    </strong>
+
+                    <span>
+                        49%
+                    </span>
+
+                    <span class="status attention">
+                        Needs Attention
+                    </span>
+
+                    <button class="row-action">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+
+                </div>
+
+
+                <div class="employee-row">
+
+                    <div class="employee-info">
+
+                        <div class="table-avatar">
+                            SN
+                        </div>
+
+                        <div>
+                            <strong>
+                                Sneha Nair
+                            </strong>
+
+                            <span>
+                                sneha.nair@gov.in
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <span>
+                        Survey Operations
+                    </span>
+
+                    <strong>
+                        71%
+                    </strong>
+
+                    <span>
+                        83%
+                    </span>
+
+                    <span class="status active">
+                        Active
+                    </span>
+
+                    <button class="row-action">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             ROLES
+        ====================================================== -->
+
+        <section
+            id="roles"
+            class="admin-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        COMPETENCY FRAMEWORK
+                    </span>
+
+                    <h2>
+                        Roles & Competencies
+                    </h2>
+
+                    <p>
+                        Define competency requirements for each employee role.
+                    </p>
+
+                </div>
+
+                <button class="primary-button">
+                    <i class="fa-solid fa-plus"></i>
+                    Create Role
+                </button>
+
+            </div>
+
+
+            <div class="roles-grid">
+
+
+                <div class="role-card">
+
+                    <div class="role-icon">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </div>
+
+                    <div class="role-info">
+
+                        <h3>
+                            Data Analyst
+                        </h3>
+
+                        <p>
+                            68 employees
+                        </p>
+
+                    </div>
+
+                    <div class="role-score">
+                        76%
+                    </div>
+
+                    <div class="role-skills">
+
+                        <span>Statistics</span>
+                        <span>Excel</span>
+                        <span>Data Cleaning</span>
+                        <span>Visualization</span>
+
+                    </div>
+
+                    <button class="role-action">
+                        Manage Competencies
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
 
                 </div>
 
 
 
-                <!-- =================================================
-                     ROLE + LEARNING MATERIALS
-                     ================================================= -->
+                <div class="role-card">
 
-                <div class="admin-grid">
+                    <div class="role-icon">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
 
+                    <div class="role-info">
 
-                    <!-- =================================================
-                         ROLE & COMPETENCY
-                         ================================================= -->
+                        <h3>
+                            Data Processing Officer
+                        </h3>
 
-                    <section
-                        class="admin-card"
-                        id="roles"
-                    >
+                        <p>
+                            82 employees
+                        </p>
 
+                    </div>
 
-                        <div class="card-header">
+                    <div class="role-score">
+                        64%
+                    </div>
 
+                    <div class="role-skills">
 
-                            <div>
+                        <span>Data Cleaning</span>
+                        <span>Validation</span>
+                        <span>Excel</span>
+                        <span>Quality Control</span>
 
-                                <h3>
-                                    Role & Competency Management
-                                </h3>
+                    </div>
 
-                                <p>
-                                    Define competencies required for each role
-                                </p>
-
-                            </div>
-
-
-                            <a
-                                href="#"
-                                class="view-link"
-                            >
-                                Manage
-                            </a>
-
-
-                        </div>
-
-
-
-                        <!-- Role -->
-
-                        <div class="role-box">
-
-
-                            <div class="role-header">
-
-
-                                <strong>
-                                    Statistical Officer
-                                </strong>
-
-
-                                <span class="role-status">
-                                    Active
-                                </span>
-
-
-                            </div>
-
-
-
-                            <!-- Competencies -->
-
-                            <div class="competency-list">
-
-
-                                <div class="competency-item">
-                                    Excel
-                                </div>
-
-
-                                <div class="competency-item">
-                                    Statistics
-                                </div>
-
-
-                                <div class="competency-item">
-                                    Data Interpretation
-                                </div>
-
-
-                                <div class="competency-item">
-                                    Data Cleaning
-                                </div>
-
-
-                            </div>
-
-
-
-                            <!-- Add -->
-
-                            <button
-                                class="add-competency"
-                                onclick="alert('Competency management will be connected to the Flask backend later.')"
-                            >
-
-                                + Add Competency
-
-                            </button>
-
-
-                        </div>
-
-
-                    </section>
-
-
-
-                    <!-- =================================================
-                         LEARNING MATERIALS
-                         ================================================= -->
-
-                    <section
-                        class="admin-card"
-                        id="materials"
-                    >
-
-
-                        <div class="card-header">
-
-
-                            <div>
-
-                                <h3>
-                                    Learning Material Management
-                                </h3>
-
-                                <p>
-                                    Upload and manage approved learning resources
-                                </p>
-
-                            </div>
-
-
-                            <a
-                                href="#"
-                                class="view-link"
-                            >
-                                View All
-                            </a>
-
-
-                        </div>
-
-
-
-                        <!-- Upload Area -->
-
-                        <div class="upload-area">
-
-
-                            <div class="upload-icon">
-                                📄
-                            </div>
-
-
-                            <h4>
-                                Upload Learning Material
-                            </h4>
-
-
-                            <p>
-                                Supported formats:
-                                PDF, PPT, PPTX, DOC, DOCX
-                            </p>
-
-
-
-                            <!-- Upload Button -->
-
-                            <button
-                                type="button"
-                                class="upload-btn"
-                                onclick="document.getElementById('materialFile').click()"
-                            >
-
-                                + Select File
-
-                            </button>
-
-
-                            <!-- Hidden File Input -->
-
-                            <input
-                                type="file"
-                                id="materialFile"
-                                accept=".pdf,.ppt,.pptx,.doc,.docx"
-                                style="display: none;"
-                            >
-
-
-                        </div>
-
-
-
-                        <!-- Materials -->
-
-                        <div class="material-list">
-
-
-                            <!-- Material 1 -->
-
-                            <div class="material-item">
-
-
-                                <div class="material-info">
-
-
-                                    <div class="file-icon">
-                                        PDF
-                                    </div>
-
-
-                                    <div>
-
-                                        <strong>
-                                            Data Cleaning Fundamentals
-                                        </strong>
-
-                                        <span>
-                                            Data Cleaning • 24 min
-                                        </span>
-
-                                    </div>
-
-
-                                </div>
-
-
-                                <span class="status approved">
-                                    Approved
-                                </span>
-
-
-                            </div>
-
-
-
-                            <!-- Material 2 -->
-
-                            <div class="material-item">
-
-
-                                <div class="material-info">
-
-
-                                    <div class="file-icon">
-                                        PDF
-                                    </div>
-
-
-                                    <div>
-
-                                        <strong>
-                                            Statistical Methods
-                                        </strong>
-
-                                        <span>
-                                            Statistics • 32 min
-                                        </span>
-
-                                    </div>
-
-
-                                </div>
-
-
-                                <span class="status processing">
-                                    Processing
-                                </span>
-
-
-                            </div>
-
-
-
-                            <!-- Material 3 -->
-
-                            <div class="material-item">
-
-
-                                <div class="material-info">
-
-
-                                    <div class="file-icon">
-                                        PPT
-                                    </div>
-
-
-                                    <div>
-
-                                        <strong>
-                                            Data Interpretation Guide
-                                        </strong>
-
-                                        <span>
-                                            Data Interpretation • 18 min
-                                        </span>
-
-                                    </div>
-
-
-                                </div>
-
-
-                                <span class="status pending">
-                                    Pending
-                                </span>
-
-
-                            </div>
-
-
-                        </div>
-
-
-                    </section>
-
+                    <button class="role-action">
+                        Manage Competencies
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
 
                 </div>
 
 
 
-                <!-- =================================================
-                     AI QUIZ REVIEW
-                     ================================================= -->
+                <div class="role-card">
 
-                <section
-                    class="admin-card quiz-card"
-                    id="quiz-review"
-                >
+                    <div class="role-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+
+                    <div class="role-info">
+
+                        <h3>
+                            Statistical Officer
+                        </h3>
+
+                        <p>
+                            51 employees
+                        </p>
+
+                    </div>
+
+                    <div class="role-score">
+                        71%
+                    </div>
+
+                    <div class="role-skills">
+
+                        <span>Statistics</span>
+                        <span>Analysis</span>
+                        <span>Reporting</span>
+                        <span>Interpretation</span>
+
+                    </div>
+
+                    <button class="role-action">
+                        Manage Competencies
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                </div>
 
 
-                    <div class="card-header">
 
+                <div class="role-card add-role-card">
+
+                    <div class="add-role-icon">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+
+                    <h3>
+                        Add New Role
+                    </h3>
+
+                    <p>
+                        Define a new role and its required competencies.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             LEARNING MATERIALS
+        ====================================================== -->
+
+        <section
+            id="materials"
+            class="admin-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        KNOWLEDGE MANAGEMENT
+                    </span>
+
+                    <h2>
+                        Learning Materials
+                    </h2>
+
+                    <p>
+                        Upload approved learning content used by the AI system.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="material-management-grid">
+
+
+                <!-- Upload -->
+                <div class="admin-card material-upload-card">
+
+                    <div class="upload-card-header">
+
+                        <div class="upload-icon">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
 
                         <div>
 
                             <h3>
-                                AI Quiz Review
+                                Upload Material
                             </h3>
 
                             <p>
-                                Review source-grounded questions before publishing
+                                PDF, PPT or DOCX files
                             </p>
 
                         </div>
 
+                    </div>
 
-                        <a
-                            href="#"
-                            class="view-link"
-                        >
-                            View All Reviews
-                        </a>
 
+                    <div
+                        class="upload-drop-zone"
+                        id="uploadDropZone">
+
+                        <i class="fa-solid fa-file-arrow-up"></i>
+
+                        <strong>
+                            Drop your file here
+                        </strong>
+
+                        <span>
+                            or click to browse
+                        </span>
+
+                        <small>
+                            Maximum file size: 25 MB
+                        </small>
+
+                        <input
+                            type="file"
+                            id="materialFile"
+                            accept=".pdf,.ppt,.pptx,.doc,.docx">
 
                     </div>
 
 
+                    <div
+                        class="selected-file-card"
+                        id="selectedFileCard"
+                        style="display:none;">
 
-                    <!-- Quiz Table -->
+                        <div class="selected-file-icon">
+                            <i class="fa-solid fa-file"></i>
+                        </div>
 
-                    <div class="quiz-table-wrapper">
+                        <div>
 
+                            <strong id="selectedFileName">
+                                file.pdf
+                            </strong>
 
-                        <table class="quiz-table">
+                            <span id="selectedFileSize">
+                                0 MB
+                            </span>
 
+                        </div>
 
-                            <thead>
+                        <button
+                            id="removeFileBtn"
+                            type="button">
 
-                                <tr>
+                            <i class="fa-solid fa-xmark"></i>
 
-                                    <th>
-                                        Question
-                                    </th>
-
-                                    <th>
-                                        Topic
-                                    </th>
-
-                                    <th>
-                                        Source Validation
-                                    </th>
-
-                                    <th>
-                                        Confidence
-                                    </th>
-
-                                    <th>
-                                        Difficulty
-                                    </th>
-
-                                    <th>
-                                        Action
-                                    </th>
-
-                                </tr>
-
-                            </thead>
-
-
-
-                            <tbody>
-
-
-                                <!-- Question 1 -->
-
-                                <tr>
-
-
-                                    <td class="question-cell">
-
-                                        Which technique is commonly used
-                                        to identify duplicate records
-                                        during data cleaning?
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <span class="topic-tag">
-                                            Data Cleaning
-                                        </span>
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <span class="validation">
-                                            ✓ Validated
-                                        </span>
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <span class="confidence high">
-                                            96%
-                                        </span>
-
-                                    </td>
-
-
-                                    <td class="difficulty">
-                                        Easy
-                                    </td>
-
-
-                                    <td>
-
-                                        <div class="review-actions">
-
-
-                                            <button
-                                                class="approve-btn"
-                                                onclick="approveQuestion(this)"
-                                            >
-                                                Approve
-                                            </button>
-
-
-                                            <button
-                                                class="flag-btn"
-                                                onclick="flagQuestion(this)"
-                                            >
-                                                Flag
-                                            </button>
-
-
-                                        </div>
-
-                                    </td>
-
-
-                                </tr>
-
-
-
-                                <!-- Question 2 -->
-
-                                <tr>
-
-
-                                    <td class="question-cell">
-
-                                        What is the primary purpose of
-                                        validating data before analysis?
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <span class="topic-tag">
-                                            Data Validation
-                                        </span>
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <span class="validation">
-                                            ✓ Validated
-                                        </span>
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <span class="confidence high">
-                                            93%
-                                        </span>
-
-                                    </td>
-
-
-                                    <td class="difficulty">
-                                        Medium
-                                    </td>
-
-
-                                    <td>
-
-                                        <div class="review-actions">
-
-
-                                            <button
-                                                class="approve-btn"
-                                                onclick="approveQuestion(this)"
-                                            >
-                                                Approve
-                                            </button>
-
-
-                                            <button
-                                                class="flag-btn"
-                                                onclick="flagQuestion(this)"
-                                            >
-                                                Flag
-                                            </button>
-
-
-                                        </div>
-
-                                    </td>
-
-
-                                </tr>
-
-
-
-                                <!-- Question 3 -->
-
-                                <tr>
-
-
-                                    <td class="question-cell">
-
-                                        Which approach can be used to
-                                        handle missing numerical values?
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <span class="topic-tag">
-                                            Missing Values
-                                        </span>
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <span class="validation">
-                                            ✓ Validated
-                                        </span>
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <span class="confidence medium">
-                                            87%
-                                        </span>
-
-                                    </td>
-
-
-                                    <td class="difficulty">
-                                        Medium
-                                    </td>
-
-
-                                    <td>
-
-                                        <div class="review-actions">
-
-
-                                            <button
-                                                class="approve-btn"
-                                                onclick="approveQuestion(this)"
-                                            >
-                                                Approve
-                                            </button>
-
-
-                                            <button
-                                                class="flag-btn"
-                                                onclick="flagQuestion(this)"
-                                            >
-                                                Flag
-                                            </button>
-
-
-                                        </div>
-
-                                    </td>
-
-
-                                </tr>
-
-
-                            </tbody>
-
-
-                        </table>
-
+                        </button>
 
                     </div>
 
 
-                </section>
+                    <div class="upload-fields">
 
+                        <div class="form-field">
 
+                            <label for="materialTitle">
+                                Material Title
+                            </label>
 
-                <!-- =================================================
-                     RECENT ACTIVITY + QUICK ACTIONS
-                     ================================================= -->
-
-                <div class="admin-grid">
-
-
-                    <!-- =================================================
-                         RECENT ACTIVITY
-                         ================================================= -->
-
-                    <section
-                        class="admin-card"
-                        id="activity"
-                    >
-
-
-                        <div class="card-header">
-
-
-                            <div>
-
-                                <h3>
-                                    Recent Activity
-                                </h3>
-
-                                <p>
-                                    Latest platform events
-                                </p>
-
-                            </div>
-
-
-                            <a
-                                href="#"
-                                class="view-link"
-                            >
-                                View All
-                            </a>
-
+                            <input
+                                type="text"
+                                id="materialTitle"
+                                placeholder="e.g. Data Cleaning Fundamentals">
 
                         </div>
 
 
+                        <div class="form-row">
 
-                        <div class="activity-list">
+                            <div class="form-field">
 
+                                <label for="materialCompetency">
+                                    Competency
+                                </label>
 
-                            <!-- Activity 1 -->
+                                <select id="materialCompetency">
 
-                            <div class="activity-item">
+                                    <option value="">
+                                        Select competency
+                                    </option>
 
+                                    <option>
+                                        Data Cleaning
+                                    </option>
 
-                                <div class="activity-icon">
-                                    📄
-                                </div>
+                                    <option>
+                                        Statistics
+                                    </option>
 
+                                    <option>
+                                        Data Interpretation
+                                    </option>
 
-                                <div class="activity-text">
+                                    <option>
+                                        Excel
+                                    </option>
 
-                                    <strong>
-                                        New learning material uploaded
-                                    </strong>
-
-                                    <p>
-                                        Data Cleaning Fundamentals.pdf
-                                    </p>
-
-                                </div>
-
-
-                                <span class="activity-time">
-                                    10 min ago
-                                </span>
-
-
-                            </div>
-
-
-
-                            <!-- Activity 2 -->
-
-                            <div class="activity-item">
-
-
-                                <div class="activity-icon">
-                                    🤖
-                                </div>
-
-
-                                <div class="activity-text">
-
-                                    <strong>
-                                        AI generated 8 quiz questions
-                                    </strong>
-
-                                    <p>
-                                        Based on Data Cleaning material
-                                    </p>
-
-                                </div>
-
-
-                                <span class="activity-time">
-                                    28 min ago
-                                </span>
-
+                                </select>
 
                             </div>
 
 
+                            <div class="form-field">
 
-                            <!-- Activity 3 -->
+                                <label for="materialTopic">
+                                    Topic
+                                </label>
 
-                            <div class="activity-item">
-
-
-                                <div class="activity-icon">
-                                    👤
-                                </div>
-
-
-                                <div class="activity-text">
-
-                                    <strong>
-                                        Employee competency updated
-                                    </strong>
-
-                                    <p>
-                                        Data Cleaning score increased to 58%
-                                    </p>
-
-                                </div>
-
-
-                                <span class="activity-time">
-                                    1 hr ago
-                                </span>
-
+                                <input
+                                    type="text"
+                                    id="materialTopic"
+                                    placeholder="e.g. Missing Values">
 
                             </div>
-
-
-
-                            <!-- Activity 4 -->
-
-                            <div class="activity-item">
-
-
-                                <div class="activity-icon">
-                                    ✓
-                                </div>
-
-
-                                <div class="activity-text">
-
-                                    <strong>
-                                        Learning material approved
-                                    </strong>
-
-                                    <p>
-                                        Statistical Methods.pdf
-                                    </p>
-
-                                </div>
-
-
-                                <span class="activity-time">
-                                    2 hrs ago
-                                </span>
-
-
-                            </div>
-
 
                         </div>
 
 
-                    </section>
+                        <div class="form-field">
 
+                            <label for="materialDescription">
+                                Description
+                            </label>
 
-
-                    <!-- =================================================
-                         QUICK ACTIONS
-                         ================================================= -->
-
-                    <section class="admin-card">
-
-
-                        <div class="card-header">
-
-
-                            <div>
-
-                                <h3>
-                                    Quick Actions
-                                </h3>
-
-                                <p>
-                                    Common administration tasks
-                                </p>
-
-                            </div>
-
+                            <textarea
+                                id="materialDescription"
+                                rows="3"
+                                placeholder="Brief description of the learning material..."></textarea>
 
                         </div>
 
+                    </div>
 
 
-                        <div class="quick-actions">
+                    <div class="upload-actions">
+
+                        <button
+                            type="button"
+                            class="secondary-button">
+
+                            Cancel
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                            id="uploadMaterialBtn">
+
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                            Upload Material
+
+                        </button>
+
+                    </div>
 
 
-                            <!-- Upload -->
+                    <div
+                        id="uploadStatus"
+                        class="upload-status"
+                        style="display:none;">
 
-                            <button
-                                class="quick-action"
-                                onclick="document.getElementById('materialFile').click()"
-                            >
+                        <strong id="uploadStatusTitle">
+                            Uploading...
+                        </strong>
 
+                        <p id="uploadStatusText">
+                            Processing your learning material.
+                        </p>
 
-                                <div class="quick-action-icon">
-                                    📤
-                                </div>
-
-
-                                <strong>
-                                    Upload Material
-                                </strong>
-
-
-                                <span>
-                                    Add approved resources
-                                </span>
-
-
-                            </button>
-
-
-
-                            <!-- Roles -->
-
-                            <button
-                                class="quick-action"
-                                onclick="scrollToSection('roles')"
-                            >
-
-
-                                <div class="quick-action-icon">
-                                    👤
-                                </div>
-
-
-                                <strong>
-                                    Manage Roles
-                                </strong>
-
-
-                                <span>
-                                    Configure competencies
-                                </span>
-
-
-                            </button>
-
-
-
-                            <!-- Quiz -->
-
-                            <button
-                                class="quick-action"
-                                onclick="scrollToSection('quiz-review')"
-                            >
-
-
-                                <div class="quick-action-icon">
-                                    🤖
-                                </div>
-
-
-                                <strong>
-                                    Review AI Quizzes
-                                </strong>
-
-
-                                <span>
-                                    12 questions pending
-                                </span>
-
-
-                            </button>
-
-
-                        </div>
-
-
-                    </section>
-
+                    </div>
 
                 </div>
 
 
+
+                <!-- Material list -->
+                <div class="admin-card materials-list-card">
+
+                    <div class="card-heading">
+
+                        <div>
+
+                            <span class="card-label">
+                                APPROVED CONTENT
+                            </span>
+
+                            <h3>
+                                Recent Materials
+                            </h3>
+
+                        </div>
+
+                        <span class="material-count">
+                            12 Materials
+                        </span>
+
+                    </div>
+
+
+                    <div class="material-list">
+
+
+                        <div class="material-row">
+
+                            <div class="file-type pdf">
+                                PDF
+                            </div>
+
+                            <div class="material-row-info">
+
+                                <strong>
+                                    Data Cleaning Fundamentals
+                                </strong>
+
+                                <span>
+                                    Data Cleaning · 24 min
+                                </span>
+
+                            </div>
+
+                            <span class="material-status approved">
+                                Approved
+                            </span>
+
+                            <button class="material-more">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="material-row">
+
+                            <div class="file-type ppt">
+                                PPT
+                            </div>
+
+                            <div class="material-row-info">
+
+                                <strong>
+                                    Statistical Methods
+                                </strong>
+
+                                <span>
+                                    Statistics · 38 min
+                                </span>
+
+                            </div>
+
+                            <span class="material-status approved">
+                                Approved
+                            </span>
+
+                            <button class="material-more">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="material-row">
+
+                            <div class="file-type pdf">
+                                PDF
+                            </div>
+
+                            <div class="material-row-info">
+
+                                <strong>
+                                    Excel for Official Statistics
+                                </strong>
+
+                                <span>
+                                    Excel · 31 min
+                                </span>
+
+                            </div>
+
+                            <span class="material-status approved">
+                                Approved
+                            </span>
+
+                            <button class="material-more">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="material-row">
+
+                            <div class="file-type doc">
+                                DOC
+                            </div>
+
+                            <div class="material-row-info">
+
+                                <strong>
+                                    Data Validation Guide
+                                </strong>
+
+                                <span>
+                                    Data Quality · 19 min
+                                </span>
+
+                            </div>
+
+                            <span class="material-status pending">
+                                Processing
+                            </span>
+
+                            <button class="material-more">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             QUIZ REVIEW
+        ====================================================== -->
+
+        <section
+            id="quizzes"
+            class="admin-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        AI ASSESSMENT
+                    </span>
+
+                    <h2>
+                        Quiz Review
+                    </h2>
+
+                    <p>
+                        Review AI-generated questions before publishing them.
+                    </p>
+
+                </div>
+
+                <span class="review-count">
+                    8 Questions Pending
+                </span>
+
             </div>
 
 
-        </main>
+            <div class="quiz-review-grid">
 
 
-    </div>
+                <div class="admin-card quiz-review-card">
+
+                    <div class="quiz-card-header">
+
+                        <div class="question-number">
+                            Q01
+                        </div>
+
+                        <span class="difficulty medium">
+                            MEDIUM
+                        </span>
+
+                        <span class="quiz-source">
+                            Data Cleaning Fundamentals
+                        </span>
+
+                    </div>
+
+
+                    <div class="quiz-question">
+
+                        <h3>
+                            Which technique is most appropriate
+                            for handling missing values in a numerical
+                            dataset?
+                        </h3>
+
+                    </div>
+
+
+                    <div class="answer-options">
+
+                        <label class="answer-option correct">
+
+                            <span>A</span>
+
+                            <p>
+                                Mean or median imputation
+                            </p>
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                        </label>
+
+
+                        <label class="answer-option">
+
+                            <span>B</span>
+
+                            <p>
+                                Always deleting the entire dataset
+                            </p>
+
+                        </label>
+
+
+                        <label class="answer-option">
+
+                            <span>C</span>
+
+                            <p>
+                                Replacing values with random numbers
+                            </p>
+
+                        </label>
+
+
+                        <label class="answer-option">
+
+                            <span>D</span>
+
+                            <p>
+                                Ignoring the missing values
+                            </p>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="question-footer">
+
+                        <span>
+                            <i class="fa-solid fa-robot"></i>
+                            AI Generated
+                        </span>
+
+                        <div>
+
+                            <button class="flag-btn">
+                                <i class="fa-solid fa-flag"></i>
+                                Flag
+                            </button>
+
+                            <button class="approve-btn">
+                                <i class="fa-solid fa-check"></i>
+                                Approve
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
 
 
-    <!-- =====================================================
+                <div class="admin-card quiz-review-card">
+
+                    <div class="quiz-card-header">
+
+                        <div class="question-number">
+                            Q02
+                        </div>
+
+                        <span class="difficulty hard">
+                            HARD
+                        </span>
+
+                        <span class="quiz-source">
+                            Statistical Methods
+                        </span>
+
+                    </div>
+
+
+                    <div class="quiz-question">
+
+                        <h3>
+                            What does the standard deviation tell us
+                            about a dataset?
+                        </h3>
+
+                    </div>
+
+
+                    <div class="answer-options">
+
+                        <label class="answer-option">
+
+                            <span>A</span>
+
+                            <p>
+                                The central value
+                            </p>
+
+                        </label>
+
+
+                        <label class="answer-option correct">
+
+                            <span>B</span>
+
+                            <p>
+                                The amount of variation around the mean
+                            </p>
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                        </label>
+
+
+                        <label class="answer-option">
+
+                            <span>C</span>
+
+                            <p>
+                                The number of observations
+                            </p>
+
+                        </label>
+
+
+                        <label class="answer-option">
+
+                            <span>D</span>
+
+                            <p>
+                                The maximum value
+                            </p>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="question-footer">
+
+                        <span>
+                            <i class="fa-solid fa-robot"></i>
+                            AI Generated
+                        </span>
+
+                        <div>
+
+                            <button class="flag-btn">
+                                <i class="fa-solid fa-flag"></i>
+                                Flag
+                            </button>
+
+                            <button class="approve-btn">
+                                <i class="fa-solid fa-check"></i>
+                                Approve
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             ANALYTICS
+        ====================================================== -->
+
+        <section
+            id="analytics"
+            class="admin-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        PERFORMANCE INSIGHTS
+                    </span>
+
+                    <h2>
+                        Analytics
+                    </h2>
+
+                    <p>
+                        Track competency growth and learning outcomes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="analytics-grid">
+
+
+                <div class="admin-card analytics-card large-chart">
+
+                    <div class="card-heading">
+
+                        <div>
+
+                            <span class="card-label">
+                                COMPETENCY TREND
+                            </span>
+
+                            <h3>
+                                Average Competency Growth
+                            </h3>
+
+                        </div>
+
+                        <span class="chart-period">
+                            Last 6 Months
+                        </span>
+
+                    </div>
+
+
+                    <div class="chart-container">
+
+                        <div class="chart-y">
+
+                            <span>80%</span>
+                            <span>60%</span>
+                            <span>40%</span>
+                            <span>20%</span>
+                            <span>0%</span>
+
+                        </div>
+
+
+                        <div class="chart-area">
+
+                            <div class="chart-grid-lines">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+
+                            <svg
+                                class="growth-line"
+                                viewBox="0 0 600 220"
+                                preserveAspectRatio="none">
+
+                                <polyline
+                                    points="0,170 100,150 200,135 300,115 400,92 500,72 600,48"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="4"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                </polyline>
+
+                                <circle cx="0" cy="170" r="5"></circle>
+                                <circle cx="100" cy="150" r="5"></circle>
+                                <circle cx="200" cy="135" r="5"></circle>
+                                <circle cx="300" cy="115" r="5"></circle>
+                                <circle cx="400" cy="92" r="5"></circle>
+                                <circle cx="500" cy="72" r="5"></circle>
+                                <circle cx="600" cy="48" r="5"></circle>
+
+                            </svg>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-months">
+
+                        <span>Apr</span>
+                        <span>May</span>
+                        <span>Jun</span>
+                        <span>Jul</span>
+                        <span>Aug</span>
+                        <span>Sep</span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="admin-card completion-card">
+
+                    <div class="card-heading">
+
+                        <div>
+
+                            <span class="card-label">
+                                LEARNING
+                            </span>
+
+                            <h3>
+                                Completion Rate
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="completion-circle">
+
+                        <div>
+                            <strong>
+                                74%
+                            </strong>
+
+                            <span>
+                                Complete
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="completion-stats">
+
+                        <div>
+
+                            <strong>
+                                183
+                            </strong>
+
+                            <span>
+                                Completed
+                            </span>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                65
+                            </strong>
+
+                            <span>
+                                In Progress
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             ACTIVITY
+        ====================================================== -->
+
+        <section
+            id="activity"
+            class="admin-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        SYSTEM ACTIVITY
+                    </span>
+
+                    <h2>
+                        Recent Activity
+                    </h2>
+
+                    <p>
+                        Latest employee and platform events.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-card activity-card">
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon success">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+
+                    <div class="activity-info">
+
+                        <strong>
+                            Quiz approved
+                        </strong>
+
+                        <p>
+                            Data Cleaning Fundamentals Q01
+                            was approved for employees.
+                        </p>
+
+                        <span>
+                            8 minutes ago
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon learning">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+
+                    <div class="activity-info">
+
+                        <strong>
+                            Learning material uploaded
+                        </strong>
+
+                        <p>
+                            Statistical Methods.pdf was added
+                            to the approved learning library.
+                        </p>
+
+                        <span>
+                            24 minutes ago
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon ai">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+
+                    <div class="activity-info">
+
+                        <strong>
+                            AI generated new assessment
+                        </strong>
+
+                        <p>
+                            12 questions were generated from
+                            Data Cleaning Fundamentals.
+                        </p>
+
+                        <span>
+                            1 hour ago
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+
+                    <div class="activity-info">
+
+                        <strong>
+                            Competency gap detected
+                        </strong>
+
+                        <p>
+                            Multiple employees scored below
+                            50% in Data Cleaning.
+                        </p>
+
+                        <span>
+                            2 hours ago
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity-item">
+
+                    <div class="activity-icon user">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+
+                    <div class="activity-info">
+
+                        <strong>
+                            New employee registered
+                        </strong>
+
+                        <p>
+                            Employee profile added to
+                            Statistical Operations.
+                        </p>
+
+                        <span>
+                            3 hours ago
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             QUICK ACTIONS
+        ====================================================== -->
+
+        <section class="quick-actions-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        QUICK ACTIONS
+                    </span>
+
+                    <h2>
+                        What would you like to do?
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="quick-actions-grid">
+
+
+                <button
+                    class="quick-action"
+                    onclick="document.querySelector('[data-section=employees]').click()">
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Manage Employees
+                        </strong>
+
+                        <span>
+                            Add and manage workforce
+                        </span>
+
+                    </div>
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+
+                <button
+                    class="quick-action"
+                    onclick="document.querySelector('[data-section=materials]').click()">
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Upload Material
+                        </strong>
+
+                        <span>
+                            Add approved learning content
+                        </span>
+
+                    </div>
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+
+                <button
+                    class="quick-action"
+                    onclick="document.querySelector('[data-section=quizzes]').click()">
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Review AI Quizzes
+                        </strong>
+
+                        <span>
+                            8 questions awaiting review
+                        </span>
+
+                    </div>
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+
+                <button
+                    class="quick-action"
+                    onclick="document.querySelector('[data-section=analytics]').click()">
+
+                    <div class="quick-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            View Analytics
+                        </strong>
+
+                        <span>
+                            Explore competency insights
+                        </span>
+
+                    </div>
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
+
+        <footer class="admin-footer">
+
+            <div>
+
+                <strong>
+                    Tech Spark
+                </strong>
+
+                <span>
+                    AI-Powered Competency Intelligence
+                </span>
+
+            </div>
+
+
+            <div>
+
+                SIH26101 · Smart India Hackathon 2026
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    System Status
+                </span>
+
+                <strong class="system-online">
+                    <i class="fa-solid fa-circle"></i>
+                    All Systems Operational
+                </strong>
+
+            </div>
+
+        </footer>
+
+    </main>
+
+
+
+    <!-- =========================================================
          JAVASCRIPT
-         ===================================================== -->
+    ========================================================== -->
 
-    <!-- Authentication -->
     <script src="../../js/auth.js"></script>
 
-    <!-- Admin Functions -->
     <script src="../../js/admin.js"></script>
 
 
-    <!-- Admin Authentication Check -->
-
     <script>
 
-        requireLogin("admin");
+        /*
+         * Admin authentication
+         */
+        document.addEventListener("DOMContentLoaded", function () {
+
+            if (typeof requireLogin === "function") {
+                requireLogin("admin");
+            }
+
+        });
+
+
+
+        /*
+         * Sidebar navigation
+         */
+        document.querySelectorAll(".admin-nav-item").forEach(function (item) {
+
+            item.addEventListener("click", function (event) {
+
+                event.preventDefault();
+
+                const targetId =
+                    this.getAttribute("data-section");
+
+                if (!targetId) return;
+
+                /*
+                 * Active navigation
+                 */
+                document
+                    .querySelectorAll(".admin-nav-item")
+                    .forEach(function (nav) {
+
+                        nav.classList.remove("active");
+
+                    });
+
+                this.classList.add("active");
+
+
+                /*
+                 * Hide all sections
+                 */
+                document
+                    .querySelectorAll(".admin-section")
+                    .forEach(function (section) {
+
+                        section.classList.remove("active-section");
+
+                    });
+
+
+                /*
+                 * Show selected section
+                 */
+                const target =
+                    document.getElementById(targetId);
+
+                if (target) {
+
+                    target.classList.add("active-section");
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+
+                }
+
+            });
+
+        });
+
+
+
+        /*
+         * Search
+         */
+        const searchInput =
+            document.getElementById("adminSearch");
+
+        if (searchInput) {
+
+            searchInput.addEventListener("input", function () {
+
+                const searchValue =
+                    this.value.toLowerCase().trim();
+
+                const rows =
+                    document.querySelectorAll(
+                        ".employee-row, .material-row"
+                    );
+
+                rows.forEach(function (row) {
+
+                    const text =
+                        row.textContent.toLowerCase();
+
+                    if (!searchValue || text.includes(searchValue)) {
+
+                        row.style.display = "";
+
+                    } else {
+
+                        row.style.display = "none";
+
+                    }
+
+                });
+
+            });
+
+        }
+
+
+
+        /*
+         * Keyboard shortcut CTRL + K
+         */
+        document.addEventListener("keydown", function (event) {
+
+            if (
+                (event.ctrlKey || event.metaKey) &&
+                event.key.toLowerCase() === "k"
+            ) {
+
+                event.preventDefault();
+
+                if (searchInput) {
+
+                    searchInput.focus();
+
+                }
+
+            }
+
+        });
+
+
+
+        /*
+         * Stat number animation
+         */
+        function animateNumbers() {
+
+            document
+                .querySelectorAll(".stat-card strong")
+                .forEach(function (element) {
+
+                    const original =
+                        element.textContent.trim();
+
+                    const match =
+                        original.match(/(\d+)/);
+
+                    if (!match) return;
+
+                    const target =
+                        parseInt(match[1]);
+
+                    if (target > 5000) return;
+
+                    let current = 0;
+
+                    const increment =
+                        Math.max(1, Math.ceil(target / 35));
+
+                    const timer =
+                        setInterval(function () {
+
+                            current += increment;
+
+                            if (current >= target) {
+
+                                current = target;
+
+                                clearInterval(timer);
+
+                            }
+
+                            element.textContent =
+                                current +
+                                original.replace(/\d+/, "");
+
+                        }, 25);
+
+                });
+
+        }
+
+
+        setTimeout(animateNumbers, 400);
+
+
+
+        /*
+         * Intersection animation
+         */
+        const observer =
+            new IntersectionObserver(
+                function (entries) {
+
+                    entries.forEach(function (entry) {
+
+                        if (entry.isIntersecting) {
+
+                            entry.target.classList.add("visible");
+
+                        }
+
+                    });
+
+                },
+                {
+                    threshold: 0.15
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                ".admin-card, .stat-card, .role-card, .quick-action"
+            )
+            .forEach(function (element) {
+
+                observer.observe(element);
+
+            });
+
+
+
+        /*
+         * Material upload preview
+         */
+        const materialFile =
+            document.getElementById("materialFile");
+
+        const selectedFileCard =
+            document.getElementById("selectedFileCard");
+
+        const selectedFileName =
+            document.getElementById("selectedFileName");
+
+        const selectedFileSize =
+            document.getElementById("selectedFileSize");
+
+        const removeFileBtn =
+            document.getElementById("removeFileBtn");
+
+
+        if (materialFile) {
+
+            materialFile.addEventListener("change", function () {
+
+                const file = this.files[0];
+
+                if (!file) return;
+
+                selectedFileName.textContent =
+                    file.name;
+
+                selectedFileSize.textContent =
+                    (file.size / 1024 / 1024).toFixed(2) +
+                    " MB";
+
+                selectedFileCard.style.display =
+                    "flex";
+
+            });
+
+        }
+
+
+        if (removeFileBtn) {
+
+            removeFileBtn.addEventListener("click", function () {
+
+                materialFile.value = "";
+
+                selectedFileCard.style.display =
+                    "none";
+
+            });
+
+        }
+
+
+
+        /*
+         * Drop zone
+         */
+        const dropZone =
+            document.getElementById("uploadDropZone");
+
+
+        if (dropZone && materialFile) {
+
+            dropZone.addEventListener(
+                "dragover",
+                function (event) {
+
+                    event.preventDefault();
+
+                    dropZone.classList.add("dragging");
+
+                }
+            );
+
+
+            dropZone.addEventListener(
+                "dragleave",
+                function () {
+
+                    dropZone.classList.remove("dragging");
+
+                }
+            );
+
+
+            dropZone.addEventListener(
+                "drop",
+                function (event) {
+
+                    event.preventDefault();
+
+                    dropZone.classList.remove("dragging");
+
+                    if (
+                        event.dataTransfer.files &&
+                        event.dataTransfer.files.length
+                    ) {
+
+                        materialFile.files =
+                            event.dataTransfer.files;
+
+                        materialFile.dispatchEvent(
+                            new Event("change")
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        /*
+         * Mobile menu
+         */
+        const mobileMenuBtn =
+            document.querySelector(".mobile-menu-btn");
+
+
+        if (mobileMenuBtn) {
+
+            mobileMenuBtn.addEventListener("click", function () {
+
+                document
+                    .querySelector(".admin-sidebar")
+                    .classList.toggle("mobile-open");
+
+            });
+
+        }
+
+
+
+        /*
+         * Close sidebar after mobile navigation
+         */
+        document
+            .querySelectorAll(".admin-nav-item")
+            .forEach(function (item) {
+
+                item.addEventListener("click", function () {
+
+                    const sidebar =
+                        document.querySelector(".admin-sidebar");
+
+                    if (sidebar) {
+
+                        sidebar.classList.remove(
+                            "mobile-open"
+                        );
+
+                    }
+
+                });
+
+            });
 
     </script>
-
 
 </body>
 
