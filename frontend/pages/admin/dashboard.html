@@ -2,20 +2,24 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Tech Spark | Admin Dashboard</title>
 
-    <!-- Main Website Styles -->
+    <!-- Main Website CSS -->
     <link rel="stylesheet" href="../../css/style.css">
 
-    <!-- Admin Dashboard Styles -->
+    <!-- Admin Dashboard CSS -->
     <link rel="stylesheet" href="../../css/admin.css">
+
 </head>
 
+
 <body>
+
 
     <!-- =====================================================
          ADMIN DASHBOARD
@@ -23,11 +27,13 @@
 
     <div class="admin-dashboard">
 
+
         <!-- =================================================
              SIDEBAR
              ================================================= -->
 
         <aside class="admin-sidebar">
+
 
             <!-- Brand -->
 
@@ -44,48 +50,124 @@
 
             <nav class="admin-nav">
 
+
                 <div class="admin-nav-title">
                     Administration
                 </div>
 
+
+                <!-- Overview -->
+
                 <a href="#" class="active">
-                    <span class="nav-icon">⌂</span>
-                    <span>Overview</span>
+
+                    <span class="nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Overview
+                    </span>
+
                 </a>
+
+
+                <!-- Roles -->
 
                 <a href="#roles">
-                    <span class="nav-icon">◈</span>
-                    <span>Roles & Competencies</span>
+
+                    <span class="nav-icon">
+                        ◈
+                    </span>
+
+                    <span>
+                        Roles & Competencies
+                    </span>
+
                 </a>
+
+
+                <!-- Materials -->
 
                 <a href="#materials">
-                    <span class="nav-icon">▣</span>
-                    <span>Learning Materials</span>
+
+                    <span class="nav-icon">
+                        ▣
+                    </span>
+
+                    <span>
+                        Learning Materials
+                    </span>
+
                 </a>
+
+
+                <!-- Quiz Review -->
 
                 <a href="#quiz-review">
-                    <span class="nav-icon">✓</span>
-                    <span>AI Quiz Review</span>
+
+                    <span class="nav-icon">
+                        ✓
+                    </span>
+
+                    <span>
+                        AI Quiz Review
+                    </span>
+
                 </a>
+
+
+                <!-- Activity -->
 
                 <a href="#activity">
-                    <span class="nav-icon">◷</span>
-                    <span>Recent Activity</span>
+
+                    <span class="nav-icon">
+                        ◷
+                    </span>
+
+                    <span>
+                        Recent Activity
+                    </span>
+
                 </a>
 
-                <div class="admin-nav-title" style="margin-top: 20px;">
+
+                <div
+                    class="admin-nav-title"
+                    style="margin-top: 20px;"
+                >
                     System
                 </div>
 
-                <a href="#">
-                    <span class="nav-icon">⚙</span>
-                    <span>Settings</span>
-                </a>
+
+                <!-- Settings -->
 
                 <a href="#">
-                    <span class="nav-icon">?</span>
-                    <span>Help & Support</span>
+
+                    <span class="nav-icon">
+                        ⚙
+                    </span>
+
+                    <span>
+                        Settings
+                    </span>
+
                 </a>
+
+
+                <!-- Help -->
+
+                <a href="#">
+
+                    <span class="nav-icon">
+                        ?
+                    </span>
+
+                    <span>
+                        Help & Support
+                    </span>
+
+                </a>
+
 
             </nav>
 
@@ -94,26 +176,46 @@
 
             <div class="admin-sidebar-footer">
 
+
                 <div class="admin-user-mini">
+
 
                     <div class="admin-avatar">
                         A
                     </div>
 
+
                     <div>
-                        <strong>Administrator</strong>
-                        <span>System Admin</span>
+
+                        <strong>
+                            Administrator
+                        </strong>
+
+                        <span>
+                            System Admin
+                        </span>
+
                     </div>
+
 
                 </div>
 
-                <button class="logout-btn" onclick="logout()">
+
+                <button
+                    class="logout-btn"
+                    onclick="logout()"
+                >
+
                     ⇥ &nbsp; Logout
+
                 </button>
+
 
             </div>
 
+
         </aside>
+
 
 
         <!-- =================================================
@@ -129,12 +231,16 @@
 
             <header class="admin-header">
 
+
                 <div class="header-title">
 
-                    <h1>Admin Overview</h1>
+                    <h1>
+                        Admin Overview
+                    </h1>
 
                     <p>
-                        Manage competencies, learning materials and AI assessments
+                        Manage competencies, learning materials
+                        and AI assessments
                     </p>
 
                 </div>
@@ -142,7 +248,11 @@
 
                 <div class="header-right">
 
-                    <button class="notification" title="Notifications">
+
+                    <button
+                        class="notification"
+                        title="Notifications"
+                    >
 
                         🔔
 
@@ -150,9 +260,12 @@
 
                     </button>
 
+
                 </div>
 
+
             </header>
+
 
 
             <!-- =================================================
@@ -163,12 +276,14 @@
 
 
                 <!-- =================================================
-                     OVERVIEW
+                     PLATFORM OVERVIEW
                      ================================================= -->
 
                 <div class="section-heading">
 
-                    <h2>Platform Overview</h2>
+                    <h2>
+                        Platform Overview
+                    </h2>
 
                     <p>
                         Current status of the competency learning ecosystem
@@ -176,6 +291,9 @@
 
                 </div>
 
+
+
+                <!-- Statistics -->
 
                 <div class="stats-grid">
 
@@ -192,19 +310,23 @@
 
                         </div>
 
+
                         <div class="stat-label">
                             Total Employees
                         </div>
 
+
                         <div class="stat-value">
                             248
                         </div>
+
 
                         <div class="stat-note green">
                             ↑ 12 this month
                         </div>
 
                     </div>
+
 
 
                     <!-- Active Roles -->
@@ -219,19 +341,23 @@
 
                         </div>
 
+
                         <div class="stat-label">
                             Active Roles
                         </div>
 
+
                         <div class="stat-value">
                             08
                         </div>
+
 
                         <div class="stat-note">
                             Across statistical functions
                         </div>
 
                     </div>
+
 
 
                     <!-- Learning Materials -->
@@ -246,13 +372,16 @@
 
                         </div>
 
+
                         <div class="stat-label">
                             Learning Materials
                         </div>
 
+
                         <div class="stat-value">
                             64
                         </div>
+
 
                         <div class="stat-note green">
                             58 approved
@@ -261,7 +390,8 @@
                     </div>
 
 
-                    <!-- Pending Reviews -->
+
+                    <!-- Pending AI Reviews -->
 
                     <div class="stat-card">
 
@@ -273,13 +403,16 @@
 
                         </div>
 
+
                         <div class="stat-label">
                             Pending AI Reviews
                         </div>
 
+
                         <div class="stat-value">
                             12
                         </div>
+
 
                         <div class="stat-note amber">
                             Requires attention
@@ -287,23 +420,30 @@
 
                     </div>
 
+
                 </div>
 
 
+
                 <!-- =================================================
-                     ROLE + MATERIALS
+                     ROLE + LEARNING MATERIALS
                      ================================================= -->
 
                 <div class="admin-grid">
 
 
                     <!-- =================================================
-                         ROLE & COMPETENCY MANAGEMENT
+                         ROLE & COMPETENCY
                          ================================================= -->
 
-                    <section class="admin-card" id="roles">
+                    <section
+                        class="admin-card"
+                        id="roles"
+                    >
+
 
                         <div class="card-header">
+
 
                             <div>
 
@@ -317,68 +457,101 @@
 
                             </div>
 
-                            <a href="#" class="view-link">
+
+                            <a
+                                href="#"
+                                class="view-link"
+                            >
                                 Manage
                             </a>
+
 
                         </div>
 
 
+
+                        <!-- Role -->
+
                         <div class="role-box">
 
+
                             <div class="role-header">
+
 
                                 <strong>
                                     Statistical Officer
                                 </strong>
 
+
                                 <span class="role-status">
                                     Active
                                 </span>
 
+
                             </div>
 
 
+
+                            <!-- Competencies -->
+
                             <div class="competency-list">
+
 
                                 <div class="competency-item">
                                     Excel
                                 </div>
 
+
                                 <div class="competency-item">
                                     Statistics
                                 </div>
+
 
                                 <div class="competency-item">
                                     Data Interpretation
                                 </div>
 
+
                                 <div class="competency-item">
                                     Data Cleaning
                                 </div>
 
+
                             </div>
 
 
-                            <button class="add-competency">
+
+                            <!-- Add -->
+
+                            <button
+                                class="add-competency"
+                                onclick="alert('Competency management will be connected to the Flask backend later.')"
+                            >
 
                                 + Add Competency
 
                             </button>
 
+
                         </div>
+
 
                     </section>
 
 
 
                     <!-- =================================================
-                         LEARNING MATERIAL MANAGEMENT
+                         LEARNING MATERIALS
                          ================================================= -->
 
-                    <section class="admin-card" id="materials">
+                    <section
+                        class="admin-card"
+                        id="materials"
+                    >
+
 
                         <div class="card-header">
+
 
                             <div>
 
@@ -392,44 +565,66 @@
 
                             </div>
 
-                            <a href="#" class="view-link">
+
+                            <a
+                                href="#"
+                                class="view-link"
+                            >
                                 View All
                             </a>
+
 
                         </div>
 
 
-                        <!-- Upload -->
+
+                        <!-- Upload Area -->
 
                         <div class="upload-area">
+
 
                             <div class="upload-icon">
                                 📄
                             </div>
 
+
                             <h4>
                                 Upload Learning Material
                             </h4>
 
+
                             <p>
-                                Supported formats: PDF, PPT, PPTX, DOC, DOCX
+                                Supported formats:
+                                PDF, PPT, PPTX, DOC, DOCX
                             </p>
 
-                            <button class="upload-btn"
-                                onclick="document.getElementById('materialFile').click()">
+
+
+                            <!-- Upload Button -->
+
+                            <button
+                                type="button"
+                                class="upload-btn"
+                                onclick="document.getElementById('materialFile').click()"
+                            >
 
                                 + Select File
 
                             </button>
 
+
+                            <!-- Hidden File Input -->
+
                             <input
                                 type="file"
                                 id="materialFile"
                                 accept=".pdf,.ppt,.pptx,.doc,.docx"
-                                style="display:none;"
+                                style="display: none;"
                             >
 
+
                         </div>
+
 
 
                         <!-- Materials -->
@@ -437,13 +632,18 @@
                         <div class="material-list">
 
 
+                            <!-- Material 1 -->
+
                             <div class="material-item">
 
+
                                 <div class="material-info">
+
 
                                     <div class="file-icon">
                                         PDF
                                     </div>
+
 
                                     <div>
 
@@ -457,22 +657,31 @@
 
                                     </div>
 
+
                                 </div>
+
 
                                 <span class="status approved">
                                     Approved
                                 </span>
 
+
                             </div>
 
 
+
+                            <!-- Material 2 -->
+
                             <div class="material-item">
 
+
                                 <div class="material-info">
+
 
                                     <div class="file-icon">
                                         PDF
                                     </div>
+
 
                                     <div>
 
@@ -486,22 +695,31 @@
 
                                     </div>
 
+
                                 </div>
+
 
                                 <span class="status processing">
                                     Processing
                                 </span>
 
+
                             </div>
 
 
+
+                            <!-- Material 3 -->
+
                             <div class="material-item">
 
+
                                 <div class="material-info">
+
 
                                     <div class="file-icon">
                                         PPT
                                     </div>
+
 
                                     <div>
 
@@ -515,17 +733,23 @@
 
                                     </div>
 
+
                                 </div>
+
 
                                 <span class="status pending">
                                     Pending
                                 </span>
 
+
                             </div>
+
 
                         </div>
 
+
                     </section>
+
 
                 </div>
 
@@ -535,9 +759,14 @@
                      AI QUIZ REVIEW
                      ================================================= -->
 
-                <section class="admin-card quiz-card" id="quiz-review">
+                <section
+                    class="admin-card quiz-card"
+                    id="quiz-review"
+                >
+
 
                     <div class="card-header">
+
 
                         <div>
 
@@ -551,16 +780,26 @@
 
                         </div>
 
-                        <a href="#" class="view-link">
+
+                        <a
+                            href="#"
+                            class="view-link"
+                        >
                             View All Reviews
                         </a>
+
 
                     </div>
 
 
+
+                    <!-- Quiz Table -->
+
                     <div class="quiz-table-wrapper">
 
+
                         <table class="quiz-table">
+
 
                             <thead>
 
@@ -595,12 +834,14 @@
                             </thead>
 
 
+
                             <tbody>
 
 
                                 <!-- Question 1 -->
 
                                 <tr>
+
 
                                     <td class="question-cell">
 
@@ -610,6 +851,7 @@
 
                                     </td>
 
+
                                     <td>
 
                                         <span class="topic-tag">
@@ -618,6 +860,7 @@
 
                                     </td>
 
+
                                     <td>
 
                                         <span class="validation">
@@ -625,6 +868,7 @@
                                         </span>
 
                                     </td>
+
 
                                     <td>
 
@@ -634,29 +878,37 @@
 
                                     </td>
 
+
                                     <td class="difficulty">
                                         Easy
                                     </td>
+
 
                                     <td>
 
                                         <div class="review-actions">
 
+
                                             <button
                                                 class="approve-btn"
-                                                onclick="approveQuestion(this)">
+                                                onclick="approveQuestion(this)"
+                                            >
                                                 Approve
                                             </button>
 
+
                                             <button
                                                 class="flag-btn"
-                                                onclick="flagQuestion(this)">
+                                                onclick="flagQuestion(this)"
+                                            >
                                                 Flag
                                             </button>
+
 
                                         </div>
 
                                     </td>
+
 
                                 </tr>
 
@@ -666,12 +918,14 @@
 
                                 <tr>
 
+
                                     <td class="question-cell">
 
                                         What is the primary purpose of
                                         validating data before analysis?
 
                                     </td>
+
 
                                     <td>
 
@@ -681,6 +935,7 @@
 
                                     </td>
 
+
                                     <td>
 
                                         <span class="validation">
@@ -688,6 +943,7 @@
                                         </span>
 
                                     </td>
+
 
                                     <td>
 
@@ -697,29 +953,37 @@
 
                                     </td>
 
+
                                     <td class="difficulty">
                                         Medium
                                     </td>
+
 
                                     <td>
 
                                         <div class="review-actions">
 
+
                                             <button
                                                 class="approve-btn"
-                                                onclick="approveQuestion(this)">
+                                                onclick="approveQuestion(this)"
+                                            >
                                                 Approve
                                             </button>
 
+
                                             <button
                                                 class="flag-btn"
-                                                onclick="flagQuestion(this)">
+                                                onclick="flagQuestion(this)"
+                                            >
                                                 Flag
                                             </button>
+
 
                                         </div>
 
                                     </td>
+
 
                                 </tr>
 
@@ -729,12 +993,14 @@
 
                                 <tr>
 
+
                                     <td class="question-cell">
 
                                         Which approach can be used to
                                         handle missing numerical values?
 
                                     </td>
+
 
                                     <td>
 
@@ -744,6 +1010,7 @@
 
                                     </td>
 
+
                                     <td>
 
                                         <span class="validation">
@@ -751,6 +1018,7 @@
                                         </span>
 
                                     </td>
+
 
                                     <td>
 
@@ -760,37 +1028,49 @@
 
                                     </td>
 
+
                                     <td class="difficulty">
                                         Medium
                                     </td>
+
 
                                     <td>
 
                                         <div class="review-actions">
 
+
                                             <button
                                                 class="approve-btn"
-                                                onclick="approveQuestion(this)">
+                                                onclick="approveQuestion(this)"
+                                            >
                                                 Approve
                                             </button>
 
+
                                             <button
                                                 class="flag-btn"
-                                                onclick="flagQuestion(this)">
+                                                onclick="flagQuestion(this)"
+                                            >
                                                 Flag
                                             </button>
+
 
                                         </div>
 
                                     </td>
 
+
                                 </tr>
+
 
                             </tbody>
 
+
                         </table>
 
+
                     </div>
+
 
                 </section>
 
@@ -803,11 +1083,18 @@
                 <div class="admin-grid">
 
 
-                    <!-- Recent Activity -->
+                    <!-- =================================================
+                         RECENT ACTIVITY
+                         ================================================= -->
 
-                    <section class="admin-card" id="activity">
+                    <section
+                        class="admin-card"
+                        id="activity"
+                    >
+
 
                         <div class="card-header">
+
 
                             <div>
 
@@ -821,21 +1108,31 @@
 
                             </div>
 
-                            <a href="#" class="view-link">
+
+                            <a
+                                href="#"
+                                class="view-link"
+                            >
                                 View All
                             </a>
 
+
                         </div>
+
 
 
                         <div class="activity-list">
 
 
+                            <!-- Activity 1 -->
+
                             <div class="activity-item">
+
 
                                 <div class="activity-icon">
                                     📄
                                 </div>
+
 
                                 <div class="activity-text">
 
@@ -849,18 +1146,25 @@
 
                                 </div>
 
+
                                 <span class="activity-time">
                                     10 min ago
                                 </span>
 
+
                             </div>
 
 
+
+                            <!-- Activity 2 -->
+
                             <div class="activity-item">
+
 
                                 <div class="activity-icon">
                                     🤖
                                 </div>
+
 
                                 <div class="activity-text">
 
@@ -874,18 +1178,25 @@
 
                                 </div>
 
+
                                 <span class="activity-time">
                                     28 min ago
                                 </span>
 
+
                             </div>
 
 
+
+                            <!-- Activity 3 -->
+
                             <div class="activity-item">
+
 
                                 <div class="activity-icon">
                                     👤
                                 </div>
+
 
                                 <div class="activity-text">
 
@@ -899,18 +1210,25 @@
 
                                 </div>
 
+
                                 <span class="activity-time">
                                     1 hr ago
                                 </span>
 
+
                             </div>
 
 
+
+                            <!-- Activity 4 -->
+
                             <div class="activity-item">
+
 
                                 <div class="activity-icon">
                                     ✓
                                 </div>
+
 
                                 <div class="activity-text">
 
@@ -924,23 +1242,31 @@
 
                                 </div>
 
+
                                 <span class="activity-time">
                                     2 hrs ago
                                 </span>
 
+
                             </div>
 
+
                         </div>
+
 
                     </section>
 
 
 
-                    <!-- Quick Actions -->
+                    <!-- =================================================
+                         QUICK ACTIONS
+                         ================================================= -->
 
                     <section class="admin-card">
 
+
                         <div class="card-header">
+
 
                             <div>
 
@@ -954,175 +1280,132 @@
 
                             </div>
 
+
                         </div>
+
 
 
                         <div class="quick-actions">
 
 
-                            <button class="quick-action"
-                                onclick="document.getElementById('materialFile').click()">
+                            <!-- Upload -->
+
+                            <button
+                                class="quick-action"
+                                onclick="document.getElementById('materialFile').click()"
+                            >
+
 
                                 <div class="quick-action-icon">
                                     📤
                                 </div>
 
+
                                 <strong>
                                     Upload Material
                                 </strong>
+
 
                                 <span>
                                     Add approved resources
                                 </span>
 
+
                             </button>
 
 
-                            <button class="quick-action"
-                                onclick="document.getElementById('roles').scrollIntoView({behavior:'smooth'})">
+
+                            <!-- Roles -->
+
+                            <button
+                                class="quick-action"
+                                onclick="scrollToSection('roles')"
+                            >
+
 
                                 <div class="quick-action-icon">
                                     👤
                                 </div>
 
+
                                 <strong>
                                     Manage Roles
                                 </strong>
+
 
                                 <span>
                                     Configure competencies
                                 </span>
 
+
                             </button>
 
 
-                            <button class="quick-action"
-                                onclick="document.getElementById('quiz-review').scrollIntoView({behavior:'smooth'})">
+
+                            <!-- Quiz -->
+
+                            <button
+                                class="quick-action"
+                                onclick="scrollToSection('quiz-review')"
+                            >
+
 
                                 <div class="quick-action-icon">
                                     🤖
                                 </div>
 
+
                                 <strong>
                                     Review AI Quizzes
                                 </strong>
+
 
                                 <span>
                                     12 questions pending
                                 </span>
 
+
                             </button>
+
 
                         </div>
 
+
                     </section>
+
 
                 </div>
 
 
             </div>
 
+
         </main>
+
 
     </div>
 
 
+
     <!-- =====================================================
-         AUTHENTICATION
+         JAVASCRIPT
          ===================================================== -->
 
+    <!-- Authentication -->
     <script src="../../js/auth.js"></script>
 
+    <!-- Admin Functions -->
+    <script src="../../js/admin.js"></script>
+
+
+    <!-- Admin Authentication Check -->
 
     <script>
 
-        /* -----------------------------------------------
-           Require Admin Login
-           ----------------------------------------------- */
-
         requireLogin("admin");
 
-
-        /* -----------------------------------------------
-           Approve AI Question
-           ----------------------------------------------- */
-
-        function approveQuestion(button) {
-
-            const row = button.closest("tr");
-
-            const question = row.querySelector(".question-cell");
-
-            button.textContent = "Approved";
-
-            button.disabled = true;
-
-            button.style.opacity = "0.6";
-
-            const flagButton = row.querySelector(".flag-btn");
-
-            if (flagButton) {
-                flagButton.disabled = true;
-                flagButton.style.opacity = "0.5";
-            }
-
-            question.style.opacity = "0.65";
-
-        }
-
-
-        /* -----------------------------------------------
-           Flag AI Question
-           ----------------------------------------------- */
-
-        function flagQuestion(button) {
-
-            const row = button.closest("tr");
-
-            const validation = row.querySelector(".validation");
-
-            validation.textContent = "⚠ Flagged";
-
-            validation.style.color = "#b91c1c";
-
-            button.textContent = "Flagged";
-
-            button.disabled = true;
-
-            button.style.opacity = "0.6";
-
-        }
-
-
-        /* -----------------------------------------------
-           File Selection Demo
-           ----------------------------------------------- */
-
-        const materialFile =
-            document.getElementById("materialFile");
-
-
-        if (materialFile) {
-
-            materialFile.addEventListener("change", function () {
-
-                if (this.files.length > 0) {
-
-                    const fileName = this.files[0].name;
-
-                    alert(
-                        "Selected learning material:\n\n" +
-                        fileName +
-                        "\n\nBackend upload and document processing will be connected later."
-                    );
-
-                }
-
-            });
-
-        }
-
     </script>
+
 
 </body>
 
