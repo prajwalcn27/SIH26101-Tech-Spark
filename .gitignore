@@ -4,13 +4,9 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Environment variables
+# Environment
 .env
 .env.*
-
-# Generated files
-extracted_text.txt
-ai_pipeline_result.json
 
 # Virtual environments
 venv/
@@ -24,3 +20,21 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Generated files
+extracted_text.txt
+cleaned_text.txt
+text_sections.txt
+topics.txt
+ai/*_result.json
+ai/*_results.json
+ai/quiz_result_analysis.json
+ai/learning_profile.json
+ai/updated_competency.json
+ai/content_index.json
+ai/content_analysis.json
+ai/gap_analysis.json
+ai/recommendations.json
+
+# Learning materials
+learning_materials/*.pdf

@@ -1,0 +1,82 @@
+{
+    "questions": [
+        {
+            "id": 1,
+            "question": "Which algorithm uses a tree structure?",
+            "options": {
+                "A": "K-Means",
+                "B": "Decision Tree",
+                "C": "Naive Bayes",
+                "D": "Linear Regression"
+            },
+            "correct_answer": "B",
+            "topic": "Decision Tree",
+            "difficulty": "Easy"
+        },
+        {
+            "id": 2,
+            "question": "What does pruning help reduce in a Decision Tree?",
+            "options": {
+                "A": "Data collection",
+                "B": "Training data",
+                "C": "Overfitting",
+                "D": "Feature names"
+            },
+            "correct_answer": "C",
+            "topic": "Decision Tree",
+            "difficulty": "Medium"
+        },
+        {
+            "id": 3,
+            "question": "Naive Bayes is a probabilistic classifier based on which concept?",
+            "options": {
+                "A": "Bayes theorem",
+                "B": "Gradient descent",
+                "C": "Clustering",
+                "D": "Decision trees"
+            },
+            "correct_answer": "A",
+            "topic": "Naive Bayes",
+            "difficulty": "Easy"
+        },
+        {
+            "id": 4,
+            "question": "What is the purpose of data cleaning?",
+            "options": {
+                "A": "To increase duplicate data",
+                "B": "To remove or correct incorrect and inconsistent data",
+                "C": "To create random data",
+                "D": "To delete the entire dataset"
+            },
+            "correct_answer": "B",
+            "topic": "Data Cleaning",
+            "difficulty": "Easy"
+        },
+        {
+            "id": 5,
+            "question": "Which is commonly handled during data cleaning?",
+            "options": {
+                "A": "Missing values",
+                "B": "Computer hardware",
+                "C": "Network cables",
+                "D": "Operating systems"
+            },
+            "correct_answer": "A",
+            "topic": "Data Cleaning",
+            "difficulty": "Easy"
+        },
+        {
+            "id": 6,
+            "question": "Which of the following is associated with Naive Bayes?",
+            "options": {
+                "A": "Posterior probability",
+                "B": "HTML rendering",
+                "C": "Sorting algorithms",
+                "D": "Image compression"
+            },
+            "correct_answer": "A",
+            "topic": "Naive Bayes",
+            "difficulty": "Medium"
+        }
+    ]
+}

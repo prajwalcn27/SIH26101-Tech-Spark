@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# API key
+.env
+.env.*
+
+# Generated files
+extracted_text.txt
+ai_pipeline_result.json
+
+quiz_result_analysis.json
