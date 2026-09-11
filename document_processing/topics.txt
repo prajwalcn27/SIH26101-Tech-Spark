@@ -1,0 +1,9 @@
+Missing Values
+Duplicate Records
+Incorrect Data
+Inconsistent Formats
+Outliers
+Standardization
+Validation
+Data Quality
+Data Cleaning

@@ -1,0 +1,16 @@
+[
+    {
+        "weak_topic": "Missing Values",
+        "title": "Data Cleaning",
+        "file": "Data_Cleaning.pdf",
+        "similarity": 36.35,
+        "reason": "Recommended because it covers the weak topic: Missing Values"
+    },
+    {
+        "weak_topic": "Data Cleaning",
+        "title": "Data Cleaning",
+        "file": "Data_Cleaning.pdf",
+        "similarity": 45.29,
+        "reason": "Recommended because it covers the weak topic: Data Cleaning"
+    }
+]
