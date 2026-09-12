@@ -1,0 +1,2505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Role & Competency Management | Tech Spark</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --green:#18a957;
+    --dark:#08783d;
+    --light:#eafff2;
+    --text:#173b2b;
+    --muted:#6d7f75;
+    --border:#dcebe3;
+    --bg:#f6fbf8;
+    --white:#fff;
+    --red:#d95353;
+    --yellow:#c98c25;
+}
+
+body{
+    font-family:"Segoe UI",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* ================= HEADER ================= */
+
+.topbar{
+    height:76px;
+    background:rgba(255,255,255,.96);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 5%;
+    position:sticky;
+    top:0;
+    z-index:100;
+    backdrop-filter:blur(15px);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo{
+    width:44px;
+    height:44px;
+    border-radius:13px;
+    background:linear-gradient(135deg,#18b866,#08783d);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+    box-shadow:0 8px 20px rgba(24,169,87,.2);
+}
+
+.brand strong{
+    display:block;
+    font-size:17px;
+}
+
+.brand span{
+    display:block;
+    color:var(--muted);
+    font-size:11px;
+}
+
+.back-btn{
+    border:1px solid var(--border);
+    background:white;
+    padding:10px 17px;
+    border-radius:11px;
+    cursor:pointer;
+    font-weight:700;
+    transition:.25s;
+}
+
+.back-btn:hover{
+    color:var(--green);
+    border-color:var(--green);
+    transform:translateY(-2px);
+}
+
+/* ================= HERO ================= */
+
+.hero{
+    padding:48px 6% 55px;
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(24,169,87,.15),
+            transparent 30%
+        ),
+        linear-gradient(135deg,#effff5,#fff);
+}
+
+.hero-inner{
+    max-width:1150px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:40px;
+}
+
+.badge{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:30px;
+    background:#dcfae8;
+    color:var(--dark);
+    font-size:12px;
+    font-weight:900;
+    margin-bottom:15px;
+}
+
+.hero h1{
+    font-size:clamp(34px,5vw,53px);
+    line-height:1.08;
+    letter-spacing:-1.5px;
+    margin-bottom:15px;
+}
+
+.hero h1 span{
+    color:var(--green);
+}
+
+.hero p{
+    max-width:690px;
+    color:var(--muted);
+    line-height:1.75;
+    font-size:15px;
+}
+
+/* ================= ROBOT ================= */
+
+.robot{
+    width:145px;
+    height:180px;
+    position:relative;
+    animation:float 3s ease-in-out infinite;
+}
+
+.robot-head{
+    width:125px;
+    height:82px;
+    position:absolute;
+    top:10px;
+    left:10px;
+    background:white;
+    border:4px solid var(--dark);
+    border-radius:29px;
+    box-shadow:0 12px 30px rgba(8,120,61,.15);
+}
+
+.antenna{
+    width:7px;
+    height:25px;
+    background:var(--dark);
+    position:absolute;
+    top:-28px;
+    left:57px;
+    border-radius:10px;
+}
+
+.antenna:after{
+    content:"";
+    width:15px;
+    height:15px;
+    position:absolute;
+    top:-10px;
+    left:-4px;
+    border-radius:50%;
+    background:#18b866;
+    box-shadow:0 0 18px #18b866;
+}
+
+.eye{
+    width:17px;
+    height:21px;
+    background:var(--dark);
+    border-radius:7px;
+    position:absolute;
+    top:26px;
+    animation:blink 4s infinite;
+}
+
+.eye.left{
+    left:28px;
+}
+
+.eye.right{
+    right:28px;
+}
+
+.smile{
+    width:38px;
+    height:14px;
+    position:absolute;
+    left:40px;
+    top:51px;
+    border-bottom:4px solid var(--green);
+    border-radius:0 0 30px 30px;
+}
+
+.robot-body{
+    width:82px;
+    height:70px;
+    position:absolute;
+    left:31px;
+    top:96px;
+    border-radius:22px;
+    background:linear-gradient(145deg,#18b866,#08783d);
+}
+
+.robot-body:after{
+    content:"🎯";
+    width:38px;
+    height:25px;
+    position:absolute;
+    left:22px;
+    top:20px;
+    background:white;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+}
+
+/* ================= MAIN ================= */
+
+.container{
+    width:min(1150px,92%);
+    margin:35px auto 70px;
+}
+
+/* ================= INFO CARDS ================= */
+
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+    margin-bottom:25px;
+}
+
+.info-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:21px;
+    box-shadow:0 8px 25px rgba(20,91,55,.05);
+}
+
+.info-icon{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    background:#e8f9ee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:13px;
+}
+
+.info-card strong{
+    display:block;
+    font-size:25px;
+    color:var(--green);
+}
+
+.info-card span{
+    color:var(--muted);
+    font-size:12px;
+}
+
+/* ================= ROLE CARD ================= */
+
+.card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:22px;
+    box-shadow:0 12px 35px rgba(20,91,55,.07);
+}
+
+.role-card{
+    overflow:hidden;
+}
+
+.toolbar{
+    padding:25px 28px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.toolbar h2{
+    font-size:20px;
+}
+
+.toolbar p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:5px;
+}
+
+.toolbar-right{
+    display:flex;
+    gap:10px;
+}
+
+.search{
+    width:220px;
+    padding:11px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    outline:none;
+}
+
+.search:focus{
+    border-color:var(--green);
+}
+
+.create-btn{
+    border:none;
+    padding:12px 18px;
+    border-radius:11px;
+    background:linear-gradient(135deg,#18b866,#08783d);
+    color:white;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 8px 20px rgba(24,169,87,.2);
+}
+
+.create-btn:hover{
+    transform:translateY(-2px);
+}
+
+/* ================= ROLE LIST ================= */
+
+.role-list{
+    padding:20px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+}
+
+.role-item{
+    border:1px solid var(--border);
+    border-radius:17px;
+    padding:20px;
+    transition:.25s;
+}
+
+.role-item:hover{
+    border-color:#a7dcbc;
+    transform:translateY(-3px);
+    box-shadow:0 10px 25px rgba(20,91,55,.07);
+}
+
+.role-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
+}
+
+.role-name{
+    font-size:17px;
+    font-weight:900;
+}
+
+.role-description{
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.6;
+    margin-top:5px;
+}
+
+.employee-count{
+    background:#e8f9ee;
+    color:var(--dark);
+    padding:6px 9px;
+    border-radius:20px;
+    font-size:10px;
+    font-weight:900;
+    white-space:nowrap;
+}
+
+.competency-title{
+    margin-top:20px;
+    margin-bottom:10px;
+    color:var(--green);
+    font-size:11px;
+    text-transform:uppercase;
+    font-weight:900;
+    letter-spacing:.5px;
+}
+
+.competencies{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+}
+
+.competency{
+    padding:7px 10px;
+    background:#f2f8f4;
+    border:1px solid #e0eee5;
+    border-radius:8px;
+    font-size:11px;
+    color:#416153;
+    font-weight:700;
+}
+
+.role-footer{
+    margin-top:20px;
+    padding-top:15px;
+    border-top:1px solid #edf3ef;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.level{
+    font-size:11px;
+    color:var(--muted);
+}
+
+.level strong{
+    color:var(--green);
+}
+
+.role-actions{
+    display:flex;
+    gap:7px;
+}
+
+.small-btn{
+    width:33px;
+    height:33px;
+    border:1px solid var(--border);
+    background:white;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.small-btn:hover{
+    border-color:var(--green);
+    color:var(--green);
+}
+
+/* ================= AI SECTION ================= */
+
+.ai-card{
+    margin-top:25px;
+    padding:28px;
+    background:
+        linear-gradient(
+            135deg,
+            #effff5,
+            #ffffff
+        );
+    border:1px solid #cbe9d6;
+    border-radius:22px;
+}
+
+.ai-header{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:20px;
+}
+
+.ai-icon{
+    width:48px;
+    height:48px;
+    background:var(--green);
+    color:white;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+}
+
+.ai-header h2{
+    font-size:20px;
+}
+
+.ai-header p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:3px;
+}
+
+.ai-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.ai-point{
+    padding:17px;
+    background:white;
+    border:1px solid var(--border);
+    border-radius:14px;
+}
+
+.ai-point strong{
+    display:block;
+    font-size:13px;
+    margin-bottom:6px;
+}
+
+.ai-point span{
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.6;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:500;
+    background:rgba(8,35,22,.55);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-box{
+    width:min(600px,100%);
+    max-height:90vh;
+    overflow-y:auto;
+    background:white;
+    border-radius:22px;
+    padding:30px;
+    box-shadow:0 25px 70px rgba(0,0,0,.25);
+    animation:modalIn .3s ease;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+}
+
+.modal-header h2{
+    font-size:21px;
+}
+
+.close{
+    width:34px;
+    height:34px;
+    border:none;
+    background:#f1f6f3;
+    border-radius:9px;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.form-group{
+    margin-bottom:17px;
+}
+
+label{
+    display:block;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+input,
+textarea{
+    width:100%;
+    padding:12px 13px;
+    border:1px solid var(--border);
+    background:#fbfefc;
+    border-radius:10px;
+    outline:none;
+    font-family:inherit;
+    font-size:13px;
+}
+
+textarea{
+    min-height:75px;
+    resize:vertical;
+}
+
+input:focus,
+textarea:focus{
+    border-color:var(--green);
+    box-shadow:0 0 0 3px rgba(24,169,87,.08);
+}
+
+.level-options{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;
+}
+
+.level-option{
+    border:1px solid var(--border);
+    padding:11px;
+    text-align:center;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:11px;
+    font-weight:800;
+}
+
+.level-option.selected{
+    border-color:var(--green);
+    background:var(--light);
+    color:var(--dark);
+}
+
+.competency-input{
+    display:flex;
+    gap:8px;
+}
+
+.competency-input input{
+    flex:1;
+}
+
+.add-competency{
+    border:1px solid var(--green);
+    background:white;
+    color:var(--green);
+    border-radius:10px;
+    padding:0 14px;
+    cursor:pointer;
+    font-weight:800;
+}
+
+.selected-competencies{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-top:10px;
+}
+
+.selected-tag{
+    padding:7px 10px;
+    background:#eafff2;
+    color:var(--dark);
+    border-radius:8px;
+    font-size:11px;
+    font-weight:800;
+}
+
+.selected-tag button{
+    border:none;
+    background:none;
+    color:var(--red);
+    margin-left:5px;
+    cursor:pointer;
+    font-weight:900;
+}
+
+.save-btn{
+    width:100%;
+    border:none;
+    padding:14px;
+    border-radius:11px;
+    background:linear-gradient(135deg,#18b866,#08783d);
+    color:white;
+    font-weight:900;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+    display:none;
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    z-index:700;
+    background:#08783d;
+    color:white;
+    padding:15px 20px;
+    border-radius:12px;
+    box-shadow:0 12px 30px rgba(0,0,0,.2);
+    font-size:13px;
+    font-weight:700;
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+    border-top:1px solid var(--border);
+    padding:30px;
+    text-align:center;
+    color:var(--muted);
+    font-size:12px;
+}
+
+/* ================= ANIMATION ================= */
+
+@keyframes float{
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-12px);
+    }
+}
+
+@keyframes blink{
+    0%,45%,50%,100%{
+        transform:scaleY(1);
+    }
+
+    47%{
+        transform:scaleY(.1);
+    }
+}
+
+@keyframes modalIn{
+    from{
+        opacity:0;
+        transform:scale(.92) translateY(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:scale(1) translateY(0);
+    }
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:850px){
+
+    .hero-inner{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .info-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .role-list{
+        grid-template-columns:1fr;
+    }
+
+    .ai-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:600px){
+
+    .brand span{
+        display:none;
+    }
+
+    .info-grid{
+        grid-template-columns:1fr;
+    }
+
+    .toolbar-right{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search{
+        width:100%;
+    }
+
+    .level-options{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="logo">
+            TS
+        </div>
+
+        <div>
+
+            <strong>
+                Tech Spark
+            </strong>
+
+            <span>
+                Competency Intelligence
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="goDashboard()">
+
+        ← Admin Dashboard
+
+    </button>
+
+</header>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero">
+
+    <div class="hero-inner">
+
+        <div>
+
+            <div class="badge">
+                🎯 ROLE & COMPETENCY MANAGEMENT
+            </div>
+
+            <h1>
+                Define what each
+                <span>role needs.</span>
+            </h1>
+
+            <p>
+                Configure the competencies required for each
+                employee role. Tech Spark can then compare an
+                employee's current competency against the
+                expected level and identify specific gaps.
+            </p>
+
+        </div>
+
+
+        <!-- CSS ROBOT -->
+
+        <div class="robot">
+
+            <div class="robot-head">
+
+                <div class="antenna"></div>
+
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+
+                <div class="smile"></div>
+
+            </div>
+
+            <div class="robot-body"></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="container">
+
+
+    <!-- =================================================
+         STATS
+    ================================================== -->
+
+    <section class="info-grid">
+
+        <div class="info-card">
+
+            <div class="info-icon">
+                👔
+            </div>
+
+            <strong id="roleCount">
+                6
+            </strong>
+
+            <span>
+                Defined Roles
+            </span>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <div class="info-icon">
+                🎯
+            </div>
+
+            <strong>
+                12
+            </strong>
+
+            <span>
+                Competency Areas
+            </span>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <div class="info-icon">
+                📈
+            </div>
+
+            <strong>
+                70%
+            </strong>
+
+            <span>
+                Average Expected Level
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         ROLE DIRECTORY
+    ================================================== -->
+
+    <section class="card role-card">
+
+        <div class="toolbar">
+
+            <div>
+
+                <h2>
+                    Role Definitions
+                </h2>
+
+                <p>
+                    Configure required competencies for employee roles.
+                </p>
+
+            </div>
+
+
+            <div class="toolbar-right">
+
+                <input
+                    class="search"
+                    id="searchInput"
+                    type="text"
+                    placeholder="🔍 Search role...">
+
+
+                <button
+                    class="create-btn"
+                    onclick="openRoleModal()">
+
+                    + Create Role
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="role-list"
+            id="roleList">
+
+
+            <!-- ROLE 1 -->
+
+            <div
+                class="role-item"
+                data-role="Statistical Officer">
+
+                <div class="role-header">
+
+                    <div>
+
+                        <div class="role-name">
+                            Statistical Officer
+                        </div>
+
+                        <div class="role-description">
+                            Responsible for statistical analysis,
+                            data interpretation and official reporting.
+                        </div>
+
+                    </div>
+
+                    <div class="employee-count">
+                        42 Employees
+                    </div>
+
+                </div>
+
+
+                <div class="competency-title">
+                    Required Competencies
+                </div>
+
+
+                <div class="competencies">
+
+                    <span class="competency">
+                        Statistical Analysis
+                    </span>
+
+                    <span class="competency">
+                        Data Interpretation
+                    </span>
+
+                    <span class="competency">
+                        Data Quality
+                    </span>
+
+                    <span class="competency">
+                        Report Preparation
+                    </span>
+
+                </div>
+
+
+                <div class="role-footer">
+
+                    <div class="level">
+                        Expected Level:
+                        <strong>Advanced</strong>
+                    </div>
+
+                    <div class="role-actions">
+
+                        <button
+                            class="small-btn"
+                            onclick="editRole('Statistical Officer')">
+
+                            ✏
+
+                        </button>
+
+                        <button
+                            class="small-btn"
+                            onclick="viewRole('Statistical Officer')">
+
+                            👁
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ROLE 2 -->
+
+            <div
+                class="role-item"
+                data-role="Data Analyst">
+
+                <div class="role-header">
+
+                    <div>
+
+                        <div class="role-name">
+                            Data Analyst
+                        </div>
+
+                        <div class="role-description">
+                            Analyses datasets and supports data-driven
+                            decision making.
+                        </div>
+
+                    </div>
+
+                    <div class="employee-count">
+                        36 Employees
+                    </div>
+
+                </div>
+
+
+                <div class="competency-title">
+                    Required Competencies
+                </div>
+
+
+                <div class="competencies">
+
+                    <span class="competency">
+                        Data Management
+                    </span>
+
+                    <span class="competency">
+                        Data Cleaning
+                    </span>
+
+                    <span class="competency">
+                        Data Visualization
+                    </span>
+
+                    <span class="competency">
+                        Statistical Computing
+                    </span>
+
+                </div>
+
+
+                <div class="role-footer">
+
+                    <div class="level">
+                        Expected Level:
+                        <strong>Advanced</strong>
+                    </div>
+
+                    <div class="role-actions">
+
+                        <button
+                            class="small-btn"
+                            onclick="editRole('Data Analyst')">
+
+                            ✏
+
+                        </button>
+
+                        <button
+                            class="small-btn"
+                            onclick="viewRole('Data Analyst')">
+
+                            👁
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ROLE 3 -->
+
+            <div
+                class="role-item"
+                data-role="Data Entry Operator">
+
+                <div class="role-header">
+
+                    <div>
+
+                        <div class="role-name">
+                            Data Entry Operator
+                        </div>
+
+                        <div class="role-description">
+                            Maintains accurate data entry and
+                            basic data quality standards.
+                        </div>
+
+                    </div>
+
+                    <div class="employee-count">
+                        58 Employees
+                    </div>
+
+                </div>
+
+
+                <div class="competency-title">
+                    Required Competencies
+                </div>
+
+
+                <div class="competencies">
+
+                    <span class="competency">
+                        Data Entry
+                    </span>
+
+                    <span class="competency">
+                        Data Validation
+                    </span>
+
+                    <span class="competency">
+                        Data Quality
+                    </span>
+
+                </div>
+
+
+                <div class="role-footer">
+
+                    <div class="level">
+                        Expected Level:
+                        <strong>Intermediate</strong>
+                    </div>
+
+                    <div class="role-actions">
+
+                        <button
+                            class="small-btn"
+                            onclick="editRole('Data Entry Operator')">
+
+                            ✏
+
+                        </button>
+
+                        <button
+                            class="small-btn"
+                            onclick="viewRole('Data Entry Operator')">
+
+                            👁
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ROLE 4 -->
+
+            <div
+                class="role-item"
+                data-role="Survey Officer">
+
+                <div class="role-header">
+
+                    <div>
+
+                        <div class="role-name">
+                            Survey Officer
+                        </div>
+
+                        <div class="role-description">
+                            Supports survey planning, data collection
+                            and survey quality management.
+                        </div>
+
+                    </div>
+
+                    <div class="employee-count">
+                        29 Employees
+                    </div>
+
+                </div>
+
+
+                <div class="competency-title">
+                    Required Competencies
+                </div>
+
+
+                <div class="competencies">
+
+                    <span class="competency">
+                        Survey Methodology
+                    </span>
+
+                    <span class="competency">
+                        Data Collection
+                    </span>
+
+                    <span class="competency">
+                        Data Quality
+                    </span>
+
+                </div>
+
+
+                <div class="role-footer">
+
+                    <div class="level">
+                        Expected Level:
+                        <strong>Intermediate</strong>
+                    </div>
+
+                    <div class="role-actions">
+
+                        <button
+                            class="small-btn"
+                            onclick="editRole('Survey Officer')">
+
+                            ✏
+
+                        </button>
+
+                        <button
+                            class="small-btn"
+                            onclick="viewRole('Survey Officer')">
+
+                            👁
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ROLE 5 -->
+
+            <div
+                class="role-item"
+                data-role="Senior Statistical Officer">
+
+                <div class="role-header">
+
+                    <div>
+
+                        <div class="role-name">
+                            Senior Statistical Officer
+                        </div>
+
+                        <div class="role-description">
+                            Leads statistical analysis, interpretation,
+                            quality review and reporting.
+                        </div>
+
+                    </div>
+
+                    <div class="employee-count">
+                        18 Employees
+                    </div>
+
+                </div>
+
+
+                <div class="competency-title">
+                    Required Competencies
+                </div>
+
+
+                <div class="competencies">
+
+                    <span class="competency">
+                        Advanced Statistics
+                    </span>
+
+                    <span class="competency">
+                        Data Interpretation
+                    </span>
+
+                    <span class="competency">
+                        Quality Assurance
+                    </span>
+
+                    <span class="competency">
+                        Leadership
+                    </span>
+
+                </div>
+
+
+                <div class="role-footer">
+
+                    <div class="level">
+                        Expected Level:
+                        <strong>Expert</strong>
+                    </div>
+
+                    <div class="role-actions">
+
+                        <button
+                            class="small-btn"
+                            onclick="editRole('Senior Statistical Officer')">
+
+                            ✏
+
+                        </button>
+
+                        <button
+                            class="small-btn"
+                            onclick="viewRole('Senior Statistical Officer')">
+
+                            👁
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ROLE 6 -->
+
+            <div
+                class="role-item"
+                data-role="Data Quality Specialist">
+
+                <div class="role-header">
+
+                    <div>
+
+                        <div class="role-name">
+                            Data Quality Specialist
+                        </div>
+
+                        <div class="role-description">
+                            Focuses on validation, consistency,
+                            accuracy and quality assurance.
+                        </div>
+
+                    </div>
+
+                    <div class="employee-count">
+                        15 Employees
+                    </div>
+
+                </div>
+
+
+                <div class="competency-title">
+                    Required Competencies
+                </div>
+
+
+                <div class="competencies">
+
+                    <span class="competency">
+                        Data Validation
+                    </span>
+
+                    <span class="competency">
+                        Data Cleaning
+                    </span>
+
+                    <span class="competency">
+                        Quality Assurance
+                    </span>
+
+                    <span class="competency">
+                        Error Detection
+                    </span>
+
+                </div>
+
+
+                <div class="role-footer">
+
+                    <div class="level">
+                        Expected Level:
+                        <strong>Advanced</strong>
+                    </div>
+
+                    <div class="role-actions">
+
+                        <button
+                            class="small-btn"
+                            onclick="editRole('Data Quality Specialist')">
+
+                            ✏
+
+                        </button>
+
+                        <button
+                            class="small-btn"
+                            onclick="viewRole('Data Quality Specialist')">
+
+                            👁
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         AI EXPLANATION
+    ================================================== -->
+
+    <section class="ai-card">
+
+        <div class="ai-header">
+
+            <div class="ai-icon">
+                🤖
+            </div>
+
+            <div>
+
+                <h2>
+                    How Role Definitions Help AI
+                </h2>
+
+                <p>
+                    Connecting roles with competency expectations
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="ai-grid">
+
+            <div class="ai-point">
+
+                <strong>
+                    01 · Establish a Benchmark
+                </strong>
+
+                <span>
+                    Each role has expected competencies and
+                    proficiency levels that can be used as
+                    a reference point.
+                </span>
+
+            </div>
+
+
+            <div class="ai-point">
+
+                <strong>
+                    02 · Find the Gap
+                </strong>
+
+                <span>
+                    AI can compare an employee's demonstrated
+                    competency with the requirements associated
+                    with their role.
+                </span>
+
+            </div>
+
+
+            <div class="ai-point">
+
+                <strong>
+                    03 · Personalize Learning
+                </strong>
+
+                <span>
+                    Identified gaps can be used to prioritize
+                    relevant learning materials and assessments.
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     CREATE ROLE MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="roleModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                Create New Role
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeRoleModal()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <form id="roleForm">
+
+
+            <div class="form-group">
+
+                <label>
+                    Role Name
+                </label>
+
+                <input
+                    type="text"
+                    id="roleName"
+                    placeholder="Example: Statistical Programmer"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Role Description
+                </label>
+
+                <textarea
+                    id="roleDescription"
+                    placeholder="Describe the responsibilities of this role..."></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Expected Proficiency Level
+                </label>
+
+
+                <div class="level-options">
+
+                    <div
+                        class="level-option"
+                        data-level="Beginner"
+                        onclick="selectLevel(this)">
+
+                        Beginner
+
+                    </div>
+
+                    <div
+                        class="level-option selected"
+                        data-level="Intermediate"
+                        onclick="selectLevel(this)">
+
+                        Intermediate
+
+                    </div>
+
+                    <div
+                        class="level-option"
+                        data-level="Advanced"
+                        onclick="selectLevel(this)">
+
+                        Advanced
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Required Competencies
+                </label>
+
+
+                <div class="competency-input">
+
+                    <input
+                        type="text"
+                        id="competencyInput"
+                        placeholder="Example: Data Visualization">
+
+
+                    <button
+                        type="button"
+                        class="add-competency"
+                        onclick="addCompetency()">
+
+                        + Add
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="selected-competencies"
+                    id="selectedCompetencies">
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="save-btn">
+
+                Create Role →
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     VIEW ROLE MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="viewModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                Role Details
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeViewModal()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="roleDetails">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div
+    class="toast"
+    id="toast">
+
+    ✓ Role created successfully!
+
+</div>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+    <strong>
+        Tech Spark
+    </strong>
+
+    — Competency Intelligence Platform
+
+    <br><br>
+
+    Role & Competency Management · SIH26101
+
+</footer>
+
+
+<script>
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function goDashboard(){
+
+    window.location.href =
+        "dashboard.html";
+
+}
+
+
+/* =====================================================
+   SEARCH ROLES
+===================================================== */
+
+document
+    .getElementById("searchInput")
+    .addEventListener(
+        "input",
+        function(){
+
+            const search =
+                this.value
+                .toLowerCase()
+                .trim();
+
+
+            document
+                .querySelectorAll(".role-item")
+                .forEach(function(role){
+
+                    const name =
+                        role.dataset.role
+                        .toLowerCase();
+
+
+                    role.style.display =
+                        name.includes(search)
+                        ? ""
+                        : "none";
+
+                });
+
+        }
+    );
+
+
+/* =====================================================
+   CREATE ROLE MODAL
+===================================================== */
+
+function openRoleModal(){
+
+    document
+        .getElementById("roleModal")
+        .style.display = "flex";
+
+}
+
+
+function closeRoleModal(){
+
+    document
+        .getElementById("roleModal")
+        .style.display = "none";
+
+}
+
+
+/* =====================================================
+   LEVEL
+===================================================== */
+
+let selectedLevel =
+    "Intermediate";
+
+
+function selectLevel(element){
+
+    document
+        .querySelectorAll(".level-option")
+        .forEach(function(option){
+
+            option.classList.remove(
+                "selected"
+            );
+
+        });
+
+
+    element.classList.add("selected");
+
+
+    selectedLevel =
+        element.dataset.level;
+
+}
+
+
+/* =====================================================
+   COMPETENCIES
+===================================================== */
+
+let competencies = [];
+
+
+function addCompetency(){
+
+    const input =
+        document.getElementById(
+            "competencyInput"
+        );
+
+
+    const value =
+        input.value.trim();
+
+
+    if(!value){
+
+        return;
+
+    }
+
+
+    if(
+        competencies
+            .map(x => x.toLowerCase())
+            .includes(value.toLowerCase())
+    ){
+
+        input.value = "";
+
+        return;
+
+    }
+
+
+    competencies.push(value);
+
+    input.value = "";
+
+    renderCompetencies();
+
+}
+
+
+function renderCompetencies(){
+
+    const container =
+        document.getElementById(
+            "selectedCompetencies"
+        );
+
+
+    container.innerHTML = "";
+
+
+    competencies.forEach(
+        function(item,index){
+
+            const tag =
+                document.createElement("div");
+
+            tag.className =
+                "selected-tag";
+
+
+            tag.innerHTML = `
+
+                ${item}
+
+                <button
+                    type="button"
+                    onclick="removeCompetency(${index})">
+
+                    ×
+
+                </button>
+
+            `;
+
+
+            container.appendChild(tag);
+
+        }
+    );
+
+}
+
+
+function removeCompetency(index){
+
+    competencies.splice(
+        index,
+        1
+    );
+
+    renderCompetencies();
+
+}
+
+
+/* =====================================================
+   CREATE ROLE
+===================================================== */
+
+document
+    .getElementById("roleForm")
+    .addEventListener(
+        "submit",
+        function(event){
+
+            event.preventDefault();
+
+
+            const name =
+                document
+                .getElementById("roleName")
+                .value
+                .trim();
+
+
+            const description =
+                document
+                .getElementById("roleDescription")
+                .value
+                .trim();
+
+
+            if(!name){
+
+                return;
+
+            }
+
+
+            /* Create role card */
+
+            const roleList =
+                document.getElementById(
+                    "roleList"
+                );
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "role-item";
+
+
+            card.dataset.role =
+                name;
+
+
+            let competencyHTML =
+                "";
+
+
+            if(competencies.length === 0){
+
+                competencyHTML =
+                    `<span class="competency">
+                        To be defined
+                    </span>`;
+
+            }else{
+
+                competencies.forEach(
+                    function(item){
+
+                        competencyHTML +=
+                            `
+                            <span class="competency">
+                                ${item}
+                            </span>
+                            `;
+
+                    }
+                );
+
+            }
+
+
+            card.innerHTML = `
+
+                <div class="role-header">
+
+                    <div>
+
+                        <div class="role-name">
+                            ${name}
+                        </div>
+
+                        <div class="role-description">
+                            ${description || "New employee role"}
+                        </div>
+
+                    </div>
+
+                    <div class="employee-count">
+                        0 Employees
+                    </div>
+
+                </div>
+
+
+                <div class="competency-title">
+                    Required Competencies
+                </div>
+
+
+                <div class="competencies">
+
+                    ${competencyHTML}
+
+                </div>
+
+
+                <div class="role-footer">
+
+                    <div class="level">
+
+                        Expected Level:
+
+                        <strong>
+                            ${selectedLevel}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="role-actions">
+
+                        <button
+                            class="small-btn"
+                            onclick="editRole('${name}')">
+
+                            ✏
+
+                        </button>
+
+                        <button
+                            class="small-btn"
+                            onclick="viewRole('${name}')">
+
+                            👁
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            roleList.prepend(card);
+
+
+            /* Save to localStorage */
+
+            const roles =
+                JSON.parse(
+                    localStorage.getItem(
+                        "techSparkRoles"
+                    ) || "[]"
+                );
+
+
+            roles.push({
+
+                name:name,
+
+                description:description,
+
+                level:selectedLevel,
+
+                competencies:[
+                    ...competencies
+                ]
+
+            });
+
+
+            localStorage.setItem(
+                "techSparkRoles",
+                JSON.stringify(roles)
+            );
+
+
+            closeRoleModal();
+
+
+            document
+                .getElementById("roleForm")
+                .reset();
+
+
+            competencies = [];
+
+            selectedLevel =
+                "Intermediate";
+
+
+            renderCompetencies();
+
+
+            document
+                .querySelectorAll(".level-option")
+                .forEach(function(option){
+
+                    option.classList.remove(
+                        "selected"
+                    );
+
+                });
+
+
+            document
+                .querySelector(
+                    '[data-level="Intermediate"]'
+                )
+                .classList.add(
+                    "selected"
+                );
+
+
+            updateRoleCount();
+
+
+            showToast(
+                "✓ Role created successfully!"
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   ROLE COUNT
+===================================================== */
+
+function updateRoleCount(){
+
+    const count =
+        document
+        .querySelectorAll(".role-item")
+        .length;
+
+
+    document.getElementById(
+        "roleCount"
+    ).textContent = count;
+
+}
+
+
+/* =====================================================
+   VIEW ROLE
+===================================================== */
+
+function viewRole(name){
+
+    const role =
+        document.querySelector(
+            `[data-role="${name}"]`
+        );
+
+
+    if(!role){
+
+        return;
+
+    }
+
+
+    const competencies =
+        role.querySelector(
+            ".competencies"
+        ).innerHTML;
+
+
+    const level =
+        role.querySelector(
+            ".level"
+        ).innerHTML;
+
+
+    document.getElementById(
+        "roleDetails"
+    ).innerHTML = `
+
+        <div
+            style="
+                padding:20px;
+                background:#f5faf7;
+                border-radius:15px;
+                margin-bottom:15px;
+            ">
+
+            <h3 style="margin-bottom:7px;">
+                ${name}
+            </h3>
+
+            <p
+                style="
+                    color:#6d7f75;
+                    font-size:12px;
+                    line-height:1.6;
+                ">
+
+                Role configuration and
+                competency requirements.
+
+            </p>
+
+        </div>
+
+
+        <div
+            style="
+                margin-bottom:15px;
+            ">
+
+            <strong
+                style="
+                    display:block;
+                    font-size:12px;
+                    color:#18a957;
+                    margin-bottom:10px;
+                ">
+
+                REQUIRED COMPETENCIES
+
+            </strong>
+
+            <div
+                class="competencies">
+
+                ${competencies}
+
+            </div>
+
+        </div>
+
+
+        <div
+            style="
+                padding:15px;
+                background:#eafff2;
+                border-radius:12px;
+                font-size:12px;
+            ">
+
+            ${level}
+
+        </div>
+
+    `;
+
+
+    document.getElementById(
+        "viewModal"
+    ).style.display = "flex";
+
+}
+
+
+function closeViewModal(){
+
+    document.getElementById(
+        "viewModal"
+    ).style.display = "none";
+
+}
+
+
+/* =====================================================
+   EDIT ROLE
+===================================================== */
+
+function editRole(name){
+
+    alert(
+        "Edit role: " +
+        name +
+        "\n\nThis will be connected to the Flask API later."
+    );
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+function showToast(message){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    toast.textContent =
+        message;
+
+
+    toast.style.display =
+        "block";
+
+
+    setTimeout(
+        function(){
+
+            toast.style.display =
+                "none";
+
+        },
+        3000
+    );
+
+}
+
+
+/* =====================================================
+   CLICK OUTSIDE MODAL
+===================================================== */
+
+window.addEventListener(
+    "click",
+    function(event){
+
+        const roleModal =
+            document.getElementById(
+                "roleModal"
+            );
+
+
+        const viewModal =
+            document.getElementById(
+                "viewModal"
+            );
+
+
+        if(event.target === roleModal){
+
+            closeRoleModal();
+
+        }
+
+
+        if(event.target === viewModal){
+
+            closeViewModal();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        updateRoleCount();
+
+    }
+);
+
+</script>
+
+</body>
+</html>

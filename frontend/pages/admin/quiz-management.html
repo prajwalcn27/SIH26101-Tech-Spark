@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Management - Tech Spark</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #168f5b;
+            --green-dark: #087443;
+            --green-light: #e9f8f0;
+            --text: #18352a;
+            --muted: #708078;
+            --border: #dfe9e4;
+            --white: #ffffff;
+            --bg: #f5f9f7;
+            --orange: #f59e0b;
+            --red: #dc3545;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #063e29, #087443, #18a76b);
+            color: white;
+            padding: 28px 6%;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 50%;
+            right: -100px;
+            top: -180px;
+        }
+
+        .hero-top {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 14px;
+            background: white;
+            color: var(--green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 19px;
+        }
+
+        .brand h2 {
+            font-size: 21px;
+        }
+
+        .brand span {
+            display: block;
+            font-size: 12px;
+            opacity: .75;
+        }
+
+        .back-btn {
+            border: 1px solid rgba(255,255,255,.3);
+            background: rgba(255,255,255,.1);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: var(--green-dark);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 38px 0 25px;
+            max-width: 800px;
+        }
+
+        .hero-content .tag {
+            display: inline-block;
+            background: rgba(255,255,255,.14);
+            padding: 7px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+
+        .hero-content h1 {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .hero-content p {
+            color: rgba(255,255,255,.82);
+            line-height: 1.7;
+            max-width: 680px;
+        }
+
+        /* ROBOT */
+
+        .robot {
+            position: absolute;
+            right: 8%;
+            bottom: 18px;
+            width: 100px;
+            height: 120px;
+            animation: floatRobot 3s ease-in-out infinite;
+        }
+
+        .robot-head {
+            position: absolute;
+            width: 68px;
+            height: 52px;
+            left: 16px;
+            top: 18px;
+            border-radius: 18px;
+            background: white;
+            border: 4px solid #9be4bf;
+        }
+
+        .robot-head::before {
+            content: "";
+            position: absolute;
+            width: 6px;
+            height: 15px;
+            background: #9be4bf;
+            left: 28px;
+            top: -19px;
+            border-radius: 5px;
+        }
+
+        .robot-head::after {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #bdf2d4;
+            border-radius: 50%;
+            left: 25px;
+            top: -27px;
+        }
+
+        .eye {
+            position: absolute;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--green);
+            top: 17px;
+        }
+
+        .eye.left {
+            left: 17px;
+        }
+
+        .eye.right {
+            right: 17px;
+        }
+
+        .robot-smile {
+            position: absolute;
+            width: 24px;
+            height: 10px;
+            border-bottom: 3px solid var(--green);
+            border-radius: 50%;
+            bottom: 10px;
+            left: 18px;
+        }
+
+        .robot-body {
+            position: absolute;
+            width: 55px;
+            height: 43px;
+            left: 23px;
+            top: 72px;
+            background: #d9f7e7;
+            border: 4px solid #9be4bf;
+            border-radius: 13px;
+        }
+
+        .robot-body::after {
+            content: "AI";
+            position: absolute;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--green-dark);
+            left: 17px;
+            top: 12px;
+        }
+
+        .robot-arm {
+            position: absolute;
+            width: 13px;
+            height: 34px;
+            background: white;
+            border: 3px solid #9be4bf;
+            border-radius: 10px;
+            top: 75px;
+        }
+
+        .robot-arm.left {
+            left: 7px;
+            transform: rotate(18deg);
+        }
+
+        .robot-arm.right {
+            right: 7px;
+            transform: rotate(-18deg);
+        }
+
+        @keyframes floatRobot {
+            0%,100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* MAIN */
+
+        .container {
+            width: 88%;
+            max-width: 1350px;
+            margin: 35px auto 70px;
+        }
+
+        /* STATS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            padding: 22px;
+            box-shadow: 0 5px 18px rgba(17,70,45,.05);
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 9px;
+        }
+
+        .stat-value {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--green-dark);
+        }
+
+        .stat-small {
+            margin-top: 7px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* SECTION */
+
+        .section {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 18px rgba(17,70,45,.04);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .section-title h2 {
+            font-size: 21px;
+        }
+
+        .section-title p {
+            margin-top: 5px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 11px 17px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .btn-primary {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--green-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--green);
+            color: var(--green-dark);
+        }
+
+        .btn-danger {
+            background: #fff0f1;
+            color: var(--red);
+        }
+
+        .btn-warning {
+            background: #fff7e6;
+            color: #a86700;
+        }
+
+        /* FILTER */
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 240px;
+            position: relative;
+        }
+
+        .search input,
+        .filters select {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            outline: none;
+            background: white;
+            color: var(--text);
+        }
+
+        .search input:focus,
+        .filters select:focus {
+            border-color: var(--green);
+        }
+
+        .status-filter {
+            width: 180px;
+        }
+
+        /* QUIZ CARDS */
+
+        .quiz-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .quiz-card {
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 19px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: center;
+            transition: .2s;
+        }
+
+        .quiz-card:hover {
+            border-color: #b9dcc9;
+            box-shadow: 0 7px 20px rgba(17,70,45,.07);
+        }
+
+        .quiz-main {
+            min-width: 0;
+        }
+
+        .quiz-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .quiz-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .pill {
+            font-size: 11px;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #f1f6f3;
+            color: #557064;
+        }
+
+        .pill.green {
+            background: #e7f8ee;
+            color: #087443;
+        }
+
+        .pill.orange {
+            background: #fff3db;
+            color: #9b6300;
+        }
+
+        .pill.red {
+            background: #ffe9eb;
+            color: #b52c39;
+        }
+
+        .quiz-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* PIPELINE */
+
+        .pipeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            margin-top: 20px;
+        }
+
+        .pipeline-step {
+            position: relative;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .pipeline-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: #dcece4;
+            top: 35px;
+            left: 50%;
+            z-index: 0;
+        }
+
+        .step-circle {
+            position: relative;
+            z-index: 2;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e9f8f0;
+            color: var(--green-dark);
+            font-weight: 800;
+        }
+
+        .pipeline-step h4 {
+            font-size: 13px;
+        }
+
+        .pipeline-step p {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* PERFORMANCE */
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .performance-item {
+            margin-bottom: 20px;
+        }
+
+        .performance-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+            font-size: 13px;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 20px;
+            background: #edf2ef;
+            overflow: hidden;
+        }
+
+        .progress span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, #0c7d4c, #35ba7d);
+            border-radius: 20px;
+        }
+
+        /* EMPTY */
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: var(--muted);
+            display: none;
+        }
+
+        /* MODAL */
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10,40,27,.55);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            width: 100%;
+            max-width: 760px;
+            max-height: 88vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            padding: 28px;
+            animation: modalIn .2s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: none;
+            background: #f0f4f2;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .question {
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 17px;
+            margin-bottom: 13px;
+        }
+
+        .question-number {
+            color: var(--green-dark);
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .question p {
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .options {
+            margin-top: 12px;
+            display: grid;
+            gap: 7px;
+        }
+
+        .option {
+            background: #f7faf8;
+            border-radius: 8px;
+            padding: 9px 11px;
+            font-size: 13px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* TOAST */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #123d2b;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 11px;
+            box-shadow: 0 8px 30px rgba(0,0,0,.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: .3s;
+            z-index: 200;
+            font-size: 13px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1000px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pipeline {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .pipeline-step:not(:last-child)::after {
+                display: none;
+            }
+
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .robot {
+                display: none;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                width: 94%;
+            }
+
+            .hero {
+                padding: 22px 4%;
+            }
+
+            .hero-content h1 {
+                font-size: 28px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .quiz-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .quiz-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .pipeline {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HERO -->
+<header class="hero">
+
+    <div class="hero-top">
+
+        <div class="brand">
+            <div class="brand-logo">TS</div>
+            <div>
+                <h2>Tech Spark</h2>
+                <span>AI Learning Platform</span>
+            </div>
+        </div>
+
+        <button class="back-btn" onclick="goDashboard()">
+            ← Admin Dashboard
+        </button>
+
+    </div>
+
+    <div class="hero-content">
+
+        <span class="tag">ADMIN • ASSESSMENT MANAGEMENT</span>
+
+        <h1>Quiz Management</h1>
+
+        <p>
+            Review AI-generated assessments, approve quality questions,
+            monitor quiz performance, and manage competency-based assessments
+            for employees.
+        </p>
+
+    </div>
+
+    <!-- CSS ROBOT -->
+    <div class="robot">
+
+        <div class="robot-head">
+            <span class="eye left"></span>
+            <span class="eye right"></span>
+            <span class="robot-smile"></span>
+        </div>
+
+        <div class="robot-body"></div>
+
+        <div class="robot-arm left"></div>
+        <div class="robot-arm right"></div>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <!-- STATISTICS -->
+
+    <section class="stats">
+
+        <div class="stat-card">
+            <div class="stat-label">Generated Quizzes</div>
+            <div class="stat-value">84</div>
+            <div class="stat-small">AI-generated assessments</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Approved Assessments</div>
+            <div class="stat-value">68</div>
+            <div class="stat-small">Ready for employees</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Pending Review</div>
+            <div class="stat-value">11</div>
+            <div class="stat-small">Require admin review</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Average Quiz Score</div>
+            <div class="stat-value">78%</div>
+            <div class="stat-small">Across completed quizzes</div>
+        </div>
+
+    </section>
+
+
+    <!-- QUIZ MANAGEMENT -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div class="section-title">
+                <h2>AI-Generated Assessments</h2>
+                <p>
+                    Review and manage assessments generated from approved
+                    learning materials.
+                </p>
+            </div>
+
+            <button class="btn btn-primary" onclick="generateQuiz()">
+                + Generate Quiz
+            </button>
+
+        </div>
+
+
+        <!-- FILTERS -->
+
+        <div class="filters">
+
+            <div class="search">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search quizzes..."
+                    oninput="filterQuizzes()"
+                >
+            </div>
+
+            <div class="status-filter">
+                <select id="statusFilter" onchange="filterQuizzes()">
+                    <option value="all">All Status</option>
+                    <option value="approved">Approved</option>
+                    <option value="review">Pending Review</option>
+                    <option value="flagged">Flagged</option>
+                </select>
+            </div>
+
+        </div>
+
+
+        <div class="quiz-list" id="quizList">
+
+            <!-- QUIZ 1 -->
+
+            <div
+                class="quiz-card"
+                data-title="Data Cleaning Fundamentals"
+                data-status="approved"
+            >
+
+                <div class="quiz-main">
+
+                    <div class="quiz-title">
+                        Data Cleaning Fundamentals
+                    </div>
+
+                    <div class="quiz-meta">
+
+                        <span class="pill green">
+                            Approved
+                        </span>
+
+                        <span class="pill">
+                            10 Questions
+                        </span>
+
+                        <span class="pill">
+                            Data Cleaning
+                        </span>
+
+                        <span class="pill">
+                            82% Avg Score
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="quiz-actions">
+
+                    <button
+                        class="btn btn-outline"
+                        onclick="previewQuiz('Data Cleaning Fundamentals')"
+                    >
+                        Preview
+                    </button>
+
+                    <button
+                        class="btn btn-danger"
+                        onclick="flagQuiz(this)"
+                    >
+                        Flag
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUIZ 2 -->
+
+            <div
+                class="quiz-card"
+                data-title="Statistical Analysis Basics"
+                data-status="review"
+            >
+
+                <div class="quiz-main">
+
+                    <div class="quiz-title">
+                        Statistical Analysis Basics
+                    </div>
+
+                    <div class="quiz-meta">
+
+                        <span class="pill orange">
+                            Pending Review
+                        </span>
+
+                        <span class="pill">
+                            15 Questions
+                        </span>
+
+                        <span class="pill">
+                            Statistical Analysis
+                        </span>
+
+                        <span class="pill">
+                            AI Generated
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="quiz-actions">
+
+                    <button
+                        class="btn btn-outline"
+                        onclick="previewQuiz('Statistical Analysis Basics')"
+                    >
+                        Preview
+                    </button>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="approveQuiz(this)"
+                    >
+                        Approve
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUIZ 3 -->
+
+            <div
+                class="quiz-card"
+                data-title="Data Validation Assessment"
+                data-status="flagged"
+            >
+
+                <div class="quiz-main">
+
+                    <div class="quiz-title">
+                        Data Validation Assessment
+                    </div>
+
+                    <div class="quiz-meta">
+
+                        <span class="pill red">
+                            Flagged
+                        </span>
+
+                        <span class="pill">
+                            12 Questions
+                        </span>
+
+                        <span class="pill">
+                            Data Validation
+                        </span>
+
+                        <span class="pill">
+                            Needs Review
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="quiz-actions">
+
+                    <button
+                        class="btn btn-outline"
+                        onclick="previewQuiz('Data Validation Assessment')"
+                    >
+                        Review
+                    </button>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="approveQuiz(this)"
+                    >
+                        Approve
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUIZ 4 -->
+
+            <div
+                class="quiz-card"
+                data-title="Survey Methodology Quiz"
+                data-status="approved"
+            >
+
+                <div class="quiz-main">
+
+                    <div class="quiz-title">
+                        Survey Methodology Quiz
+                    </div>
+
+                    <div class="quiz-meta">
+
+                        <span class="pill green">
+                            Approved
+                        </span>
+
+                        <span class="pill">
+                            20 Questions
+                        </span>
+
+                        <span class="pill">
+                            Survey Methodology
+                        </span>
+
+                        <span class="pill">
+                            75% Avg Score
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="quiz-actions">
+
+                    <button
+                        class="btn btn-outline"
+                        onclick="previewQuiz('Survey Methodology Quiz')"
+                    >
+                        Preview
+                    </button>
+
+                    <button
+                        class="btn btn-danger"
+                        onclick="flagQuiz(this)"
+                    >
+                        Flag
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="empty" id="emptyState">
+            No quizzes match your search.
+        </div>
+
+    </section>
+
+
+    <!-- AI PIPELINE -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <h2>AI Assessment Pipeline</h2>
+
+                <p>
+                    How approved learning material becomes an employee
+                    assessment.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="pipeline">
+
+            <div class="pipeline-step">
+
+                <div class="step-circle">
+                    1
+                </div>
+
+                <h4>Approved Material</h4>
+
+                <p>
+                    Admin-approved PDF/PPT/DOCX
+                </p>
+
+            </div>
+
+
+            <div class="pipeline-step">
+
+                <div class="step-circle">
+                    2
+                </div>
+
+                <h4>AI Extraction</h4>
+
+                <p>
+                    Important concepts identified
+                </p>
+
+            </div>
+
+
+            <div class="pipeline-step">
+
+                <div class="step-circle">
+                    3
+                </div>
+
+                <h4>Question Generation</h4>
+
+                <p>
+                    AI creates competency questions
+                </p>
+
+            </div>
+
+
+            <div class="pipeline-step">
+
+                <div class="step-circle">
+                    4
+                </div>
+
+                <h4>Human Review</h4>
+
+                <p>
+                    Admin validates assessment
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PERFORMANCE -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <h2>Assessment Performance</h2>
+
+                <p>
+                    Overview of employee performance across major assessments.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="performance-grid">
+
+            <div>
+
+                <div class="performance-item">
+
+                    <div class="performance-top">
+                        <span>Data Cleaning Fundamentals</span>
+                        <strong>82%</strong>
+                    </div>
+
+                    <div class="progress">
+                        <span style="width:82%"></span>
+                    </div>
+
+                </div>
+
+
+                <div class="performance-item">
+
+                    <div class="performance-top">
+                        <span>Statistical Analysis Basics</span>
+                        <strong>76%</strong>
+                    </div>
+
+                    <div class="progress">
+                        <span style="width:76%"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <div class="performance-item">
+
+                    <div class="performance-top">
+                        <span>Data Validation Assessment</span>
+                        <strong>69%</strong>
+                    </div>
+
+                    <div class="progress">
+                        <span style="width:69%"></span>
+                    </div>
+
+                </div>
+
+
+                <div class="performance-item">
+
+                    <div class="performance-top">
+                        <span>Survey Methodology Quiz</span>
+                        <strong>75%</strong>
+                    </div>
+
+                    <div class="progress">
+                        <span style="width:75%"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- AI INSIGHT -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <h2>AI Assessment Insight</h2>
+
+                <p>
+                    Assessment quality and competency feedback.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div
+            style="
+                background:#eaf8f0;
+                border:1px solid #ccebdd;
+                border-radius:15px;
+                padding:20px;
+                line-height:1.7;
+            "
+        >
+
+            <strong style="color:#087443;">
+                AI Recommendation
+            </strong>
+
+            <p style="margin-top:8px;color:#557064;font-size:14px;">
+
+                Data Cleaning assessments are currently producing the strongest
+                learning outcomes. Employees are showing lower performance in
+                Missing Values and Data Validation topics. More targeted
+                questions around these concepts can help identify competency
+                gaps more accurately.
+
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- PREVIEW MODAL -->
+
+<div class="modal-overlay" id="previewModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <div>
+                <h2 id="modalTitle">
+                    Quiz Preview
+                </h2>
+
+                <p
+                    style="
+                        color:#708078;
+                        font-size:13px;
+                        margin-top:5px;
+                    "
+                >
+                    AI-generated assessment preview
+                </p>
+            </div>
+
+            <button class="close" onclick="closeModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div id="questionsContainer">
+
+            <!-- QUESTIONS CREATED BY JS -->
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="btn btn-outline"
+                onclick="closeModal()"
+            >
+                Close
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="approveFromModal()"
+            >
+                Approve Assessment
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+    let selectedQuiz = "";
+
+
+    /* DASHBOARD */
+
+    function goDashboard() {
+
+        window.location.href = "dashboard.html";
+
+    }
+
+
+    /* TOAST */
+
+    function showToast(message) {
+
+        const toast = document.getElementById("toast");
+
+        toast.textContent = message;
+
+        toast.classList.add("show");
+
+        setTimeout(() => {
+
+            toast.classList.remove("show");
+
+        }, 3000);
+
+    }
+
+
+    /* FILTER */
+
+    function filterQuizzes() {
+
+        const search =
+            document
+                .getElementById("searchInput")
+                .value
+                .toLowerCase();
+
+        const status =
+            document
+                .getElementById("statusFilter")
+                .value;
+
+        const cards =
+            document.querySelectorAll(".quiz-card");
+
+        let visible = 0;
+
+        cards.forEach(card => {
+
+            const title =
+                card.dataset.title.toLowerCase();
+
+            const cardStatus =
+                card.dataset.status;
+
+            const matchesSearch =
+                title.includes(search);
+
+            const matchesStatus =
+                status === "all" ||
+                cardStatus === status;
+
+            if (matchesSearch && matchesStatus) {
+
+                card.style.display = "flex";
+
+                visible++;
+
+            } else {
+
+                card.style.display = "none";
+
+            }
+
+        });
+
+
+        document.getElementById("emptyState").style.display =
+            visible === 0 ? "block" : "none";
+
+    }
+
+
+    /* PREVIEW */
+
+    function previewQuiz(title) {
+
+        selectedQuiz = title;
+
+        document.getElementById("modalTitle").textContent =
+            title;
+
+        const container =
+            document.getElementById("questionsContainer");
+
+        let questions = [];
+
+
+        if (title === "Data Cleaning Fundamentals") {
+
+            questions = [
+
+                {
+                    q: "Which technique is commonly used to handle missing values?",
+                    options: [
+                        "Mean or median imputation",
+                        "Deleting the database",
+                        "Increasing file size",
+                        "Changing the monitor"
+                    ]
+                },
+
+                {
+                    q: "What is the main purpose of data cleaning?",
+                    options: [
+                        "Improve data quality",
+                        "Increase screen brightness",
+                        "Create network cables",
+                        "Install an operating system"
+                    ]
+                },
+
+                {
+                    q: "Which issue occurs when the same record appears multiple times?",
+                    options: [
+                        "Duplicate data",
+                        "Data encryption",
+                        "Data compression",
+                        "Data visualization"
+                    ]
+                },
+
+                {
+                    q: "Why is data validation important?",
+                    options: [
+                        "To ensure data follows expected rules",
+                        "To make files larger",
+                        "To remove all users",
+                        "To change computer hardware"
+                    ]
+                },
+
+                {
+                    q: "Which value represents a missing numerical observation?",
+                    options: [
+                        "NULL",
+                        "100",
+                        "True",
+                        "Completed"
+                    ]
+                }
+
+            ];
+
+        } else {
+
+            questions = [
+
+                {
+                    q: "What is the primary purpose of this assessment?",
+                    options: [
+                        "Measure employee competency",
+                        "Change computer hardware",
+                        "Install software",
+                        "Create a network"
+                    ]
+                },
+
+                {
+                    q: "Which approach supports personalized learning?",
+                    options: [
+                        "Identifying individual competency gaps",
+                        "Giving everyone identical training",
+                        "Removing assessments",
+                        "Ignoring performance"
+                    ]
+                },
+
+                {
+                    q: "What should an administrator review before approving an AI-generated quiz?",
+                    options: [
+                        "Question quality and relevance",
+                        "Monitor size",
+                        "Keyboard brand",
+                        "Internet speed"
+                    ]
+                },
+
+                {
+                    q: "What can quiz results help update?",
+                    options: [
+                        "Competency profile",
+                        "Computer wallpaper",
+                        "Operating system",
+                        "Email password"
+                    ]
+                }
+
+            ];
+
+        }
+
+
+        container.innerHTML = "";
+
+
+        questions.forEach((item, index) => {
+
+            const question =
+                document.createElement("div");
+
+            question.className = "question";
+
+            question.innerHTML = `
+
+                <div class="question-number">
+                    QUESTION ${index + 1}
+                </div>
+
+                <p>
+                    ${item.q}
+                </p>
+
+                <div class="options">
+
+                    ${item.options
+                        .map(
+                            (option, i) =>
+                                `<div class="option">
+                                    ${String.fromCharCode(65 + i)}. ${option}
+                                </div>`
+                        )
+                        .join("")}
+
+                </div>
+
+            `;
+
+            container.appendChild(question);
+
+        });
+
+
+        document
+            .getElementById("previewModal")
+            .classList.add("show");
+
+    }
+
+
+    /* CLOSE MODAL */
+
+    function closeModal() {
+
+        document
+            .getElementById("previewModal")
+            .classList.remove("show");
+
+    }
+
+
+    /* APPROVE FROM MODAL */
+
+    function approveFromModal() {
+
+        if (!selectedQuiz) return;
+
+        const cards =
+            document.querySelectorAll(".quiz-card");
+
+        cards.forEach(card => {
+
+            if (card.dataset.title === selectedQuiz) {
+
+                card.dataset.status = "approved";
+
+                const pill =
+                    card.querySelector(".pill");
+
+                if (pill) {
+
+                    pill.textContent = "Approved";
+
+                    pill.className = "pill green";
+
+                }
+
+                showToast(
+                    selectedQuiz + " approved successfully."
+                );
+
+            }
+
+        });
+
+        closeModal();
+
+    }
+
+
+    /* APPROVE */
+
+    function approveQuiz(button) {
+
+        const card =
+            button.closest(".quiz-card");
+
+        const title =
+            card.dataset.title;
+
+        card.dataset.status = "approved";
+
+        const pill =
+            card.querySelector(".pill");
+
+        pill.textContent = "Approved";
+
+        pill.className = "pill green";
+
+        button.remove();
+
+        showToast(
+            title + " approved successfully."
+        );
+
+        saveQuizState(title, "approved");
+
+    }
+
+
+    /* FLAG */
+
+    function flagQuiz(button) {
+
+        const card =
+            button.closest(".quiz-card");
+
+        const title =
+            card.dataset.title;
+
+        card.dataset.status = "flagged";
+
+        const pill =
+            card.querySelector(".pill");
+
+        pill.textContent = "Flagged";
+
+        pill.className = "pill red";
+
+        showToast(
+            title + " has been flagged for review."
+        );
+
+        saveQuizState(title, "flagged");
+
+    }
+
+
+    /* GENERATE QUIZ */
+
+    function generateQuiz() {
+
+        showToast(
+            "AI quiz generation started. Connect Gemini API in backend for real generation."
+        );
+
+    }
+
+
+    /* LOCAL STORAGE */
+
+    function saveQuizState(title, status) {
+
+        let quizzes =
+            JSON.parse(
+                localStorage.getItem("techSparkQuizzes") || "[]"
+            );
+
+        const existing =
+            quizzes.find(q => q.title === title);
+
+        if (existing) {
+
+            existing.status = status;
+
+        } else {
+
+            quizzes.push({
+                title: title,
+                status: status,
+                updatedAt: new Date().toISOString()
+            });
+
+        }
+
+        localStorage.setItem(
+            "techSparkQuizzes",
+            JSON.stringify(quizzes)
+        );
+
+    }
+
+
+    /* CLOSE MODAL WHEN CLICKING OUTSIDE */
+
+    document
+        .getElementById("previewModal")
+        .addEventListener("click", function(event) {
+
+            if (event.target === this) {
+
+                closeModal();
+
+            }
+
+        });
+
+
+    /* ESCAPE KEY */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Escape") {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

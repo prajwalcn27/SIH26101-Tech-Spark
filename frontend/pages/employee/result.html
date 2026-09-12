@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz Result | Tech Spark</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f8f5;
+            color: #17352a;
+            min-height: 100vh;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        /* =========================
+           TOP BAR
+        ========================= */
+
+        .topbar {
+            height: 72px;
+            background: #ffffff;
+            border-bottom: 1px solid #dce9e1;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 40px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            color: #11824f;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            background: linear-gradient(
+                135deg,
+                #20a96b,
+                #0b7046
+            );
+
+            color: white;
+
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 900;
+        }
+
+        .back-btn {
+            border: 1px solid #cfe1d7;
+            background: white;
+            color: #23634a;
+
+            padding: 10px 18px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            transition: .2s;
+        }
+
+        .back-btn:hover {
+            background: #edf8f1;
+        }
+
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+
+            margin: auto;
+
+            padding: 45px 22px 70px;
+        }
+
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            background:
+                linear-gradient(
+                    135deg,
+                    #0d7048,
+                    #15945d
+                );
+
+            color: white;
+
+            border-radius: 24px;
+
+            padding: 38px;
+
+            margin-bottom: 25px;
+
+            position: relative;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 15px 35px
+                rgba(17, 107, 69, .15);
+        }
+
+        .hero::before {
+            content: "";
+
+            position: absolute;
+
+            width: 250px;
+            height: 250px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255,255,255,.07);
+
+            right: -80px;
+            top: -120px;
+        }
+
+        .hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255,255,255,.05);
+
+            right: 150px;
+            bottom: -130px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-label {
+            display: inline-block;
+
+            background:
+                rgba(255,255,255,.15);
+
+            border:
+                1px solid
+                rgba(255,255,255,.18);
+
+            padding: 7px 14px;
+
+            border-radius: 30px;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 15px;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            max-width: 700px;
+
+            color: #e8fff2;
+
+            font-size: 16px;
+
+            line-height: 1.7;
+        }
+
+
+        /* =========================
+           ROBOT
+        ========================= */
+
+        .robot {
+            position: absolute;
+
+            right: 55px;
+            bottom: 10px;
+
+            width: 135px;
+            height: 150px;
+
+            animation:
+                robotFloat 3s
+                ease-in-out
+                infinite;
+        }
+
+        .robot-head {
+            position: absolute;
+
+            width: 92px;
+            height: 70px;
+
+            left: 22px;
+            top: 15px;
+
+            background: white;
+
+            border-radius: 25px;
+
+            box-shadow:
+                0 10px 20px
+                rgba(0,0,0,.15);
+        }
+
+        .robot-eye {
+            position: absolute;
+
+            width: 11px;
+            height: 11px;
+
+            border-radius: 50%;
+
+            background: #16a765;
+
+            top: 27px;
+        }
+
+        .robot-eye.left {
+            left: 24px;
+        }
+
+        .robot-eye.right {
+            right: 24px;
+        }
+
+        .robot-smile {
+            position: absolute;
+
+            width: 30px;
+            height: 13px;
+
+            border-bottom:
+                3px solid
+                #15945d;
+
+            border-radius:
+                0 0 20px 20px;
+
+            left: 31px;
+            top: 43px;
+        }
+
+        .antenna {
+            position: absolute;
+
+            width: 4px;
+            height: 17px;
+
+            background: white;
+
+            left: 66px;
+            top: 0;
+        }
+
+        .antenna::before {
+            content: "";
+
+            position: absolute;
+
+            width: 9px;
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: #b9f6d2;
+
+            top: -6px;
+            left: -2px;
+        }
+
+        .robot-body {
+            position: absolute;
+
+            width: 72px;
+            height: 58px;
+
+            left: 32px;
+            bottom: 5px;
+
+            background: #dff8e9;
+
+            border-radius: 17px;
+        }
+
+        .robot-body::after {
+            content: "AI";
+
+            position: absolute;
+
+            width: 31px;
+            height: 25px;
+
+            left: 20px;
+            top: 17px;
+
+            background: #15945d;
+
+            color: white;
+
+            border-radius: 7px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 800;
+
+            font-size: 12px;
+        }
+
+        .robot-arm {
+            position: absolute;
+
+            width: 16px;
+            height: 43px;
+
+            background: white;
+
+            border-radius: 15px;
+
+            bottom: 13px;
+        }
+
+        .robot-arm.left {
+            left: 10px;
+            transform: rotate(20deg);
+        }
+
+        .robot-arm.right {
+            right: 10px;
+            transform: rotate(-20deg);
+        }
+
+        @keyframes robotFloat {
+
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+
+        }
+
+
+        /* =========================
+           RESULT CARD
+        ========================= */
+
+        .result-card {
+            background: white;
+
+            border:
+                1px solid
+                #dce9e1;
+
+            border-radius: 24px;
+
+            padding: 42px;
+
+            text-align: center;
+
+            box-shadow:
+                0 10px 30px
+                rgba(30,70,50,.07);
+        }
+
+
+        /* =========================
+           SUCCESS ICON
+        ========================= */
+
+        .success-icon {
+            width: 82px;
+            height: 82px;
+
+            margin: auto;
+
+            border-radius: 50%;
+
+            background: #e5f8ed;
+
+            color: #11824f;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 42px;
+
+            font-weight: 800;
+
+            border:
+                5px solid
+                #ccebd9;
+        }
+
+
+        .result-card h2 {
+            margin-top: 20px;
+
+            font-size: 32px;
+
+            color: #17352a;
+        }
+
+        .subtitle {
+            margin-top: 9px;
+
+            color: #71847a;
+
+            font-size: 15px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+           SCORE
+        ========================= */
+
+        .score-circle {
+            width: 175px;
+            height: 175px;
+
+            margin: 30px auto;
+
+            border-radius: 50%;
+
+            background:
+                #e9f8ef;
+
+            border:
+                10px solid
+                #11824f;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            box-shadow:
+                inset 0 0 0 5px
+                rgba(255,255,255,.5);
+        }
+
+        .score-circle strong {
+            font-size: 42px;
+
+            color: #11824f;
+        }
+
+        .score-circle span {
+            margin-top: 4px;
+
+            font-size: 13px;
+
+            color: #71847a;
+        }
+
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-top: 25px;
+        }
+
+        .stat {
+            background: #f7faf8;
+
+            border:
+                1px solid
+                #dce9e1;
+
+            border-radius: 15px;
+
+            padding: 20px;
+        }
+
+        .stat span {
+            display: block;
+
+            color: #71847a;
+
+            font-size: 13px;
+
+            margin-bottom: 7px;
+        }
+
+        .stat strong {
+            color: #11824f;
+
+            font-size: 23px;
+        }
+
+
+        /* =========================
+           AI MESSAGE
+        ========================= */
+
+        .message {
+            margin-top: 25px;
+
+            padding: 18px 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #edf9f2,
+                    #f7fcf9
+                );
+
+            border:
+                1px solid
+                #cce8d8;
+
+            border-radius: 14px;
+
+            color: #23634a;
+
+            line-height: 1.6;
+
+            text-align: left;
+        }
+
+        .message strong {
+            color: #11824f;
+        }
+
+
+        /* =========================
+           ACTION BUTTONS
+        ========================= */
+
+        .actions {
+            margin-top: 32px;
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            border: none;
+
+            padding:
+                13px 21px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            font-weight: 800;
+
+            font-size: 14px;
+
+            transition:
+                .2s ease;
+        }
+
+        .action-btn:hover {
+            transform:
+                translateY(-2px);
+        }
+
+        .primary {
+            background: #11824f;
+            color: white;
+        }
+
+        .primary:hover {
+            background: #0b6940;
+        }
+
+        .secondary {
+            background: #e8f5ed;
+            color: #11824f;
+        }
+
+        .secondary:hover {
+            background: #d8eee1;
+        }
+
+        .certificate-btn {
+            background: #d99a18;
+            color: white;
+        }
+
+        .certificate-btn:hover {
+            background: #b77d0c;
+        }
+
+
+        /* =========================
+           CERTIFICATE PREVIEW
+        ========================= */
+
+        .certificate-info {
+            margin-top: 35px;
+
+            padding-top: 25px;
+
+            border-top:
+                1px solid
+                #e3ece7;
+
+            color: #71847a;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 750px) {
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .hero {
+                padding: 28px;
+            }
+
+            .hero h1 {
+                font-size: 29px;
+            }
+
+            .robot {
+                display: none;
+            }
+
+            .result-card {
+                padding: 28px 18px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     TOP BAR
+========================= -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            TS
+        </div>
+
+        Tech Spark
+
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="goDashboard()">
+
+        ← Dashboard
+
+    </button>
+
+</header>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="container">
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="hero-label">
+                AI ASSESSMENT RESULT
+            </span>
+
+            <h1>
+                Your Learning Progress
+            </h1>
+
+            <p>
+                Your latest assessment has been analysed.
+                Tech Spark has updated your competency profile
+                and identified what you should focus on next.
+            </p>
+
+        </div>
+
+
+        <!-- ROBOT -->
+
+        <div class="robot">
+
+            <div class="antenna"></div>
+
+            <div class="robot-head">
+
+                <div class="robot-eye left"></div>
+
+                <div class="robot-eye right"></div>
+
+                <div class="robot-smile"></div>
+
+            </div>
+
+            <div class="robot-arm left"></div>
+
+            <div class="robot-arm right"></div>
+
+            <div class="robot-body"></div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- RESULT -->
+
+    <section class="result-card">
+
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+
+        <h2>
+            Quiz Completed!
+        </h2>
+
+
+        <p class="subtitle">
+
+            Your
+            <strong>
+                Data Cleaning Fundamentals
+            </strong>
+            assessment has been completed successfully.
+
+        </p>
+
+
+
+        <!-- SCORE -->
+
+        <div class="score-circle">
+
+            <strong id="score">
+                0%
+            </strong>
+
+            <span>
+                Assessment Score
+            </span>
+
+        </div>
+
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+
+            <div class="stat">
+
+                <span>
+                    Correct Answers
+                </span>
+
+                <strong id="correct">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat">
+
+                <span>
+                    Total Questions
+                </span>
+
+                <strong id="total">
+                    5
+                </strong>
+
+            </div>
+
+
+            <div class="stat">
+
+                <span>
+                    Updated Competency
+                </span>
+
+                <strong id="competency">
+                    0%
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- AI MESSAGE -->
+
+        <div class="message">
+
+            <strong>
+                🤖 AI Recommendation:
+            </strong>
+
+            Your assessment result has been recorded.
+            Continue practising the identified weak topics
+            before moving to more advanced data-cleaning concepts.
+
+        </div>
+
+
+
+        <!-- BUTTONS -->
+
+        <div class="actions">
+
+
+            <button
+                class="action-btn primary"
+                onclick="goRecommendation()">
+
+                View Recommendations →
+
+            </button>
+
+
+            <button
+                class="action-btn secondary"
+                onclick="retakeQuiz()">
+
+                Retake Quiz
+
+            </button>
+
+
+            <button
+                class="action-btn certificate-btn"
+                onclick="viewCertificate()">
+
+                🏆 View Certificate
+
+            </button>
+
+
+        </div>
+
+
+
+        <div class="certificate-info">
+
+            Your certificate contains your employee name,
+            assessment score and learning achievement.
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<script>
+
+
+/* =========================================
+   LOAD QUIZ DATA
+========================================= */
+
+
+const score =
+    Number(
+        localStorage.getItem("quizScore")
+    ) || 0;
+
+
+const correct =
+    Number(
+        localStorage.getItem(
+            "quizCorrectAnswers"
+        )
+    ) || 0;
+
+
+const total =
+    Number(
+        localStorage.getItem(
+            "quizTotalQuestions"
+        )
+    ) || 5;
+
+
+
+/* =========================================
+   DISPLAY RESULT
+========================================= */
+
+
+document.getElementById(
+    "score"
+).textContent =
+    score + "%";
+
+
+document.getElementById(
+    "correct"
+).textContent =
+    correct;
+
+
+document.getElementById(
+    "total"
+).textContent =
+    total;
+
+
+document.getElementById(
+    "competency"
+).textContent =
+    score + "%";
+
+
+
+/* =========================================
+   DASHBOARD
+========================================= */
+
+
+function goDashboard() {
+
+    window.location.href =
+        "dashboard.html";
+
+}
+
+
+
+/* =========================================
+   RECOMMENDATION
+========================================= */
+
+
+function goRecommendation() {
+
+    window.location.href =
+        "recommendation.html";
+
+}
+
+
+
+/* =========================================
+   RETAKE QUIZ
+========================================= */
+
+
+function retakeQuiz() {
+
+
+    localStorage.removeItem(
+        "quizScore"
+    );
+
+
+    localStorage.removeItem(
+        "quizCorrectAnswers"
+    );
+
+
+    localStorage.removeItem(
+        "quizTotalQuestions"
+    );
+
+
+    localStorage.removeItem(
+        "quizCompleted"
+    );
+
+
+    localStorage.removeItem(
+        "quizAnswers"
+    );
+
+
+    window.location.href =
+        "quiz.html";
+
+}
+
+
+
+/* =========================================
+   GET EMPLOYEE NAME
+========================================= */
+
+
+function getEmployeeName() {
+
+
+    let employeeName =
+        "Tech Spark Learner";
+
+
+    try {
+
+
+        const user =
+            JSON.parse(
+                localStorage.getItem(
+                    "currentUser"
+                )
+            );
+
+
+        if (user) {
+
+
+            employeeName =
+                user.name ||
+                user.fullName ||
+                user.username ||
+                user.email ||
+                employeeName;
+
+        }
+
+
+    } catch (error) {
+
+        console.log(
+            "Could not read employee information."
+        );
+
+    }
+
+
+    return employeeName;
+
+}
+
+
+
+/* =========================================
+   VIEW CERTIFICATE
+========================================= */
+
+
+function viewCertificate() {
+
+
+    const employeeName =
+        getEmployeeName();
+
+
+
+    const certificateWindow =
+        window.open(
+            "",
+            "_blank"
+        );
+
+
+
+    /* POP-UP BLOCKED */
+
+    if (!certificateWindow) {
+
+        alert(
+            "Certificate window was blocked. Please allow pop-ups for this page."
+        );
+
+        return;
+
+    }
+
+
+
+    /* =====================================
+       CERTIFICATE HTML
+    ===================================== */
+
+
+    certificateWindow.document.write(`
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+<head>
+
+<meta charset="UTF-8">
+
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+
+<title>
+    Tech Spark Certificate
+</title>
+
+
+<style>
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #eef7f1;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+}
+
+
+.certificate {
+
+    width: 900px;
+
+    min-height: 620px;
+
+    background: white;
+
+    border:
+        12px solid
+        #11824f;
+
+    padding: 55px;
+
+    text-align: center;
+
+    position: relative;
+
+    box-shadow:
+        0 20px 50px
+        rgba(0,0,0,.15);
+
+}
+
+
+.certificate::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 15px;
+
+    left: 15px;
+
+    right: 15px;
+
+    bottom: 15px;
+
+    border:
+        2px solid
+        #b8dec9;
+
+    pointer-events: none;
+
+}
+
+
+.logo {
+
+    color: #11824f;
+
+    font-size: 28px;
+
+    font-weight: 900;
+
+    letter-spacing: 4px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.platform {
+
+    color: #71847a;
+
+    font-size: 13px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+h1 {
+
+    color: #17352a;
+
+    font-size: 43px;
+
+    margin:
+        18px 0 28px;
+
+}
+
+
+.presented {
+
+    color: #63766c;
+
+    font-size: 17px;
+
+}
+
+
+.name {
+
+    display: inline-block;
+
+    color: #11824f;
+
+    font-size: 33px;
+
+    font-weight: 800;
+
+    margin:
+        22px 0;
+
+    padding:
+        0 45px 10px;
+
+    border-bottom:
+        2px solid
+        #b8dec9;
+
+}
+
+
+.course {
+
+    color: #394f44;
+
+    font-size: 18px;
+
+    line-height: 1.7;
+
+    max-width: 680px;
+
+    margin: auto;
+
+}
+
+
+.score {
+
+    color: #11824f;
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    margin-top: 25px;
+
+}
+
+
+.correct {
+
+    color: #71847a;
+
+    margin-top: 8px;
+
+    font-size: 14px;
+
+}
+
+
+.footer {
+
+    margin-top: 48px;
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    color: #71847a;
+
+    font-size: 13px;
+
+}
+
+
+.print-btn {
+
+    margin-top: 25px;
+
+    padding:
+        12px 26px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #11824f;
+
+    color: white;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+}
+
+
+.print-btn:hover {
+
+    background: #0b6940;
+
+}
+
+
+@media print {
+
+
+    body {
+
+        background: white;
+
+    }
+
+
+    .certificate {
+
+        box-shadow: none;
+
+    }
+
+
+    .print-btn {
+
+        display: none;
+
+    }
+
+
+}
+
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+<div class="certificate">
+
+
+    <div class="logo">
+
+        TECH SPARK
+
+    </div>
+
+
+    <div class="platform">
+
+        AI-Enabled Learning Platform
+
+    </div>
+
+
+    <h1>
+
+        Certificate of Completion
+
+    </h1>
+
+
+    <div class="presented">
+
+        This certificate is proudly
+        presented to
+
+    </div>
+
+
+    <div class="name">
+
+        ${employeeName}
+
+    </div>
+
+
+    <div class="course">
+
+        for successfully completing the
+
+        <strong>
+            Data Cleaning Fundamentals
+        </strong>
+
+        competency assessment through
+        the Tech Spark personalized
+        learning platform.
+
+    </div>
+
+
+    <div class="score">
+
+        Assessment Score:
+        ${score}%
+
+    </div>
+
+
+    <div class="correct">
+
+        Questions Correct:
+        ${correct} / ${total}
+
+    </div>
+
+
+    <div class="footer">
+
+        <span>
+            Tech Spark
+        </span>
+
+
+        <span>
+            SIH26101
+        </span>
+
+
+        <span>
+            Learning Achievement
+        </span>
+
+    </div>
+
+
+    <button
+        class="print-btn"
+        onclick="window.print()">
+
+        Print / Save Certificate
+
+    </button>
+
+
+</div>
+
+
+</body>
+
+</html>
+
+
+`);
+
+
+    certificateWindow.document.close();
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

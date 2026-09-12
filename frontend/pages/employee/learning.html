@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Learning Material | Tech Spark</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #18a957;
+            --dark-green: #08783d;
+            --light-green: #eafff2;
+            --text: #173b2b;
+            --muted: #6d7f75;
+            --border: #dcebe3;
+            --white: #ffffff;
+            --bg: #f6fbf8;
+            --shadow: 0 15px 45px rgba(20, 91, 55, 0.10);
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ================================
+           HEADER
+        ================================= */
+
+        .topbar {
+            height: 76px;
+            background: rgba(255,255,255,0.96);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(15px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #18b866, #08783d);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 8px 20px rgba(24,169,87,.25);
+        }
+
+        .brand-text strong {
+            display: block;
+            font-size: 17px;
+        }
+
+        .brand-text span {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .back-btn {
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--text);
+            padding: 10px 17px;
+            border-radius: 11px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: .25s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--green);
+            color: var(--green);
+            transform: translateY(-2px);
+        }
+
+        /* ================================
+           HERO
+        ================================= */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 55px 6% 70px;
+            background:
+                radial-gradient(circle at 90% 20%, rgba(54,211,126,.18), transparent 28%),
+                radial-gradient(circle at 10% 80%, rgba(24,169,87,.10), transparent 30%),
+                linear-gradient(135deg, #effff5, #ffffff);
+        }
+
+        .hero-content {
+            max-width: 1180px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #dcfae8;
+            color: #08783d;
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            animation: fadeDown .7s ease;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #18b866;
+            animation: pulse 1.5s infinite;
+        }
+
+        .hero h1 {
+            font-size: clamp(34px, 5vw, 57px);
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            animation: fadeUp .7s ease;
+        }
+
+        .hero h1 span {
+            color: var(--green);
+        }
+
+        .hero-description {
+            color: var(--muted);
+            max-width: 680px;
+            line-height: 1.8;
+            font-size: 16px;
+            animation: fadeUp .9s ease;
+        }
+
+        /* ================================
+           ROBOT
+        ================================= */
+
+        .robot-area {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .robot-glow {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(24,169,87,.13);
+            filter: blur(10px);
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        .robot {
+            width: 145px;
+            height: 190px;
+            position: relative;
+            z-index: 2;
+            animation: robotFloat 3s ease-in-out infinite;
+        }
+
+        .antenna {
+            position: absolute;
+            top: -25px;
+            left: 68px;
+            width: 8px;
+            height: 27px;
+            background: #08783d;
+            border-radius: 10px;
+        }
+
+        .antenna::before {
+            content: "";
+            position: absolute;
+            top: -9px;
+            left: -5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #18b866;
+            box-shadow: 0 0 20px rgba(24,184,102,.7);
+        }
+
+        .robot-head {
+            width: 130px;
+            height: 88px;
+            background: linear-gradient(145deg,#ffffff,#e9f8ef);
+            border: 4px solid #0b8648;
+            border-radius: 32px;
+            position: absolute;
+            left: 7px;
+            top: 0;
+            box-shadow: 0 12px 30px rgba(8,120,61,.16);
+        }
+
+        .ear {
+            position: absolute;
+            top: 30px;
+            width: 13px;
+            height: 28px;
+            border-radius: 8px;
+            background: #18a957;
+        }
+
+        .ear.left {
+            left: -12px;
+        }
+
+        .ear.right {
+            right: -12px;
+        }
+
+        .eye {
+            position: absolute;
+            width: 18px;
+            height: 22px;
+            border-radius: 8px;
+            background: #0b8648;
+            top: 28px;
+            animation: blink 4s infinite;
+        }
+
+        .eye.left {
+            left: 31px;
+        }
+
+        .eye.right {
+            right: 31px;
+        }
+
+        .mouth {
+            position: absolute;
+            width: 36px;
+            height: 14px;
+            border-bottom: 4px solid #18a957;
+            border-radius: 0 0 30px 30px;
+            left: 43px;
+            top: 53px;
+        }
+
+        .robot-body {
+            position: absolute;
+            top: 94px;
+            left: 28px;
+            width: 90px;
+            height: 82px;
+            border-radius: 25px;
+            background: linear-gradient(145deg,#18b866,#08783d);
+            box-shadow: 0 15px 30px rgba(8,120,61,.20);
+        }
+
+        .chest {
+            position: absolute;
+            width: 45px;
+            height: 25px;
+            border-radius: 9px;
+            background: rgba(255,255,255,.9);
+            top: 20px;
+            left: 22px;
+        }
+
+        .chest::after {
+            content: "";
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #18a957;
+            top: 8px;
+            left: 18px;
+            box-shadow: 14px 0 #8ee8b5;
+        }
+
+        .arm {
+            position: absolute;
+            width: 20px;
+            height: 60px;
+            border-radius: 14px;
+            background: #0b8648;
+            top: 102px;
+        }
+
+        .arm.left {
+            left: 4px;
+            transform: rotate(10deg);
+        }
+
+        .arm.right {
+            right: 4px;
+            transform: rotate(-10deg);
+        }
+
+        /* ================================
+           MAIN CONTENT
+        ================================= */
+
+        .container {
+            width: min(1180px, 90%);
+            margin: 45px auto;
+        }
+
+        .learning-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 28px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        /* ================================
+           MATERIAL HEADER
+        ================================= */
+
+        .material-header {
+            padding: 32px;
+        }
+
+        .material-label {
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .material-header h2 {
+            font-size: 31px;
+            margin-bottom: 12px;
+        }
+
+        .material-header p {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .meta span {
+            padding: 9px 13px;
+            border-radius: 10px;
+            background: #f1f8f4;
+            color: #436154;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* ================================
+           WHY LEARNING
+        ================================= */
+
+        .why-box {
+            margin: 0 32px 30px;
+            padding: 22px;
+            background: linear-gradient(135deg,#edfff4,#f9fffb);
+            border: 1px solid #c9eed8;
+            border-radius: 17px;
+        }
+
+        .why-title {
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #08783d;
+        }
+
+        .why-box p {
+            color: #526b5e;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        /* ================================
+           TOPIC SECTION
+        ================================= */
+
+        .section {
+            padding: 0 32px 32px;
+        }
+
+        .section-title {
+            font-size: 19px;
+            margin-bottom: 18px;
+        }
+
+        .topic {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 13px;
+            padding: 18px;
+            transition: .25s;
+            cursor: pointer;
+        }
+
+        .topic:hover {
+            transform: translateX(5px);
+            border-color: #9eddb8;
+            box-shadow: 0 8px 25px rgba(20,91,55,.07);
+        }
+
+        .topic-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .topic-title {
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        .topic-status {
+            font-size: 11px;
+            font-weight: 800;
+            color: #08783d;
+            background: #e5faed;
+            padding: 6px 10px;
+            border-radius: 20px;
+        }
+
+        .topic p {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* ================================
+           LEARNING TEXT
+        ================================= */
+
+        .lesson {
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 17px;
+            background: #fbfefc;
+            border: 1px solid var(--border);
+        }
+
+        .lesson h3 {
+            margin-bottom: 13px;
+            font-size: 19px;
+        }
+
+        .lesson p {
+            color: #526b5e;
+            line-height: 1.8;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .example {
+            background: #edf9f2;
+            border-left: 4px solid var(--green);
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 15px;
+            color: #355c47;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* ================================
+           RIGHT PANEL
+        ================================= */
+
+        .side-card {
+            padding: 25px;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .side-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .progress-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 10px auto 22px;
+            background: conic-gradient(#18a957 68%, #e5f1ea 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .progress-circle::before {
+            content: "";
+            width: 118px;
+            height: 118px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .progress-number {
+            position: relative;
+            z-index: 2;
+            font-size: 32px;
+            font-weight: 900;
+            color: #08783d;
+        }
+
+        .progress-label {
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .weak-topic {
+            background: #fff8eb;
+            border: 1px solid #f5dfb1;
+            border-radius: 15px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .weak-topic small {
+            color: #96702d;
+            font-weight: 800;
+        }
+
+        .weak-topic strong {
+            display: block;
+            margin-top: 5px;
+            color: #6d511e;
+        }
+
+        .action-btn {
+            width: 100%;
+            border: none;
+            padding: 15px;
+            border-radius: 13px;
+            background: linear-gradient(135deg,#18b866,#08783d);
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(24,169,87,.22);
+            transition: .25s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(24,169,87,.3);
+        }
+
+        .complete-btn {
+            margin-top: 11px;
+            background: white;
+            color: #08783d;
+            border: 1px solid #bfe6ce;
+            box-shadow: none;
+        }
+
+        .complete-btn:hover {
+            background: #edfff4;
+        }
+
+        .ai-note {
+            margin-top: 22px;
+            padding: 15px;
+            border-radius: 14px;
+            background: #f3f8f5;
+            color: #62756b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* ================================
+           SUCCESS MESSAGE
+        ================================= */
+
+        .success {
+            display: none;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #08783d;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 13px;
+            box-shadow: 0 15px 35px rgba(0,0,0,.18);
+            z-index: 300;
+            animation: slideIn .4s ease;
+        }
+
+        /* ================================
+           FOOTER
+        ================================= */
+
+        footer {
+            margin-top: 70px;
+            padding: 30px 6%;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        /* ================================
+           ANIMATIONS
+        ================================= */
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes robotFloat {
+            0%,100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-13px);
+            }
+        }
+
+        @keyframes glow {
+            0%,100% {
+                transform: scale(.9);
+                opacity: .5;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: .9;
+            }
+        }
+
+        @keyframes pulse {
+            0%,100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.6);
+                opacity: .5;
+            }
+        }
+
+        @keyframes blink {
+            0%,45%,50%,100% {
+                transform: scaleY(1);
+            }
+            47% {
+                transform: scaleY(.1);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ================================
+           RESPONSIVE
+        ================================= */
+
+        @media(max-width:900px) {
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-description {
+                margin: auto;
+            }
+
+            .learning-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .side-card {
+                position: static;
+            }
+
+            .robot-area {
+                height: 240px;
+            }
+        }
+
+        @media(max-width:600px) {
+
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .brand-text {
+                display: none;
+            }
+
+            .hero {
+                padding: 40px 20px 55px;
+            }
+
+            .container {
+                width: 94%;
+                margin: 25px auto;
+            }
+
+            .material-header,
+            .section {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .why-box {
+                margin-left: 20px;
+                margin-right: 20px;
+            }
+
+            .material-header h2 {
+                font-size: 25px;
+            }
+
+            .topic-top {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =========================================
+     TOP BAR
+========================================= -->
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-logo">TS</div>
+
+        <div class="brand-text">
+            <strong>Tech Spark</strong>
+            <span>Competency Intelligence</span>
+        </div>
+    </div>
+
+    <button class="back-btn" onclick="goBack()">
+        ← Back
+    </button>
+
+</header>
+
+
+<!-- =========================================
+     HERO
+========================================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <div>
+
+            <div class="eyebrow">
+                <span class="live-dot"></span>
+                AI-PERSONALIZED LEARNING
+            </div>
+
+            <h1>
+                Learn exactly what
+                <span>you need.</span>
+            </h1>
+
+            <p class="hero-description">
+                This learning material has been selected by Tech Spark AI
+                based on your competency gaps. Focus on the topics where
+                you need the most improvement.
+            </p>
+
+        </div>
+
+
+        <!-- CSS ROBOT -->
+
+        <div class="robot-area">
+
+            <div class="robot-glow"></div>
+
+            <div class="robot">
+
+                <div class="antenna"></div>
+
+                <div class="robot-head">
+
+                    <div class="ear left"></div>
+                    <div class="ear right"></div>
+
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+
+                    <div class="mouth"></div>
+
+                </div>
+
+                <div class="robot-body">
+
+                    <div class="chest"></div>
+
+                </div>
+
+                <div class="arm left"></div>
+                <div class="arm right"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================
+     MAIN CONTENT
+========================================= -->
+
+<main class="container">
+
+    <div class="learning-grid">
+
+
+        <!-- =====================================
+             LEFT CONTENT
+        ====================================== -->
+
+        <div class="card">
+
+            <div class="material-header">
+
+                <div class="material-label">
+                    Recommended Material
+                </div>
+
+                <h2>
+                    Data Cleaning Fundamentals
+                </h2>
+
+                <p>
+                    Learn the essential techniques used to identify,
+                    correct and prepare data before analysis.
+                    This material focuses especially on the concepts
+                    where your competency score is currently low.
+                </p>
+
+                <div class="meta">
+
+                    <span>📄 PDF Material</span>
+
+                    <span>⏱ 24 Minutes</span>
+
+                    <span>🌱 Beginner Friendly</span>
+
+                    <span>✓ Approved Material</span>
+
+                </div>
+
+            </div>
+
+
+            <!-- WHY THIS MATERIAL -->
+
+            <div class="why-box">
+
+                <div class="why-title">
+                    🤖 Why is AI showing this material?
+                </div>
+
+                <p>
+                    Your competency analysis identified
+                    <strong>Missing Values</strong> and
+                    <strong>Duplicate Records</strong> as priority gaps.
+                    This material directly covers both topics.
+                </p>
+
+            </div>
+
+
+            <!-- TOPICS -->
+
+            <section class="section">
+
+                <h3 class="section-title">
+                    📚 What you will learn
+                </h3>
+
+
+                <div class="topic">
+
+                    <div class="topic-top">
+
+                        <div class="topic-title">
+                            01. Understanding Data Quality
+                        </div>
+
+                        <div class="topic-status">
+                            START
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Understand why clean and reliable data is
+                        important for accurate analysis and decision making.
+                    </p>
+
+                </div>
+
+
+                <div class="topic">
+
+                    <div class="topic-top">
+
+                        <div class="topic-title">
+                            02. Handling Missing Values
+                        </div>
+
+                        <div class="topic-status">
+                            PRIORITY GAP
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Learn how to identify missing values and choose
+                        appropriate techniques to handle them.
+                    </p>
+
+                </div>
+
+
+                <div class="topic">
+
+                    <div class="topic-top">
+
+                        <div class="topic-title">
+                            03. Removing Duplicate Records
+                        </div>
+
+                        <div class="topic-status">
+                            PRIORITY GAP
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Understand how duplicate records affect datasets
+                        and how to detect and remove them.
+                    </p>
+
+                </div>
+
+
+                <div class="topic">
+
+                    <div class="topic-top">
+
+                        <div class="topic-title">
+                            04. Data Formatting
+                        </div>
+
+                        <div class="topic-status">
+                            REVIEW
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Learn how to maintain consistent formats,
+                        data types and values across datasets.
+                    </p>
+
+                </div>
+
+
+                <!-- LESSON -->
+
+                <div class="lesson">
+
+                    <h3>
+                        💡 Quick Concept: Missing Values
+                    </h3>
+
+                    <p>
+                        Missing values occur when information expected
+                        in a dataset is not available. For example,
+                        an employee record may contain a name and role
+                        but have no value for training hours.
+                    </p>
+
+                    <p>
+                        Before analysing data, missing values should
+                        be identified and handled carefully. Depending
+                        on the situation, we may remove the record,
+                        replace the value or use an appropriate
+                        statistical technique.
+                    </p>
+
+                    <div class="example">
+
+                        <strong>Example:</strong><br><br>
+
+                        Dataset:
+
+                        <br>
+
+                        Employee → Training Hours
+
+                        <br>
+
+                        Ravi → 20
+
+                        <br>
+
+                        Anitha → —
+
+                        <br>
+
+                        Kumar → 35
+
+                        <br><br>
+
+                        Here, Anitha's training hours are missing.
+                        The first step is to identify the missing value
+                        before deciding how to handle it.
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+        </div>
+
+
+        <!-- =====================================
+             RIGHT SIDEBAR
+        ====================================== -->
+
+        <aside class="card side-card">
+
+            <div class="side-title">
+                Your Learning Progress
+            </div>
+
+
+            <div class="progress-circle">
+
+                <div class="progress-number" id="progressNumber">
+                    68%
+                </div>
+
+            </div>
+
+            <div class="progress-label">
+                Overall competency health
+            </div>
+
+
+            <!-- WEAK TOPIC -->
+
+            <div class="weak-topic">
+
+                <small>AI PRIORITY TOPIC</small>
+
+                <strong>
+                    Missing Values
+                </strong>
+
+                <small>
+                    Current competency: 32%
+                </small>
+
+            </div>
+
+
+            <!-- ACTION -->
+
+            <button
+                class="action-btn"
+                onclick="takeQuiz()">
+
+                Take AI Quiz →
+
+            </button>
+
+
+            <button
+                class="action-btn complete-btn"
+                onclick="markComplete()">
+
+                ✓ Mark Learning Complete
+
+            </button>
+
+
+            <div class="ai-note">
+
+                🤖 <strong>AI Tip:</strong>
+
+                Complete the priority topics first.
+                Your next quiz will focus more heavily
+                on concepts where you make mistakes.
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</main>
+
+
+<!-- =========================================
+     SUCCESS MESSAGE
+========================================= -->
+
+<div class="success" id="successMessage">
+    ✓ Learning progress updated successfully!
+</div>
+
+
+<!-- =========================================
+     FOOTER
+========================================= -->
+
+<footer>
+
+    <strong>Tech Spark</strong>
+    — Competency Intelligence Platform
+
+    <br><br>
+
+    AI-powered learning for India's Official Statistical System
+
+</footer>
+
+
+<script>
+
+    /* =========================================
+       BACK BUTTON
+    ========================================= */
+
+    function goBack() {
+
+        window.location.href = "recommendation.html";
+
+    }
+
+
+    /* =========================================
+       TAKE QUIZ
+    ========================================= */
+
+    function takeQuiz() {
+
+        // Save that employee opened learning material
+        localStorage.setItem(
+            "learningStarted",
+            "true"
+        );
+
+        window.location.href = "quiz.html";
+
+    }
+
+
+    /* =========================================
+       MARK COMPLETE
+    ========================================= */
+
+    function markComplete() {
+
+        localStorage.setItem(
+            "learningCompleted",
+            "true"
+        );
+
+        const message =
+            document.getElementById("successMessage");
+
+        message.style.display = "block";
+
+        setTimeout(function() {
+
+            message.style.display = "none";
+
+        }, 3000);
+
+    }
+
+
+    /* =========================================
+       TOPIC CLICK
+    ========================================= */
+
+    document.querySelectorAll(".topic").forEach(function(topic) {
+
+        topic.addEventListener("click", function() {
+
+            this.style.borderColor = "#18a957";
+
+            setTimeout(() => {
+
+                this.style.borderColor = "";
+
+            }, 1000);
+
+        });
+
+    });
+
+
+    /* =========================================
+       LOAD SAVED PROGRESS
+    ========================================= */
+
+    window.addEventListener("DOMContentLoaded", function() {
+
+        const completed =
+            localStorage.getItem("learningCompleted");
+
+        if (completed === "true") {
+
+            document.getElementById("progressNumber")
+                .textContent = "75%";
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
