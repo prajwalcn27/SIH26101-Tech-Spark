@@ -1,6 +1,5 @@
 import os
 import json
-import time
 
 from dotenv import load_dotenv
 from google import genai
@@ -16,46 +15,53 @@ load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
 if not api_key:
-    print("❌ GEMINI_API_KEY not found in .env")
-    exit()
+    raise ValueError("GEMINI_API_KEY not found in .env file")
 
 
 # ---------------------------------------
-# CREATE GEMINI CLIENT
+# CONNECT TO GEMINI
 # ---------------------------------------
 
 client = genai.Client(api_key=api_key)
 
 
 # ---------------------------------------
-# MCQ GENERATOR
+# GENERATE MCQs
 # ---------------------------------------
 
 def generate_mcqs(learning_material, number_of_questions=5):
 
     prompt = f"""
-You are an AI learning assistant for the SIH26101
-AI-enabled learning platform.
+You are an AI learning assessment generator.
 
-Generate exactly {number_of_questions} multiple-choice
-questions using ONLY the learning material provided below.
+Use ONLY the learning material provided below.
 
-RULES:
+Generate exactly {number_of_questions} multiple-choice questions.
 
-1. Use ONLY information from the learning material.
-2. Do not use outside knowledge.
-3. Each question must have exactly 4 options.
-4. There must be exactly ONE correct answer.
-5. Include a short explanation.
-6. Include the topic.
-7. Difficulty must be Easy, Medium, or Hard.
-8. Do not create duplicate questions.
-9. Questions should test understanding where possible.
-10. Do not invent information.
+For every question provide:
 
-Return ONLY valid JSON.
+1. question
+2. options: exactly four options A, B, C, D
+3. correct_answer: A, B, C, or D
+4. explanation
+5. topic
+6. difficulty: Easy, Medium, or Hard
 
-Format:
+Rules:
+- Every answer must be directly supported by the learning material.
+- Do not use outside knowledge.
+- Each question must have only one intended correct answer.
+- Options must be meaningful and relevant.
+- Avoid ambiguous questions.
+- Avoid duplicate questions.
+- Return valid JSON only.
+
+Learning Material:
+------------------
+{learning_material}
+------------------
+
+Return this exact JSON structure:
 
 {{
     "questions": [
@@ -68,141 +74,36 @@ Format:
                 "D": "Option D"
             }},
             "correct_answer": "A",
-            "explanation": "Explanation",
-            "topic": "Topic",
+            "explanation": "Explanation based only on the material",
+            "topic": "Topic name",
             "difficulty": "Easy"
         }}
     ]
 }}
-
-LEARNING MATERIAL:
-
-{learning_material}
 """
 
-    # ---------------------------------------
-    # RETRY SETTINGS
-    # ---------------------------------------
+    response = client.models.generate_content(
+        model="gemini-3.6-flash",
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json"
+        )
+    )
 
-    max_retries = 3
-
-    for attempt in range(1, max_retries + 1):
-
-        try:
-
-            print(
-                f"Gemini request attempt {attempt}/{max_retries}..."
-            )
-
-            response = client.models.generate_content(
-
-                model="gemini-3.6-flash",
-
-                contents=prompt,
-
-                config=types.GenerateContentConfig(
-
-                    response_mime_type="application/json"
-
-                )
-            )
-
-            result = json.loads(response.text)
-
-            return result
-
-
-        except Exception as e:
-
-            error_message = str(e)
-
-            print()
-            print("❌ Gemini error:")
-            print(error_message)
-
-            # ---------------------------------------
-            # RETRY 503
-            # ---------------------------------------
-
-            if "503" in error_message:
-
-                if attempt < max_retries:
-
-                    print()
-                    print(
-                        "⚠️ Gemini server is temporarily busy."
-                    )
-
-                    print(
-                        "Waiting 5 seconds before retry..."
-                    )
-
-                    time.sleep(5)
-
-                    continue
-
-                else:
-
-                    print()
-                    print(
-                        "❌ Gemini is still unavailable "
-                        "after multiple attempts."
-                    )
-
-                    return None
-
-            else:
-
-                return None
-
-    return None
+    return json.loads(response.text)
 
 
 # ---------------------------------------
-# TEST
+# TEST WITH SAMPLE MATERIAL
 # ---------------------------------------
 
 if __name__ == "__main__":
 
-    learning_material = """
-    Data cleaning is the process of identifying and correcting
-    incorrect, incomplete, duplicate, or inconsistent data.
+    with open("sample_material.txt", "r", encoding="utf-8") as file:
+        material = file.read()
 
-    Missing values occur when some data fields do not contain
-    a value. Missing values can be handled by removing records
-    or replacing missing values with appropriate values.
+    result = generate_mcqs(material, 5)
 
-    Duplicate records are repeated records in a dataset.
-    Removing duplicate records helps improve data quality.
+    print("\n===== GENERATED 5 MCQs =====\n")
 
-    Data validation checks whether data follows predefined
-    rules and formats.
-    """
-
-    print()
-    print("Generating MCQs...")
-    print("----------------------------------------")
-
-    result = generate_mcqs(
-        learning_material,
-        5
-    )
-
-    if result:
-
-        print()
-        print("✅ MCQs generated successfully!")
-        print()
-
-        print(
-            json.dumps(
-                result,
-                indent=4,
-                ensure_ascii=False
-            )
-        )
-
-    else:
-
-        print()
-        print("❌ MCQ generation failed.")
+    print(json.dumps(result, indent=4, ensure_ascii=False))

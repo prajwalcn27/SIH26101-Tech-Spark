@@ -1,0 +1,13 @@
+DATA CLEANING
+
+Data cleaning is the process of detecting and correcting inaccurate, incomplete, duplicated, or inconsistent data.
+
+Missing values are common in datasets. They can be handled by removing records, replacing values with appropriate values, or using statistical methods.
+
+Duplicate records occur when the same data is stored more than once. Removing duplicate records helps improve data quality.
+
+Outliers are data values that are significantly different from other observations. Outliers should be examined carefully because they may represent errors or genuine unusual observations.
+
+Data validation checks whether data follows predefined rules, formats, and constraints. It helps ensure that the data is accurate and consistent.
+
+Data preprocessing may include data cleaning, transformation, and normalization before the data is used for analysis or machine learning.
