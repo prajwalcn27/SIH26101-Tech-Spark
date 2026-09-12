@@ -7,21 +7,303 @@
 
     <title>Admin Dashboard | Tech Spark</title>
 
-    <!-- Main CSS -->
     <link rel="stylesheet" href="../../css/style.css">
-
-    <!-- Admin Dashboard CSS -->
     <link rel="stylesheet" href="../../css/admin.css">
 
-    <!-- Font Awesome -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* =========================================================
+           MODALS
+        ========================================================== */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(2, 10, 25, 0.82);
+            backdrop-filter: blur(12px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            animation: modalFadeIn 0.25s ease;
+        }
+
+        .modal-card {
+            width: min(620px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            border: 1px solid rgba(82, 210, 220, 0.25);
+            border-radius: 24px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(10, 29, 58, 0.98),
+                    rgba(5, 19, 40, 0.98)
+                );
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.55),
+                0 0 50px rgba(48, 196, 208, 0.08);
+            animation: modalSlideUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .modal-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .modal-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 15px;
+            background: rgba(52, 211, 153, 0.12);
+            color: #5eead4;
+            font-size: 21px;
+        }
+
+        .modal-icon.role-icon-modal {
+            background: rgba(99, 102, 241, 0.14);
+            color: #a5b4fc;
+        }
+
+        .modal-header h2 {
+            margin: 0 0 5px;
+            color: #f8fafc;
+            font-size: 25px;
+        }
+
+        .modal-header p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 17px;
+            transition: 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(239, 68, 68, 0.12);
+            color: #fca5a5;
+            transform: rotate(90deg);
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .modal-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .modal-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .modal-field label {
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .modal-field label span {
+            color: #f87171;
+        }
+
+        .modal-field input,
+        .modal-field select,
+        .modal-field textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px 14px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 12px;
+            outline: none;
+            background: rgba(2, 12, 28, 0.75);
+            color: #f8fafc;
+            font-family: inherit;
+            font-size: 15px;
+            transition: 0.2s ease;
+        }
+
+        .modal-field textarea {
+            min-height: 105px;
+            resize: vertical;
+        }
+
+        .modal-field input:focus,
+        .modal-field select:focus,
+        .modal-field textarea:focus {
+            border-color: rgba(45, 212, 191, 0.7);
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.08);
+        }
+
+        .modal-field select option {
+            background: #081a33;
+            color: white;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 8px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .modal-secondary,
+        .modal-primary {
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .modal-secondary {
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            background: rgba(255, 255, 255, 0.04);
+            color: #cbd5e1;
+        }
+
+        .modal-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-primary {
+            border: 0;
+            background: linear-gradient(135deg, #14b8a6, #06b6d4);
+            color: white;
+            box-shadow: 0 8px 25px rgba(20, 184, 166, 0.2);
+        }
+
+        .modal-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(20, 184, 166, 0.3);
+        }
+
+        .modal-message {
+            display: none;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .modal-message.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .modal-message.success {
+            display: block;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+
+        /* Month picker */
+
+        .date-picker-wrapper {
+            position: relative;
+        }
+
+        #dashboardMonthPicker {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            width: 1px;
+            height: 1px;
+        }
+
+        .date-button {
+            cursor: pointer;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 650px) {
+            .modal-card {
+                padding: 22px;
+                border-radius: 18px;
+            }
+
+            .modal-form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-actions {
+                flex-direction: column-reverse;
+            }
+
+            .modal-actions button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body class="admin-dashboard">
 
     <!-- =========================================================
-         BACKGROUND EFFECTS
+         BACKGROUND
     ========================================================== -->
 
     <div class="admin-background">
@@ -38,7 +320,6 @@
 
     <aside class="admin-sidebar">
 
-        <!-- Brand -->
         <div class="admin-brand">
 
             <div class="admin-brand-icon">
@@ -53,7 +334,6 @@
         </div>
 
 
-        <!-- Navigation -->
         <nav class="admin-nav">
 
             <p class="nav-title">MAIN MENU</p>
@@ -81,7 +361,7 @@
 
                 <span>Employees</span>
 
-                <span class="nav-badge">
+                <span class="nav-badge" id="employeeNavCount">
                     248
                 </span>
 
@@ -169,7 +449,6 @@
         </nav>
 
 
-        <!-- AI Promo -->
         <div class="admin-promo">
 
             <div class="promo-glow"></div>
@@ -192,7 +471,6 @@
         </div>
 
 
-        <!-- Profile -->
         <div class="admin-sidebar-bottom">
 
             <div class="admin-profile">
@@ -230,9 +508,8 @@
     </aside>
 
 
-
     <!-- =========================================================
-         MAIN CONTENT
+         MAIN
     ========================================================== -->
 
     <main class="admin-main">
@@ -254,6 +531,7 @@
 
                 </button>
 
+
                 <div class="admin-welcome">
 
                     <span class="admin-eyebrow">
@@ -262,7 +540,9 @@
 
                     <h1>
                         Good morning,
-                        <span data-user-name>Administrator</span>
+                        <span data-user-name>
+                            Administrator
+                        </span>
                     </h1>
 
                     <p>
@@ -277,7 +557,6 @@
 
             <div class="admin-header-right">
 
-                <!-- Search -->
                 <div class="admin-search">
 
                     <i class="fa-solid fa-magnifying-glass"></i>
@@ -294,7 +573,6 @@
                 </div>
 
 
-                <!-- India visual -->
                 <div class="india-visual">
 
                     <div class="india-building">
@@ -306,7 +584,6 @@
                 </div>
 
 
-                <!-- Notification -->
                 <button
                     type="button"
                     class="admin-notification">
@@ -318,7 +595,6 @@
                 </button>
 
 
-                <!-- Header Avatar -->
                 <div class="admin-header-avatar">
                     A
                 </div>
@@ -326,7 +602,6 @@
             </div>
 
         </header>
-
 
 
         <!-- =====================================================
@@ -357,29 +632,38 @@
                 </div>
 
 
-                <button
-                    type="button"
-                    class="date-button">
+                <div class="date-picker-wrapper">
 
-                    <i class="fa-regular fa-calendar"></i>
+                    <button
+                        type="button"
+                        class="date-button"
+                        id="dashboardDateButton">
 
-                    September 2026
+                        <i class="fa-regular fa-calendar"></i>
 
-                    <i class="fa-solid fa-chevron-down"></i>
+                        <span id="dashboardDateText">
+                            September 2026
+                        </span>
 
-                </button>
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </button>
+
+                    <input
+                        type="month"
+                        id="dashboardMonthPicker"
+                        value="2026-09">
+
+                </div>
 
             </div>
 
 
-            <!-- =================================================
-                 STAT CARDS
-            ================================================== -->
+            <!-- STAT CARDS -->
 
             <div class="stats-grid">
 
 
-                <!-- Employees -->
                 <div class="stat-card">
 
                     <div class="stat-top">
@@ -397,11 +681,9 @@
 
                     <div class="stat-content">
 
-                        <span>
-                            Total Employees
-                        </span>
+                        <span>Total Employees</span>
 
-                        <strong>
+                        <strong id="totalEmployeesStat">
                             248
                         </strong>
 
@@ -412,6 +694,7 @@
                     </div>
 
                     <div class="stat-decoration">
+
                         <div class="mini-chart">
                             <span></span>
                             <span></span>
@@ -419,14 +702,14 @@
                             <span></span>
                             <span></span>
                             <span></span>
+                            <span></span>
                         </div>
+
                     </div>
 
                 </div>
 
 
-
-                <!-- Competency -->
                 <div class="stat-card">
 
                     <div class="stat-top">
@@ -444,9 +727,7 @@
 
                     <div class="stat-content">
 
-                        <span>
-                            Avg. Competency
-                        </span>
+                        <span>Avg. Competency</span>
 
                         <strong>
                             68%
@@ -459,16 +740,16 @@
                     </div>
 
                     <div class="stat-decoration">
+
                         <div class="progress-ring">
                             <span>68%</span>
                         </div>
+
                     </div>
 
                 </div>
 
 
-
-                <!-- Learning -->
                 <div class="stat-card">
 
                     <div class="stat-top">
@@ -486,9 +767,7 @@
 
                     <div class="stat-content">
 
-                        <span>
-                            Learning Completion
-                        </span>
+                        <span>Learning Completion</span>
 
                         <strong>
                             74%
@@ -501,6 +780,7 @@
                     </div>
 
                     <div class="stat-decoration">
+
                         <div class="mini-chart">
                             <span></span>
                             <span></span>
@@ -508,14 +788,14 @@
                             <span></span>
                             <span></span>
                             <span></span>
+                            <span></span>
                         </div>
+
                     </div>
 
                 </div>
 
 
-
-                <!-- Quizzes -->
                 <div class="stat-card">
 
                     <div class="stat-top">
@@ -532,9 +812,7 @@
 
                     <div class="stat-content">
 
-                        <span>
-                            AI Quizzes
-                        </span>
+                        <span>AI Quizzes</span>
 
                         <strong>
                             1,426
@@ -559,15 +837,11 @@
             </div>
 
 
-
-            <!-- =================================================
-                 COMPETENCY + GAPS
-            ================================================== -->
+            <!-- COMPETENCY -->
 
             <div class="two-column-grid">
 
 
-                <!-- Competency Overview -->
                 <div class="admin-card competency-overview-card">
 
                     <div class="card-heading">
@@ -603,7 +877,7 @@
                                 Overall Competency
                             </strong>
 
-                            <span>
+                            <span id="employeeSummaryText">
                                 Across 248 employees
                             </span>
 
@@ -733,8 +1007,8 @@
                 </div>
 
 
+                <!-- GAP -->
 
-                <!-- Gap Distribution -->
                 <div class="admin-card gap-distribution-card">
 
                     <div class="card-heading">
@@ -760,6 +1034,7 @@
 
 
                     <div class="gap-chart">
+
 
                         <div class="gap-chart-item">
 
@@ -896,7 +1171,6 @@
         </section>
 
 
-
         <!-- =====================================================
              EMPLOYEES
         ====================================================== -->
@@ -923,9 +1197,16 @@
 
                 </div>
 
-                <button class="primary-button">
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="addEmployeeBtn">
+
                     <i class="fa-solid fa-user-plus"></i>
+
                     Add Employee
+
                 </button>
 
             </div>
@@ -971,181 +1252,193 @@
                 </div>
 
 
-                <div class="employee-row">
+                <div id="employeeRowsContainer">
 
-                    <div class="employee-info">
 
-                        <div class="table-avatar">
-                            RK
+                    <div class="employee-row">
+
+                        <div class="employee-info">
+
+                            <div class="table-avatar">
+                                RK
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Rahul Kumar
+                                </strong>
+
+                                <span>
+                                    rahul.kumar@gov.in
+                                </span>
+
+                            </div>
+
                         </div>
 
-                        <div>
-                            <strong>
-                                Rahul Kumar
-                            </strong>
+                        <span>
+                            Data Analysis
+                        </span>
 
-                            <span>
-                                rahul.kumar@gov.in
-                            </span>
-                        </div>
+                        <strong>
+                            82%
+                        </strong>
+
+                        <span>
+                            91%
+                        </span>
+
+                        <span class="status active">
+                            Active
+                        </span>
+
+                        <button class="row-action">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
 
                     </div>
 
-                    <span>
-                        Data Analysis
-                    </span>
 
-                    <strong>
-                        82%
-                    </strong>
+                    <div class="employee-row">
 
-                    <span>
-                        91%
-                    </span>
+                        <div class="employee-info">
 
-                    <span class="status active">
-                        Active
-                    </span>
+                            <div class="table-avatar">
+                                AS
+                            </div>
 
-                    <button class="row-action">
-                        <i class="fa-solid fa-ellipsis"></i>
-                    </button>
+                            <div>
 
-                </div>
+                                <strong>
+                                    Anjali Sharma
+                                </strong>
 
+                                <span>
+                                    anjali.sharma@gov.in
+                                </span>
 
-                <div class="employee-row">
+                            </div>
 
-                    <div class="employee-info">
-
-                        <div class="table-avatar">
-                            AS
                         </div>
 
-                        <div>
-                            <strong>
-                                Anjali Sharma
-                            </strong>
+                        <span>
+                            Statistics
+                        </span>
 
-                            <span>
-                                anjali.sharma@gov.in
-                            </span>
-                        </div>
+                        <strong>
+                            74%
+                        </strong>
+
+                        <span>
+                            78%
+                        </span>
+
+                        <span class="status active">
+                            Active
+                        </span>
+
+                        <button class="row-action">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
 
                     </div>
 
-                    <span>
-                        Statistics
-                    </span>
 
-                    <strong>
-                        74%
-                    </strong>
+                    <div class="employee-row">
 
-                    <span>
-                        78%
-                    </span>
+                        <div class="employee-info">
 
-                    <span class="status active">
-                        Active
-                    </span>
+                            <div class="table-avatar warning">
+                                MP
+                            </div>
 
-                    <button class="row-action">
-                        <i class="fa-solid fa-ellipsis"></i>
-                    </button>
+                            <div>
 
-                </div>
+                                <strong>
+                                    Manoj Prasad
+                                </strong>
 
+                                <span>
+                                    manoj.prasad@gov.in
+                                </span>
 
-                <div class="employee-row">
+                            </div>
 
-                    <div class="employee-info">
-
-                        <div class="table-avatar warning">
-                            MP
                         </div>
 
-                        <div>
-                            <strong>
-                                Manoj Prasad
-                            </strong>
+                        <span>
+                            Data Processing
+                        </span>
 
-                            <span>
-                                manoj.prasad@gov.in
-                            </span>
-                        </div>
+                        <strong class="danger-score">
+                            43%
+                        </strong>
+
+                        <span>
+                            49%
+                        </span>
+
+                        <span class="status attention">
+                            Needs Attention
+                        </span>
+
+                        <button class="row-action">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
 
                     </div>
 
-                    <span>
-                        Data Processing
-                    </span>
 
-                    <strong class="danger-score">
-                        43%
-                    </strong>
+                    <div class="employee-row">
 
-                    <span>
-                        49%
-                    </span>
+                        <div class="employee-info">
 
-                    <span class="status attention">
-                        Needs Attention
-                    </span>
+                            <div class="table-avatar">
+                                SN
+                            </div>
 
-                    <button class="row-action">
-                        <i class="fa-solid fa-ellipsis"></i>
-                    </button>
+                            <div>
 
-                </div>
+                                <strong>
+                                    Sneha Nair
+                                </strong>
 
+                                <span>
+                                    sneha.nair@gov.in
+                                </span>
 
-                <div class="employee-row">
+                            </div>
 
-                    <div class="employee-info">
-
-                        <div class="table-avatar">
-                            SN
                         </div>
 
-                        <div>
-                            <strong>
-                                Sneha Nair
-                            </strong>
+                        <span>
+                            Survey Operations
+                        </span>
 
-                            <span>
-                                sneha.nair@gov.in
-                            </span>
-                        </div>
+                        <strong>
+                            71%
+                        </strong>
+
+                        <span>
+                            83%
+                        </span>
+
+                        <span class="status active">
+                            Active
+                        </span>
+
+                        <button class="row-action">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
 
                     </div>
-
-                    <span>
-                        Survey Operations
-                    </span>
-
-                    <strong>
-                        71%
-                    </strong>
-
-                    <span>
-                        83%
-                    </span>
-
-                    <span class="status active">
-                        Active
-                    </span>
-
-                    <button class="row-action">
-                        <i class="fa-solid fa-ellipsis"></i>
-                    </button>
 
                 </div>
 
             </div>
 
         </section>
-
 
 
         <!-- =====================================================
@@ -1174,15 +1467,22 @@
 
                 </div>
 
-                <button class="primary-button">
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="createRoleBtn">
+
                     <i class="fa-solid fa-plus"></i>
+
                     Create Role
+
                 </button>
 
             </div>
 
 
-            <div class="roles-grid">
+            <div class="roles-grid" id="rolesGrid">
 
 
                 <div class="role-card">
@@ -1224,7 +1524,6 @@
                 </div>
 
 
-
                 <div class="role-card">
 
                     <div class="role-icon">
@@ -1262,7 +1561,6 @@
                     </button>
 
                 </div>
-
 
 
                 <div class="role-card">
@@ -1304,8 +1602,9 @@
                 </div>
 
 
-
-                <div class="role-card add-role-card">
+                <div
+                    class="role-card add-role-card"
+                    id="addRoleCard">
 
                     <div class="add-role-icon">
                         <i class="fa-solid fa-plus"></i>
@@ -1324,7 +1623,6 @@
             </div>
 
         </section>
-
 
 
         <!-- =====================================================
@@ -1358,8 +1656,6 @@
 
             <div class="material-management-grid">
 
-
-                <!-- Upload -->
                 <div class="admin-card material-upload-card">
 
                     <div class="upload-card-header">
@@ -1566,8 +1862,6 @@
                 </div>
 
 
-
-                <!-- Material list -->
                 <div class="admin-card materials-list-card">
 
                     <div class="card-heading">
@@ -1718,7 +2012,6 @@
         </section>
 
 
-
         <!-- =====================================================
              QUIZ REVIEW
         ====================================================== -->
@@ -1861,7 +2154,6 @@
                 </div>
 
 
-
                 <div class="admin-card quiz-review-card">
 
                     <div class="quiz-card-header">
@@ -1971,7 +2263,6 @@
         </section>
 
 
-
         <!-- =====================================================
              ANALYTICS
         ====================================================== -->
@@ -2003,7 +2294,6 @@
 
             <div class="analytics-grid">
 
-
                 <div class="admin-card analytics-card large-chart">
 
                     <div class="card-heading">
@@ -2030,25 +2320,27 @@
                     <div class="chart-container">
 
                         <div class="chart-y">
-
                             <span>80%</span>
                             <span>60%</span>
                             <span>40%</span>
                             <span>20%</span>
                             <span>0%</span>
-
                         </div>
 
 
                         <div class="chart-area">
 
                             <div class="chart-grid-lines">
+
                                 <span></span>
                                 <span></span>
                                 <span></span>
                                 <span></span>
                                 <span></span>
+                                <span></span>
+
                             </div>
+
 
                             <svg
                                 class="growth-line"
@@ -2093,7 +2385,6 @@
                 </div>
 
 
-
                 <div class="admin-card completion-card">
 
                     <div class="card-heading">
@@ -2116,6 +2407,7 @@
                     <div class="completion-circle">
 
                         <div>
+
                             <strong>
                                 74%
                             </strong>
@@ -2123,6 +2415,7 @@
                             <span>
                                 Complete
                             </span>
+
                         </div>
 
                     </div>
@@ -2161,7 +2454,6 @@
             </div>
 
         </section>
-
 
 
         <!-- =====================================================
@@ -2330,7 +2622,6 @@
         </section>
 
 
-
         <!-- =====================================================
              QUICK ACTIONS
         ====================================================== -->
@@ -2359,7 +2650,7 @@
 
                 <button
                     class="quick-action"
-                    onclick="document.querySelector('[data-section=employees]').click()">
+                    id="quickAddEmployee">
 
                     <div class="quick-icon">
                         <i class="fa-solid fa-user-plus"></i>
@@ -2461,7 +2752,6 @@
         </section>
 
 
-
         <!-- =====================================================
              FOOTER
         ====================================================== -->
@@ -2482,9 +2772,7 @@
 
 
             <div>
-
                 SIH26101 · Smart India Hackathon 2026
-
             </div>
 
 
@@ -2495,8 +2783,11 @@
                 </span>
 
                 <strong class="system-online">
+
                     <i class="fa-solid fa-circle"></i>
+
                     All Systems Operational
+
                 </strong>
 
             </div>
@@ -2506,21 +2797,406 @@
     </main>
 
 
+    <!-- =========================================================
+         ADD EMPLOYEE MODAL
+    ========================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="employeeModal">
+
+        <div
+            class="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="employeeModalTitle">
+
+            <div class="modal-header">
+
+                <div class="modal-title-wrap">
+
+                    <div class="modal-icon">
+
+                        <i class="fa-solid fa-user-plus"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h2 id="employeeModalTitle">
+                            Add Employee
+                        </h2>
+
+                        <p>
+                            Create a new employee profile.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    id="closeEmployeeModal">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+
+            <form
+                id="employeeForm"
+                class="modal-form">
+
+
+                <div
+                    class="modal-message"
+                    id="employeeModalMessage">
+                </div>
+
+
+                <div class="modal-form-row">
+
+                    <div class="modal-field">
+
+                        <label for="employeeName">
+                            Full Name <span>*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="employeeName"
+                            placeholder="e.g. Rajesh Kumar"
+                            required>
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label for="employeeEmail">
+                            Email Address <span>*</span>
+                        </label>
+
+                        <input
+                            type="email"
+                            id="employeeEmail"
+                            placeholder="employee@gov.in"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-form-row">
+
+                    <div class="modal-field">
+
+                        <label for="employeeDepartment">
+                            Department <span>*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="employeeDepartment"
+                            placeholder="e.g. Statistical Operations"
+                            required>
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label for="employeeRole">
+                            Role <span>*</span>
+                        </label>
+
+                        <select
+                            id="employeeRole"
+                            required>
+
+                            <option value="">
+                                Select role
+                            </option>
+
+                            <option>
+                                Data Analyst
+                            </option>
+
+                            <option>
+                                Data Processing Officer
+                            </option>
+
+                            <option>
+                                Statistical Officer
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-form-row">
+
+                    <div class="modal-field">
+
+                        <label for="employeeJoiningDate">
+                            Joining Date <span>*</span>
+                        </label>
+
+                        <input
+                            type="date"
+                            id="employeeJoiningDate"
+                            required>
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label for="employeeStatus">
+                            Status
+                        </label>
+
+                        <select id="employeeStatus">
+
+                            <option value="Active">
+                                Active
+                            </option>
+
+                            <option value="Inactive">
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="modal-secondary"
+                        id="cancelEmployeeBtn">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="modal-primary">
+
+                        <i class="fa-solid fa-user-plus"></i>
+
+                        Add Employee
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         CREATE ROLE MODAL
+    ========================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="roleModal">
+
+        <div
+            class="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="roleModalTitle">
+
+            <div class="modal-header">
+
+                <div class="modal-title-wrap">
+
+                    <div class="modal-icon role-icon-modal">
+
+                        <i class="fa-solid fa-user-shield"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h2 id="roleModalTitle">
+                            Create Role
+                        </h2>
+
+                        <p>
+                            Define a new role and required competencies.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    id="closeRoleModal">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+
+            <form
+                id="roleForm"
+                class="modal-form">
+
+
+                <div
+                    class="modal-message"
+                    id="roleModalMessage">
+                </div>
+
+
+                <div class="modal-field">
+
+                    <label for="roleName">
+                        Role Name <span>*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="roleName"
+                        placeholder="e.g. Data Quality Officer"
+                        required>
+
+                </div>
+
+
+                <div class="modal-field">
+
+                    <label for="roleDescription">
+                        Description <span>*</span>
+                    </label>
+
+                    <textarea
+                        id="roleDescription"
+                        placeholder="Describe the responsibilities of this role..."
+                        required></textarea>
+
+                </div>
+
+
+                <div class="modal-field">
+
+                    <label for="roleCompetencies">
+                        Required Competencies <span>*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="roleCompetencies"
+                        placeholder="Statistics, Excel, Data Cleaning"
+                        required>
+
+                </div>
+
+
+                <div class="modal-form-row">
+
+                    <div class="modal-field">
+
+                        <label for="roleCreatedDate">
+                            Created Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="roleCreatedDate">
+
+                    </div>
+
+
+                    <div class="modal-field">
+
+                        <label for="roleScore">
+                            Target Competency
+                        </label>
+
+                        <input
+                            type="number"
+                            id="roleScore"
+                            value="70"
+                            min="0"
+                            max="100">
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="modal-secondary"
+                        id="cancelRoleBtn">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="modal-primary">
+
+                        <i class="fa-solid fa-plus"></i>
+
+                        Create Role
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
 
     <!-- =========================================================
          JAVASCRIPT
     ========================================================== -->
 
     <script src="../../js/auth.js"></script>
-
     <script src="../../js/admin.js"></script>
 
 
     <script>
 
-        /*
-         * Admin authentication
-         */
+        /* =========================================================
+           AUTHENTICATION
+        ========================================================== */
+
         document.addEventListener("DOMContentLoaded", function () {
 
             if (typeof requireLogin === "function") {
@@ -2530,100 +3206,59 @@
         });
 
 
+        /* =========================================================
+           SIDEBAR NAVIGATION
+        ========================================================== */
 
-        /*
-         * Sidebar navigation
-         */
-        document.querySelectorAll(".admin-nav-item").forEach(function (item) {
+        document
+            .querySelectorAll(".admin-nav-item")
+            .forEach(function (item) {
 
-            item.addEventListener("click", function (event) {
+                item.addEventListener("click", function (event) {
 
-                event.preventDefault();
+                    event.preventDefault();
 
-                const targetId =
-                    this.getAttribute("data-section");
+                    const targetId =
+                        this.getAttribute("data-section");
 
-                if (!targetId) return;
-
-                /*
-                 * Active navigation
-                 */
-                document
-                    .querySelectorAll(".admin-nav-item")
-                    .forEach(function (nav) {
-
-                        nav.classList.remove("active");
-
-                    });
-
-                this.classList.add("active");
+                    if (!targetId) return;
 
 
-                /*
-                 * Hide all sections
-                 */
-                document
-                    .querySelectorAll(".admin-section")
-                    .forEach(function (section) {
+                    document
+                        .querySelectorAll(".admin-nav-item")
+                        .forEach(function (nav) {
 
-                        section.classList.remove("active-section");
+                            nav.classList.remove("active");
 
-                    });
+                        });
 
-
-                /*
-                 * Show selected section
-                 */
-                const target =
-                    document.getElementById(targetId);
-
-                if (target) {
-
-                    target.classList.add("active-section");
-
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth"
-                    });
-
-                }
-
-            });
-
-        });
+                    this.classList.add("active");
 
 
+                    document
+                        .querySelectorAll(".admin-section")
+                        .forEach(function (section) {
 
-        /*
-         * Search
-         */
-        const searchInput =
-            document.getElementById("adminSearch");
+                            section.classList.remove(
+                                "active-section"
+                            );
 
-        if (searchInput) {
+                        });
 
-            searchInput.addEventListener("input", function () {
 
-                const searchValue =
-                    this.value.toLowerCase().trim();
+                    const target =
+                        document.getElementById(targetId);
 
-                const rows =
-                    document.querySelectorAll(
-                        ".employee-row, .material-row"
-                    );
+                    if (target) {
 
-                rows.forEach(function (row) {
+                        target.classList.add(
+                            "active-section"
+                        );
 
-                    const text =
-                        row.textContent.toLowerCase();
-
-                    if (!searchValue || text.includes(searchValue)) {
-
-                        row.style.display = "";
-
-                    } else {
-
-                        row.style.display = "none";
+                        window.scrollTo({
+                            top: 0,
+                            behavior: "smooth"
+                        });
 
                     }
 
@@ -2631,105 +3266,1430 @@
 
             });
 
+
+        /* =========================================================
+           SEARCH
+        ========================================================== */
+
+        const searchInput =
+            document.getElementById("adminSearch");
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                "input",
+                function () {
+
+                    const searchValue =
+                        this.value.toLowerCase().trim();
+
+                    const rows =
+                        document.querySelectorAll(
+                            ".employee-row, .material-row"
+                        );
+
+                    rows.forEach(function (row) {
+
+                        const text =
+                            row.textContent.toLowerCase();
+
+                        row.style.display =
+                            !searchValue ||
+                            text.includes(searchValue)
+                                ? ""
+                                : "none";
+
+                    });
+
+                }
+            );
+
         }
 
 
+        /* =========================================================
+           CTRL + K
+        ========================================================== */
 
-        /*
-         * Keyboard shortcut CTRL + K
-         */
-        document.addEventListener("keydown", function (event) {
+        document.addEventListener(
+            "keydown",
+            function (event) {
 
-            if (
-                (event.ctrlKey || event.metaKey) &&
-                event.key.toLowerCase() === "k"
-            ) {
+                if (
+                    (event.ctrlKey || event.metaKey) &&
+                    event.key.toLowerCase() === "k"
+                ) {
 
-                event.preventDefault();
+                    event.preventDefault();
 
-                if (searchInput) {
-
-                    searchInput.focus();
+                    if (searchInput) {
+                        searchInput.focus();
+                    }
 
                 }
 
             }
-
-        });
-
+        );
 
 
-        /*
-         * Stat number animation
-         */
+        /* =========================================================
+           MONTH / DATE PICKER
+        ========================================================== */
+
+        const dashboardDateButton =
+            document.getElementById(
+                "dashboardDateButton"
+            );
+
+        const dashboardMonthPicker =
+            document.getElementById(
+                "dashboardMonthPicker"
+            );
+
+        const dashboardDateText =
+            document.getElementById(
+                "dashboardDateText"
+            );
+
+
+        function formatDashboardMonth(value) {
+
+            if (!value) return;
+
+            const parts =
+                value.split("-");
+
+            const year =
+                parseInt(parts[0]);
+
+            const month =
+                parseInt(parts[1]) - 1;
+
+            const date =
+                new Date(year, month, 1);
+
+            dashboardDateText.textContent =
+                date.toLocaleDateString(
+                    "en-US",
+                    {
+                        month: "long",
+                        year: "numeric"
+                    }
+                );
+
+        }
+
+
+        if (dashboardDateButton) {
+
+            dashboardDateButton.addEventListener(
+                "click",
+                function () {
+
+                    dashboardMonthPicker.showPicker();
+
+                }
+            );
+
+        }
+
+
+        if (dashboardMonthPicker) {
+
+            dashboardMonthPicker.addEventListener(
+                "change",
+                function () {
+
+                    formatDashboardMonth(
+                        this.value
+                    );
+
+                    localStorage.setItem(
+                        "techSparkDashboardMonth",
+                        this.value
+                    );
+
+                }
+            );
+
+        }
+
+
+        const savedDashboardMonth =
+            localStorage.getItem(
+                "techSparkDashboardMonth"
+            );
+
+        if (savedDashboardMonth) {
+
+            dashboardMonthPicker.value =
+                savedDashboardMonth;
+
+            formatDashboardMonth(
+                savedDashboardMonth
+            );
+
+        }
+
+
+        /* =========================================================
+           MODAL HELPERS
+        ========================================================== */
+
+        function openModal(modal) {
+
+            if (!modal) return;
+
+            modal.classList.add("show");
+
+            document.body.style.overflow =
+                "hidden";
+
+        }
+
+
+        function closeModal(modal) {
+
+            if (!modal) return;
+
+            modal.classList.remove("show");
+
+            document.body.style.overflow =
+                "";
+
+        }
+
+
+        function showModalMessage(
+            element,
+            message,
+            type
+        ) {
+
+            element.textContent =
+                message;
+
+            element.className =
+                "modal-message " + type;
+
+        }
+
+
+        function clearModalMessage(element) {
+
+            element.textContent = "";
+
+            element.className =
+                "modal-message";
+
+        }
+
+
+        /* =========================================================
+           EMPLOYEE MODAL
+        ========================================================== */
+
+        const employeeModal =
+            document.getElementById(
+                "employeeModal"
+            );
+
+        const addEmployeeBtn =
+            document.getElementById(
+                "addEmployeeBtn"
+            );
+
+        const quickAddEmployee =
+            document.getElementById(
+                "quickAddEmployee"
+            );
+
+        const closeEmployeeModal =
+            document.getElementById(
+                "closeEmployeeModal"
+            );
+
+        const cancelEmployeeBtn =
+            document.getElementById(
+                "cancelEmployeeBtn"
+            );
+
+        const employeeForm =
+            document.getElementById(
+                "employeeForm"
+            );
+
+        const employeeModalMessage =
+            document.getElementById(
+                "employeeModalMessage"
+            );
+
+
+        function openEmployeeModal() {
+
+            clearModalMessage(
+                employeeModalMessage
+            );
+
+            openModal(
+                employeeModal
+            );
+
+        }
+
+
+        if (addEmployeeBtn) {
+
+            addEmployeeBtn.addEventListener(
+                "click",
+                openEmployeeModal
+            );
+
+        }
+
+
+        if (quickAddEmployee) {
+
+            quickAddEmployee.addEventListener(
+                "click",
+                function () {
+
+                    document
+                        .querySelector(
+                            '[data-section="employees"]'
+                        )
+                        .click();
+
+                    setTimeout(
+                        openEmployeeModal,
+                        300
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (closeEmployeeModal) {
+
+            closeEmployeeModal.addEventListener(
+                "click",
+                function () {
+
+                    closeModal(
+                        employeeModal
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (cancelEmployeeBtn) {
+
+            cancelEmployeeBtn.addEventListener(
+                "click",
+                function () {
+
+                    closeModal(
+                        employeeModal
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================================================
+           LOAD ROLES INTO EMPLOYEE DROPDOWN
+        ========================================================== */
+
+        function loadRolesIntoEmployeeDropdown() {
+
+            const roleSelect =
+                document.getElementById(
+                    "employeeRole"
+                );
+
+            if (!roleSelect) return;
+
+
+            const savedRoles =
+                JSON.parse(
+                    localStorage.getItem(
+                        "techSparkRoles"
+                    ) || "[]"
+                );
+
+
+            savedRoles.forEach(function (role) {
+
+                const exists =
+                    Array.from(
+                        roleSelect.options
+                    ).some(function (option) {
+
+                        return option.value ===
+                            role.name;
+
+                    });
+
+
+                if (!exists) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        role.name;
+
+                    option.textContent =
+                        role.name;
+
+                    roleSelect.appendChild(
+                        option
+                    );
+
+                }
+
+            });
+
+        }
+
+
+        /* =========================================================
+           EMPLOYEE STORAGE
+        ========================================================== */
+
+        function getSavedEmployees() {
+
+            return JSON.parse(
+                localStorage.getItem(
+                    "techSparkEmployees"
+                ) || "[]"
+            );
+
+        }
+
+
+        function saveEmployees(employees) {
+
+            localStorage.setItem(
+                "techSparkEmployees",
+                JSON.stringify(employees)
+            );
+
+        }
+
+
+        function getInitials(name) {
+
+            return name
+                .trim()
+                .split(/\s+/)
+                .slice(0, 2)
+                .map(function (part) {
+
+                    return part.charAt(0);
+
+                })
+                .join("")
+                .toUpperCase();
+
+        }
+
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =========================================================
+           ADD EMPLOYEE
+        ========================================================== */
+
+        if (employeeForm) {
+
+            employeeForm.addEventListener(
+                "submit",
+                function (event) {
+
+                    event.preventDefault();
+
+
+                    const name =
+                        document
+                            .getElementById(
+                                "employeeName"
+                            )
+                            .value.trim();
+
+
+                    const email =
+                        document
+                            .getElementById(
+                                "employeeEmail"
+                            )
+                            .value.trim();
+
+
+                    const department =
+                        document
+                            .getElementById(
+                                "employeeDepartment"
+                            )
+                            .value.trim();
+
+
+                    const role =
+                        document
+                            .getElementById(
+                                "employeeRole"
+                            )
+                            .value;
+
+
+                    const joiningDate =
+                        document
+                            .getElementById(
+                                "employeeJoiningDate"
+                            )
+                            .value;
+
+
+                    const status =
+                        document
+                            .getElementById(
+                                "employeeStatus"
+                            )
+                            .value;
+
+
+                    if (
+                        !name ||
+                        !email ||
+                        !department ||
+                        !role ||
+                        !joiningDate
+                    ) {
+
+                        showModalMessage(
+                            employeeModalMessage,
+                            "Please fill all required fields.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                            .test(email)
+                    ) {
+
+                        showModalMessage(
+                            employeeModalMessage,
+                            "Please enter a valid email address.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    const employees =
+                        getSavedEmployees();
+
+
+                    const emailExists =
+                        employees.some(
+                            function (employee) {
+
+                                return employee.email
+                                    .toLowerCase() ===
+                                    email.toLowerCase();
+
+                            }
+                        );
+
+
+                    if (emailExists) {
+
+                        showModalMessage(
+                            employeeModalMessage,
+                            "This employee email is already added.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    const employee = {
+
+                        id:
+                            Date.now(),
+
+                        name:
+                            name,
+
+                        email:
+                            email,
+
+                        department:
+                            department,
+
+                        role:
+                            role,
+
+                        joiningDate:
+                            joiningDate,
+
+                        status:
+                            status,
+
+                        competency:
+                            0,
+
+                        learning:
+                            0
+
+                    };
+
+
+                    employees.push(
+                        employee
+                    );
+
+                    saveEmployees(
+                        employees
+                    );
+
+
+                    addEmployeeRow(
+                        employee
+                    );
+
+
+                    updateEmployeeCounts();
+
+
+                    showModalMessage(
+                        employeeModalMessage,
+                        "Employee added successfully.",
+                        "success"
+                    );
+
+
+                    employeeForm.reset();
+
+
+                    setTimeout(
+                        function () {
+
+                            closeModal(
+                                employeeModal
+                            );
+
+                            clearModalMessage(
+                                employeeModalMessage
+                            );
+
+                        },
+                        700
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================================================
+           ADD EMPLOYEE ROW
+        ========================================================== */
+
+        function addEmployeeRow(
+            employee
+        ) {
+
+            const container =
+                document.getElementById(
+                    "employeeRowsContainer"
+                );
+
+            if (!container) return;
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                "employee-row";
+
+
+            const initials =
+                getInitials(
+                    employee.name
+                );
+
+
+            const statusClass =
+                employee.status ===
+                "Active"
+                    ? "active"
+                    : "attention";
+
+
+            row.innerHTML = `
+
+                <div class="employee-info">
+
+                    <div class="table-avatar">
+                        ${escapeHtml(initials)}
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            ${escapeHtml(employee.name)}
+                        </strong>
+
+                        <span>
+                            ${escapeHtml(employee.email)}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <span>
+                    ${escapeHtml(employee.department)}
+                </span>
+
+                <strong>
+                    ${employee.competency}%
+                </strong>
+
+                <span>
+                    ${employee.learning}%
+                </span>
+
+                <span class="status ${statusClass}">
+                    ${escapeHtml(employee.status)}
+                </span>
+
+                <button
+                    class="row-action"
+                    type="button">
+
+                    <i class="fa-solid fa-ellipsis"></i>
+
+                </button>
+
+            `;
+
+
+            container.appendChild(
+                row
+            );
+
+        }
+
+
+        function updateEmployeeCounts() {
+
+            const savedEmployees =
+                getSavedEmployees();
+
+
+            const total =
+                248 +
+                savedEmployees.length;
+
+
+            const stat =
+                document.getElementById(
+                    "totalEmployeesStat"
+                );
+
+            if (stat) {
+
+                stat.textContent =
+                    total;
+
+            }
+
+
+            const nav =
+                document.getElementById(
+                    "employeeNavCount"
+                );
+
+            if (nav) {
+
+                nav.textContent =
+                    total;
+
+            }
+
+
+            const summary =
+                document.getElementById(
+                    "employeeSummaryText"
+                );
+
+            if (summary) {
+
+                summary.textContent =
+                    "Across " +
+                    total +
+                    " employees";
+
+            }
+
+        }
+
+
+        /* =========================================================
+           ROLE MODAL
+        ========================================================== */
+
+        const roleModal =
+            document.getElementById(
+                "roleModal"
+            );
+
+        const createRoleBtn =
+            document.getElementById(
+                "createRoleBtn"
+            );
+
+        const addRoleCard =
+            document.getElementById(
+                "addRoleCard"
+            );
+
+        const closeRoleModal =
+            document.getElementById(
+                "closeRoleModal"
+            );
+
+        const cancelRoleBtn =
+            document.getElementById(
+                "cancelRoleBtn"
+            );
+
+        const roleForm =
+            document.getElementById(
+                "roleForm"
+            );
+
+        const roleModalMessage =
+            document.getElementById(
+                "roleModalMessage"
+            );
+
+
+        function openRoleModal() {
+
+            clearModalMessage(
+                roleModalMessage
+            );
+
+            openModal(
+                roleModal
+            );
+
+        }
+
+
+        if (createRoleBtn) {
+
+            createRoleBtn.addEventListener(
+                "click",
+                openRoleModal
+            );
+
+        }
+
+
+        if (addRoleCard) {
+
+            addRoleCard.addEventListener(
+                "click",
+                openRoleModal
+            );
+
+        }
+
+
+        if (closeRoleModal) {
+
+            closeRoleModal.addEventListener(
+                "click",
+                function () {
+
+                    closeModal(
+                        roleModal
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (cancelRoleBtn) {
+
+            cancelRoleBtn.addEventListener(
+                "click",
+                function () {
+
+                    closeModal(
+                        roleModal
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================================================
+           ROLE STORAGE
+        ========================================================== */
+
+        function getSavedRoles() {
+
+            return JSON.parse(
+                localStorage.getItem(
+                    "techSparkRoles"
+                ) || "[]"
+            );
+
+        }
+
+
+        function saveRoles(roles) {
+
+            localStorage.setItem(
+                "techSparkRoles",
+                JSON.stringify(roles)
+            );
+
+        }
+
+
+        /* =========================================================
+           CREATE ROLE
+        ========================================================== */
+
+        if (roleForm) {
+
+            roleForm.addEventListener(
+                "submit",
+                function (event) {
+
+                    event.preventDefault();
+
+
+                    const name =
+                        document
+                            .getElementById(
+                                "roleName"
+                            )
+                            .value.trim();
+
+
+                    const description =
+                        document
+                            .getElementById(
+                                "roleDescription"
+                            )
+                            .value.trim();
+
+
+                    const competencyText =
+                        document
+                            .getElementById(
+                                "roleCompetencies"
+                            )
+                            .value.trim();
+
+
+                    const createdDate =
+                        document
+                            .getElementById(
+                                "roleCreatedDate"
+                            )
+                            .value;
+
+
+                    const targetScore =
+                        document
+                            .getElementById(
+                                "roleScore"
+                            )
+                            .value;
+
+
+                    if (
+                        !name ||
+                        !description ||
+                        !competencyText
+                    ) {
+
+                        showModalMessage(
+                            roleModalMessage,
+                            "Please fill all required fields.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    const roles =
+                        getSavedRoles();
+
+
+                    const exists =
+                        roles.some(
+                            function (role) {
+
+                                return role.name
+                                    .toLowerCase() ===
+                                    name.toLowerCase();
+
+                            }
+                        );
+
+
+                    if (exists) {
+
+                        showModalMessage(
+                            roleModalMessage,
+                            "This role already exists.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    const competencies =
+                        competencyText
+                            .split(",")
+                            .map(function (item) {
+
+                                return item.trim();
+
+                            })
+                            .filter(Boolean);
+
+
+                    const role = {
+
+                        id:
+                            Date.now(),
+
+                        name:
+                            name,
+
+                        description:
+                            description,
+
+                        competencies:
+                            competencies,
+
+                        createdDate:
+                            createdDate,
+
+                        score:
+                            targetScore || 70
+
+                    };
+
+
+                    roles.push(
+                        role
+                    );
+
+                    saveRoles(
+                        roles
+                    );
+
+
+                    addRoleCardToDashboard(
+                        role
+                    );
+
+
+                    loadRolesIntoEmployeeDropdown();
+
+
+                    showModalMessage(
+                        roleModalMessage,
+                        "Role created successfully.",
+                        "success"
+                    );
+
+
+                    roleForm.reset();
+
+
+                    setTimeout(
+                        function () {
+
+                            closeModal(
+                                roleModal
+                            );
+
+                            clearModalMessage(
+                                roleModalMessage
+                            );
+
+                        },
+                        700
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================================================
+           ADD ROLE CARD
+        ========================================================== */
+
+        function addRoleCardToDashboard(
+            role
+        ) {
+
+            const rolesGrid =
+                document.getElementById(
+                    "rolesGrid"
+                );
+
+            if (!rolesGrid) return;
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+            card.className =
+                "role-card visible";
+
+
+            const skillsHtml =
+                role.competencies
+                    .slice(0, 5)
+                    .map(function (skill) {
+
+                        return `
+                            <span>
+                                ${escapeHtml(skill)}
+                            </span>
+                        `;
+
+                    })
+                    .join("");
+
+
+            card.innerHTML = `
+
+                <div class="role-icon">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+
+                <div class="role-info">
+
+                    <h3>
+                        ${escapeHtml(role.name)}
+                    </h3>
+
+                    <p>
+                        0 employees
+                    </p>
+
+                </div>
+
+                <div class="role-score">
+                    ${escapeHtml(role.score)}%
+                </div>
+
+                <div class="role-skills">
+                    ${skillsHtml}
+                </div>
+
+                <button
+                    type="button"
+                    class="role-action">
+
+                    Manage Competencies
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                </button>
+
+            `;
+
+
+            rolesGrid.insertBefore(
+                card,
+                addRoleCard
+            );
+
+        }
+
+
+        /* =========================================================
+           LOAD SAVED DATA
+        ========================================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                loadRolesIntoEmployeeDropdown();
+
+                getSavedEmployees()
+                    .forEach(function (employee) {
+
+                        addEmployeeRow(
+                            employee
+                        );
+
+                    });
+
+
+                getSavedRoles()
+                    .forEach(function (role) {
+
+                        addRoleCardToDashboard(
+                            role
+                        );
+
+                    });
+
+
+                updateEmployeeCounts();
+
+
+                const today =
+                    new Date()
+                        .toISOString()
+                        .split("T")[0];
+
+
+                const joiningDate =
+                    document.getElementById(
+                        "employeeJoiningDate"
+                    );
+
+                const createdDate =
+                    document.getElementById(
+                        "roleCreatedDate"
+                    );
+
+
+                if (joiningDate) {
+                    joiningDate.value =
+                        today;
+                }
+
+                if (createdDate) {
+                    createdDate.value =
+                        today;
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           CLOSE MODALS
+        ========================================================== */
+
+        document
+            .querySelectorAll(".modal-overlay")
+            .forEach(function (overlay) {
+
+                overlay.addEventListener(
+                    "click",
+                    function (event) {
+
+                        if (
+                            event.target ===
+                            overlay
+                        ) {
+
+                            closeModal(
+                                overlay
+                            );
+
+                        }
+
+                    }
+                );
+
+            });
+
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    closeModal(
+                        employeeModal
+                    );
+
+                    closeModal(
+                        roleModal
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           STAT ANIMATION
+        ========================================================== */
+
         function animateNumbers() {
 
             document
-                .querySelectorAll(".stat-card strong")
+                .querySelectorAll(
+                    ".stat-card strong"
+                )
                 .forEach(function (element) {
 
                     const original =
                         element.textContent.trim();
 
                     const match =
-                        original.match(/(\d+)/);
+                        original.match(
+                            /(\d+)/
+                        );
 
                     if (!match) return;
 
                     const target =
-                        parseInt(match[1]);
+                        parseInt(
+                            match[1]
+                        );
 
                     if (target > 5000) return;
 
                     let current = 0;
 
                     const increment =
-                        Math.max(1, Math.ceil(target / 35));
+                        Math.max(
+                            1,
+                            Math.ceil(
+                                target / 35
+                            )
+                        );
 
                     const timer =
-                        setInterval(function () {
+                        setInterval(
+                            function () {
 
-                            current += increment;
+                                current +=
+                                    increment;
 
-                            if (current >= target) {
+                                if (
+                                    current >=
+                                    target
+                                ) {
 
-                                current = target;
+                                    current =
+                                        target;
 
-                                clearInterval(timer);
+                                    clearInterval(
+                                        timer
+                                    );
 
-                            }
+                                }
 
-                            element.textContent =
-                                current +
-                                original.replace(/\d+/, "");
+                                element.textContent =
+                                    current +
+                                    original.replace(
+                                        /\d+/,
+                                        ""
+                                    );
 
-                        }, 25);
+                            },
+                            25
+                        );
 
                 });
 
         }
 
 
-        setTimeout(animateNumbers, 400);
+        setTimeout(
+            animateNumbers,
+            400
+        );
 
 
+        /* =========================================================
+           INTERSECTION ANIMATION
+        ========================================================== */
 
-        /*
-         * Intersection animation
-         */
         const observer =
             new IntersectionObserver(
                 function (entries) {
 
-                    entries.forEach(function (entry) {
+                    entries.forEach(
+                        function (entry) {
 
-                        if (entry.isIntersecting) {
+                            if (
+                                entry.isIntersecting
+                            ) {
 
-                            entry.target.classList.add("visible");
+                                entry.target
+                                    .classList
+                                    .add(
+                                        "visible"
+                                    );
+
+                            }
 
                         }
-
-                    });
+                    );
 
                 },
                 {
@@ -2744,171 +4704,70 @@
             )
             .forEach(function (element) {
 
-                observer.observe(element);
+                observer.observe(
+                    element
+                );
 
             });
 
 
+        /* =========================================================
+           MOBILE MENU
+        ========================================================== */
 
-        /*
-         * Material upload preview
-         */
-        const materialFile =
-            document.getElementById("materialFile");
-
-        const selectedFileCard =
-            document.getElementById("selectedFileCard");
-
-        const selectedFileName =
-            document.getElementById("selectedFileName");
-
-        const selectedFileSize =
-            document.getElementById("selectedFileSize");
-
-        const removeFileBtn =
-            document.getElementById("removeFileBtn");
-
-
-        if (materialFile) {
-
-            materialFile.addEventListener("change", function () {
-
-                const file = this.files[0];
-
-                if (!file) return;
-
-                selectedFileName.textContent =
-                    file.name;
-
-                selectedFileSize.textContent =
-                    (file.size / 1024 / 1024).toFixed(2) +
-                    " MB";
-
-                selectedFileCard.style.display =
-                    "flex";
-
-            });
-
-        }
-
-
-        if (removeFileBtn) {
-
-            removeFileBtn.addEventListener("click", function () {
-
-                materialFile.value = "";
-
-                selectedFileCard.style.display =
-                    "none";
-
-            });
-
-        }
-
-
-
-        /*
-         * Drop zone
-         */
-        const dropZone =
-            document.getElementById("uploadDropZone");
-
-
-        if (dropZone && materialFile) {
-
-            dropZone.addEventListener(
-                "dragover",
-                function (event) {
-
-                    event.preventDefault();
-
-                    dropZone.classList.add("dragging");
-
-                }
-            );
-
-
-            dropZone.addEventListener(
-                "dragleave",
-                function () {
-
-                    dropZone.classList.remove("dragging");
-
-                }
-            );
-
-
-            dropZone.addEventListener(
-                "drop",
-                function (event) {
-
-                    event.preventDefault();
-
-                    dropZone.classList.remove("dragging");
-
-                    if (
-                        event.dataTransfer.files &&
-                        event.dataTransfer.files.length
-                    ) {
-
-                        materialFile.files =
-                            event.dataTransfer.files;
-
-                        materialFile.dispatchEvent(
-                            new Event("change")
-                        );
-
-                    }
-
-                }
-            );
-
-        }
-
-
-
-        /*
-         * Mobile menu
-         */
         const mobileMenuBtn =
-            document.querySelector(".mobile-menu-btn");
+            document.querySelector(
+                ".mobile-menu-btn"
+            );
 
 
         if (mobileMenuBtn) {
 
-            mobileMenuBtn.addEventListener("click", function () {
+            mobileMenuBtn.addEventListener(
+                "click",
+                function () {
 
-                document
-                    .querySelector(".admin-sidebar")
-                    .classList.toggle("mobile-open");
+                    document
+                        .querySelector(
+                            ".admin-sidebar"
+                        )
+                        .classList
+                        .toggle(
+                            "mobile-open"
+                        );
 
-            });
+                }
+            );
 
         }
 
 
-
-        /*
-         * Close sidebar after mobile navigation
-         */
         document
-            .querySelectorAll(".admin-nav-item")
+            .querySelectorAll(
+                ".admin-nav-item"
+            )
             .forEach(function (item) {
 
-                item.addEventListener("click", function () {
+                item.addEventListener(
+                    "click",
+                    function () {
 
-                    const sidebar =
-                        document.querySelector(".admin-sidebar");
+                        const sidebar =
+                            document.querySelector(
+                                ".admin-sidebar"
+                            );
 
-                    if (sidebar) {
+                        if (sidebar) {
 
-                        sidebar.classList.remove(
-                            "mobile-open"
-                        );
+                            sidebar.classList
+                                .remove(
+                                    "mobile-open"
+                                );
+
+                        }
 
                     }
-
-                });
+                );
 
             });
 

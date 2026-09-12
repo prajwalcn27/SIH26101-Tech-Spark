@@ -1,542 +1,372 @@
 /* =========================================================
-   TECH SPARK - AUTHENTICATION
-   Employee / Admin Login
-========================================================= */
+   TECH SPARK - LANDING PAGE JAVASCRIPT
+   ========================================================= */
 
+   document.addEventListener("DOMContentLoaded", () => {
 
-/* =========================================================
-   SELECT ROLE
-========================================================= */
+    /* =====================================================
+       NAVBAR SCROLL EFFECT
+       ===================================================== */
 
-function selectRole(role) {
+    const navbar = document.querySelector(".navbar");
 
-    // Remove active state from all role buttons
-    const roleButtons = document.querySelectorAll(".role-option");
+    function handleNavbar() {
 
-    roleButtons.forEach(function (button) {
-        button.classList.remove("active");
-    });
+        if (!navbar) return;
 
-
-    // Add active state to selected role
-    const selectedButton = document.querySelector(
-        '.role-option[data-role="' + role + '"]'
-    );
-
-    if (selectedButton) {
-        selectedButton.classList.add("active");
-    }
-
-
-    // Update hidden role field
-    const selectedRole = document.getElementById("selectedRole");
-
-    if (selectedRole) {
-        selectedRole.value = role;
-    }
-}
-
-
-
-/* =========================================================
-   NORMAL LOGIN
-========================================================= */
-
-function handleLogin(event) {
-
-    event.preventDefault();
-
-
-    // Get form values
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const roleInput = document.getElementById("selectedRole");
-    const rememberInput = document.getElementById("remember");
-
-
-    if (!emailInput || !passwordInput || !roleInput) {
-        return;
-    }
-
-
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-    const role = roleInput.value;
-
-
-    // Basic validation
-    if (!email) {
-
-        showLoginMessage(
-            "Please enter your email address.",
-            "error"
-        );
-
-        emailInput.focus();
-
-        return;
-    }
-
-
-    if (!password) {
-
-        showLoginMessage(
-            "Please enter your password.",
-            "error"
-        );
-
-        passwordInput.focus();
-
-        return;
-    }
-
-
-    // Validate email format
-    const emailPattern =
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
-    if (!emailPattern.test(email)) {
-
-        showLoginMessage(
-            "Please enter a valid email address.",
-            "error"
-        );
-
-        emailInput.focus();
-
-        return;
-    }
-
-
-    // Create temporary user object
-    // Backend authentication can replace this later.
-    const user = {
-
-        email: email,
-
-        role: role,
-
-        name:
-            role === "admin"
-                ? "Admin User"
-                : "Employee User",
-
-        remember:
-            rememberInput
-                ? rememberInput.checked
-                : false,
-
-        loginTime:
-            new Date().toISOString()
-
-    };
-
-
-    // Save login information
-    localStorage.setItem(
-        "currentUser",
-        JSON.stringify(user)
-    );
-
-
-    // Show success message
-    showLoginMessage(
-        "Login successful. Redirecting...",
-        "success"
-    );
-
-
-    // Redirect based on role
-    setTimeout(function () {
-
-        redirectByRole(role);
-
-    }, 500);
-}
-
-
-
-/* =========================================================
-   DEMO LOGIN
-========================================================= */
-
-function demoLogin() {
-
-    const roleElement =
-        document.getElementById("selectedRole");
-
-
-    const role =
-        roleElement
-            ? roleElement.value
-            : "employee";
-
-
-    // Create demo user
-    const demoUser = {
-
-        email:
-            role === "admin"
-                ? "admin@techspark.demo"
-                : "employee@techspark.demo",
-
-        role: role,
-
-        name:
-            role === "admin"
-                ? "Admin User"
-                : "Employee User",
-
-        demo: true,
-
-        loginTime:
-            new Date().toISOString()
-
-    };
-
-
-    // Save demo user
-    localStorage.setItem(
-        "currentUser",
-        JSON.stringify(demoUser)
-    );
-
-
-    // Redirect
-    redirectByRole(role);
-}
-
-
-
-/* =========================================================
-   REDIRECT BASED ON ROLE
-========================================================= */
-
-function redirectByRole(role) {
-
-    if (role === "admin") {
-
-        window.location.href =
-            "admin/dashboard.html";
-
-    } else {
-
-        window.location.href =
-            "employee/dashboard.html";
-
-    }
-}
-
-
-
-/* =========================================================
-   SHOW LOGIN MESSAGE
-========================================================= */
-
-function showLoginMessage(message, type) {
-
-    const box =
-        document.getElementById("loginMessage");
-
-
-    if (!box) {
-        return;
-    }
-
-
-    box.textContent = message;
-
-
-    // Reset classes
-    box.className =
-        "login-message-box " + type;
-
-
-    // Automatically remove message after a few seconds
-    setTimeout(function () {
-
-        if (box) {
-
-            box.textContent = "";
-            box.className = "login-message-box";
-
-        }
-
-    }, 4000);
-}
-
-
-
-/* =========================================================
-   GET CURRENT USER
-========================================================= */
-
-function getCurrentUser() {
-
-    const user =
-        localStorage.getItem("currentUser");
-
-
-    if (!user) {
-        return null;
-    }
-
-
-    try {
-
-        return JSON.parse(user);
-
-    } catch (error) {
-
-        console.error(
-            "Invalid user data:",
-            error
-        );
-
-        localStorage.removeItem("currentUser");
-
-        return null;
-    }
-}
-
-
-
-/* =========================================================
-   CHECK LOGIN
-========================================================= */
-
-function isLoggedIn() {
-
-    const user = getCurrentUser();
-
-    return user !== null;
-}
-
-
-
-/* =========================================================
-   REQUIRE LOGIN
-========================================================= */
-
-function requireLogin(requiredRole) {
-
-    const user = getCurrentUser();
-
-
-    // User is not logged in
-    if (!user) {
-
-        window.location.href =
-            "../../pages/login.html";
-
-        return false;
-    }
-
-
-    // Check required role
-    if (
-        requiredRole &&
-        user.role !== requiredRole
-    ) {
-
-        alert(
-            "Unauthorized access.\n\n" +
-            "This page is available only for " +
-            requiredRole + " users."
-        );
-
-
-        // Redirect to correct dashboard
-        if (user.role === "admin") {
-
-            window.location.href =
-                "../../pages/admin/dashboard.html";
-
+        if (window.scrollY > 30) {
+            navbar.classList.add("scrolled");
         } else {
-
-            window.location.href =
-                "../../pages/employee/dashboard.html";
-
+            navbar.classList.remove("scrolled");
         }
-
-
-        return false;
     }
 
+    window.addEventListener("scroll", handleNavbar);
 
-    return true;
-}
+    handleNavbar();
 
 
+    /* =====================================================
+       SMOOTH SCROLL
+       ===================================================== */
 
-/* =========================================================
-   LOGOUT
-========================================================= */
+    const navigationLinks = document.querySelectorAll(
+        'a[href^="#"]'
+    );
 
-function logout() {
+    navigationLinks.forEach(link => {
 
-    // Remove current user
-    localStorage.removeItem("currentUser");
+        link.addEventListener("click", function (event) {
 
+            const targetId = this.getAttribute("href");
 
-    // Redirect to login page
-    window.location.href =
-        "../../pages/login.html";
-}
-
-
-
-/* =========================================================
-   GET USER NAME
-========================================================= */
-
-function getUserName() {
-
-    const user = getCurrentUser();
-
-
-    if (!user) {
-        return "User";
-    }
-
-
-    return user.name || "User";
-}
-
-
-
-/* =========================================================
-   GET USER EMAIL
-========================================================= */
-
-function getUserEmail() {
-
-    const user = getCurrentUser();
-
-
-    if (!user) {
-        return "";
-    }
-
-
-    return user.email || "";
-}
-
-
-
-/* =========================================================
-   GET USER ROLE
-========================================================= */
-
-function getUserRole() {
-
-    const user = getCurrentUser();
-
-
-    if (!user) {
-        return "";
-    }
-
-
-    return user.role || "";
-}
-
-
-
-/* =========================================================
-   DISPLAY USER INFORMATION
-========================================================= */
-
-function loadUserInformation() {
-
-    const user = getCurrentUser();
-
-
-    if (!user) {
-        return;
-    }
-
-
-    // User name
-    const nameElements =
-        document.querySelectorAll(
-            "[data-user-name]"
-        );
-
-
-    nameElements.forEach(function (element) {
-
-        element.textContent =
-            user.name || "User";
-
-    });
-
-
-    // User email
-    const emailElements =
-        document.querySelectorAll(
-            "[data-user-email]"
-        );
-
-
-    emailElements.forEach(function (element) {
-
-        element.textContent =
-            user.email || "";
-
-    });
-
-
-    // User role
-    const roleElements =
-        document.querySelectorAll(
-            "[data-user-role]"
-        );
-
-
-    roleElements.forEach(function (element) {
-
-        element.textContent =
-            user.role || "";
-
-    });
-}
-
-
-
-/* =========================================================
-   LOGIN PAGE INITIALIZATION
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        // Default role = employee
-        const selectedRole =
-            document.getElementById(
-                "selectedRole"
-            );
-
-
-        if (selectedRole) {
-
-            if (!selectedRole.value) {
-
-                selectedRole.value =
-                    "employee";
-
+            if (!targetId || targetId === "#") {
+                return;
             }
 
-            selectRole(
-                selectedRole.value
-            );
+            const target = document.querySelector(targetId);
+
+            if (!target) {
+                return;
+            }
+
+            event.preventDefault();
+
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        });
+
+    });
+
+
+    /* =====================================================
+       ACTIVE NAVIGATION
+       ===================================================== */
+
+    const sections = document.querySelectorAll("section[id]");
+    const navItems = document.querySelectorAll(".nav-links a");
+
+    const sectionObserver = new IntersectionObserver(
+        entries => {
+
+            entries.forEach(entry => {
+
+                if (!entry.isIntersecting) {
+                    return;
+                }
+
+                const currentSection = entry.target.id;
+
+                navItems.forEach(link => {
+
+                    link.classList.remove("active");
+
+                    const href = link.getAttribute("href");
+
+                    if (href === `#${currentSection}`) {
+                        link.classList.add("active");
+                    }
+
+                });
+
+            });
+
+        },
+        {
+            threshold: 0.35
         }
+    );
+
+    sections.forEach(section => {
+        sectionObserver.observe(section);
+    });
 
 
-        // Load user information if dashboard
-        loadUserInformation();
+    /* =====================================================
+       SCROLL REVEAL ANIMATION
+       ===================================================== */
+
+    const animatedElements = document.querySelectorAll(
+        ".process-step, .difference-card, .assistant-card, .impact-item"
+    );
+
+    const revealObserver = new IntersectionObserver(
+        entries => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add("revealed");
+
+                    revealObserver.unobserve(entry.target);
+
+                }
+
+            });
+
+        },
+        {
+            threshold: 0.15
+        }
+    );
+
+    animatedElements.forEach(element => {
+        revealObserver.observe(element);
+    });
+
+
+    /* =====================================================
+       DASHBOARD HOVER EFFECT
+       ===================================================== */
+
+    const dashboard = document.querySelector(
+        ".dashboard-window"
+    );
+
+    if (dashboard) {
+
+        dashboard.addEventListener(
+            "mousemove",
+            event => {
+
+                const rect = dashboard.getBoundingClientRect();
+
+                const x =
+                    event.clientX - rect.left;
+
+                const y =
+                    event.clientY - rect.top;
+
+                const rotateY =
+                    ((x / rect.width) - 0.5) * 3;
+
+                const rotateX =
+                    ((y / rect.height) - 0.5) * -3;
+
+                dashboard.style.transform =
+                    `perspective(1200px)
+                     rotateX(${rotateX}deg)
+                     rotateY(${rotateY}deg)`;
+
+            }
+        );
+
+        dashboard.addEventListener(
+            "mouseleave",
+            () => {
+
+                dashboard.style.transform =
+                    "perspective(1200px) rotateX(0deg) rotateY(0deg)";
+
+            }
+        );
 
     }
-);
+
+
+    /* =====================================================
+       ROBOT FLOATING ANIMATION
+       ===================================================== */
+
+    const robot = document.querySelector(
+        ".hero-robot"
+    );
+
+    if (robot) {
+
+        let direction = 1;
+        let position = 0;
+
+        function animateRobot() {
+
+            position += 0.15 * direction;
+
+            if (position > 6) {
+                direction = -1;
+            }
+
+            if (position < -6) {
+                direction = 1;
+            }
+
+            robot.style.transform =
+                `translateX(-50%) translateY(${position}px)`;
+
+            requestAnimationFrame(animateRobot);
+
+        }
+
+        animateRobot();
+
+    }
+
+
+    /* =====================================================
+       LOADING DOT ANIMATION
+       ===================================================== */
+
+    const dots = document.querySelectorAll(
+        ".loading-dots span"
+    );
+
+    dots.forEach((dot, index) => {
+
+        dot.style.animation =
+            `techSparkPulse 1.4s ${index * 0.2}s infinite`;
+
+    });
+
+
+    /* =====================================================
+       ADD PULSE ANIMATION
+       ===================================================== */
+
+    const animationStyle = document.createElement("style");
+
+    animationStyle.textContent = `
+
+        @keyframes techSparkPulse {
+
+            0%,
+            100% {
+                opacity: .25;
+                transform: scale(.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.15);
+            }
+
+        }
+
+        .navbar {
+            transition:
+                background .3s ease,
+                backdrop-filter .3s ease,
+                padding .3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(1, 22, 14, .88);
+            backdrop-filter: blur(14px);
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+        .process-step,
+        .difference-card,
+        .assistant-card,
+        .impact-item {
+            opacity: 0;
+            transform: translateY(30px);
+            transition:
+                opacity .7s ease,
+                transform .7s ease;
+        }
+
+        .process-step.revealed,
+        .difference-card.revealed,
+        .assistant-card.revealed,
+        .impact-item.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dashboard-window {
+            transition:
+                transform .25s ease,
+                box-shadow .25s ease;
+        }
+
+        .dashboard-window:hover {
+            box-shadow:
+                0 35px 80px rgba(0, 0, 0, .45),
+                0 0 50px rgba(50, 235, 150, .12);
+        }
+
+        .primary-btn,
+        .secondary-btn,
+        .signin-btn,
+        .get-started {
+            transition:
+                transform .25s ease,
+                box-shadow .25s ease,
+                background .25s ease;
+        }
+
+        .primary-btn:hover,
+        .secondary-btn:hover,
+        .signin-btn:hover,
+        .get-started:hover {
+            transform: translateY(-2px);
+        }
+
+    `;
+
+    document.head.appendChild(animationStyle);
+
+
+    /* =====================================================
+       INITIAL HASH SCROLL
+       ===================================================== */
+
+    if (window.location.hash) {
+
+        const target = document.querySelector(
+            window.location.hash
+        );
+
+        if (target) {
+
+            setTimeout(() => {
+
+                target.scrollIntoView({
+                    behavior: "smooth"
+                });
+
+            }, 300);
+
+        }
+
+    }
+
+
+    /* =====================================================
+       CONSOLE MESSAGE
+       ===================================================== */
+
+    console.log(
+        "%c Tech Spark ",
+        "background:#42e99c;color:#03251a;font-weight:bold;padding:6px 10px;border-radius:5px;"
+    );
+
+    console.log(
+        "AI-powered Competency Intelligence Platform"
+    );
+
+});

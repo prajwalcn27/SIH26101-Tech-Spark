@@ -1,63 +1,103 @@
 /* =========================================================
-   TECH SPARK - AUTHENTICATION JAVASCRIPT
-   SIH26101 - Smart India Hackathon 2026
-========================================================= */
+   TECH SPARK
+   AUTHENTICATION JAVASCRIPT
+   ========================================================= */
 
 
 /* =========================================================
-   ROLE SELECTION
-========================================================= */
+   1. ROLE SELECTION
+   ========================================================= */
 
-function selectRole(role) {
+   function selectRole(role) {
 
-    const roleButtons =
-        document.querySelectorAll(".role-option");
-
-    const selectedRole =
+    const roleInput =
         document.getElementById("selectedRole");
+
+    if (roleInput) {
+        roleInput.value = role;
+    }
 
 
     /*
-     * Update active button
+     * Remove active state from all role cards
      */
-    roleButtons.forEach(function (button) {
 
-        button.classList.remove("active");
+    const roleCards =
+        document.querySelectorAll(
+            ".role-card"
+        );
 
-        if (button.dataset.role === role) {
-            button.classList.add("active");
-        }
+    roleCards.forEach(function (card) {
+
+        card.classList.remove("active");
 
     });
 
 
     /*
-     * Store selected role
+     * Find selected role card
      */
-    if (selectedRole) {
-        selectedRole.value = role;
+
+    const selectedCard =
+        document.querySelector(
+            '[data-role="' + role + '"]'
+        );
+
+    if (selectedCard) {
+
+        selectedCard.classList.add(
+            "active"
+        );
+
     }
 
 
     /*
-     * Store temporarily
+     * Update visible role text
      */
-    sessionStorage.setItem(
-        "selectedRole",
-        role
-    );
+
+    const roleText =
+        document.getElementById(
+            "selectedRoleText"
+        );
+
+    if (roleText) {
+
+        if (role === "admin") {
+
+            roleText.textContent =
+                "Administrator";
+
+        } else {
+
+            roleText.textContent =
+                "Employee";
+
+        }
+
+    }
 
 }
 
 
 /* =========================================================
-   LOGIN FORM
-========================================================= */
+   2. LOGIN
+   ========================================================= */
 
 function handleLogin(event) {
 
-    event.preventDefault();
+    /*
+     * Prevent normal form submission
+     */
 
+    if (event) {
+        event.preventDefault();
+    }
+
+
+    /*
+     * Get form elements
+     */
 
     const emailInput =
         document.getElementById("email");
@@ -65,30 +105,33 @@ function handleLogin(event) {
     const passwordInput =
         document.getElementById("password");
 
-    const selectedRoleInput =
+    const roleInput =
         document.getElementById("selectedRole");
 
 
-    if (!emailInput || !passwordInput) {
-        return;
-    }
-
+    /*
+     * Get values safely
+     */
 
     const email =
-        emailInput.value.trim();
+        emailInput
+            ? emailInput.value.trim()
+            : "";
 
     const password =
-        passwordInput.value;
+        passwordInput
+            ? passwordInput.value.trim()
+            : "";
 
-    const role =
-        selectedRoleInput
-            ? selectedRoleInput.value
+    const selectedRole =
+        roleInput
+            ? roleInput.value
             : "employee";
 
 
-    /* -----------------------------------------------------
-       Basic validation
-    ----------------------------------------------------- */
+    /*
+     * Validate email
+     */
 
     if (!email) {
 
@@ -97,24 +140,39 @@ function handleLogin(event) {
             "error"
         );
 
-        emailInput.focus();
+        if (emailInput) {
+            emailInput.focus();
+        }
 
-        return;
+        return false;
     }
 
 
-    if (!isValidEmail(email)) {
+    /*
+     * Validate email format
+     */
+
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
 
         showLoginMessage(
             "Please enter a valid email address.",
             "error"
         );
 
-        emailInput.focus();
+        if (emailInput) {
+            emailInput.focus();
+        }
 
-        return;
+        return false;
     }
 
+
+    /*
+     * Validate password
+     */
 
     if (!password) {
 
@@ -123,11 +181,17 @@ function handleLogin(event) {
             "error"
         );
 
-        passwordInput.focus();
+        if (passwordInput) {
+            passwordInput.focus();
+        }
 
-        return;
+        return false;
     }
 
+
+    /*
+     * Minimum password validation
+     */
 
     if (password.length < 4) {
 
@@ -136,129 +200,130 @@ function handleLogin(event) {
             "error"
         );
 
-        passwordInput.focus();
-
-        return;
-    }
-
-
-    /*
-     * Show loading state
-     */
-    const loginButton =
-        document.querySelector(".login-button");
-
-
-    if (loginButton) {
-
-        loginButton.disabled = true;
-
-        loginButton.classList.add("loading");
-
-        const buttonText =
-            loginButton.querySelector("span:first-child");
-
-        if (buttonText) {
-            buttonText.textContent = "Signing in...";
+        if (passwordInput) {
+            passwordInput.focus();
         }
 
+        return false;
     }
 
 
     /*
-     * Demo frontend authentication
-     *
-     * This will later be replaced with
-     * Flask + MySQL authentication.
+     * Get user name
      */
-    setTimeout(function () {
 
-        const userName =
-            getNameFromEmail(email);
-
-
-        const user = {
-
-            name: userName,
-
-            email: email,
-
-            role: role,
-
-            loginTime: new Date().toISOString(),
-
-            remember:
-                document.getElementById("remember")
-                    ? document.getElementById("remember").checked
-                    : false
-
-        };
+    const name =
+        createUserName(email);
 
 
-        /*
-         * Save current user
-         */
+    /*
+     * Create user object
+     *
+     * This is frontend/demo authentication.
+     * The Flask backend can replace this later
+     * with real authentication.
+     */
+
+    const user = {
+
+        name: name,
+
+        email: email,
+
+        role:
+            selectedRole === "admin"
+                ? "admin"
+                : "employee",
+
+        loginTime:
+            new Date().toISOString()
+
+    };
+
+
+    /*
+     * Save login session
+     */
+
+    try {
+
         localStorage.setItem(
-            "currentUser",
+            "techSparkUser",
             JSON.stringify(user)
         );
 
-
-        /*
-         * Save role
-         */
         localStorage.setItem(
-            "userRole",
-            role
+            "isLoggedIn",
+            "true"
         );
 
+    } catch (error) {
 
-        /*
-         * Show success
-         */
+        console.error(
+            "Unable to save login session:",
+            error
+        );
+
         showLoginMessage(
-            "Login successful. Redirecting...",
-            "success"
+            "Unable to save login session. Please check browser storage.",
+            "error"
         );
 
+        return false;
 
-        /*
-         * Redirect
-         */
-        setTimeout(function () {
-
-            redirectByRole(role);
-
-        }, 600);
+    }
 
 
-    }, 700);
+    /*
+     * Show success message
+     */
 
+    showLoginMessage(
+        "Login successful. Redirecting...",
+        "success"
+    );
+
+
+    /*
+     * Redirect
+     */
+
+    setTimeout(
+        function () {
+
+            redirectByRole(
+                user.role
+            );
+
+        },
+        500
+    );
+
+
+    return false;
 }
 
 
 /* =========================================================
-   DEMO LOGIN
-========================================================= */
+   3. DEMO LOGIN
+   ========================================================= */
 
-function demoLogin() {
+function demoLogin(role) {
 
     /*
-     * Find selected role
+     * Default role
      */
-    const selectedRole =
-        document.getElementById("selectedRole");
 
-
-    const role =
-        selectedRole
-            ? selectedRole.value
+    role =
+        role === "admin"
+            ? "admin"
             : "employee";
 
 
     /*
-     * Demo accounts
+     * Demo users
      */
+
     let user;
 
 
@@ -266,13 +331,14 @@ function demoLogin() {
 
         user = {
 
-            name: "System Administrator",
+            name: "Tech Spark Admin",
 
-            email: "admin@techspark.gov.in",
+            email: "admin@techspark.com",
 
             role: "admin",
 
-            loginTime: new Date().toISOString(),
+            loginTime:
+                new Date().toISOString(),
 
             demo: true
 
@@ -282,13 +348,14 @@ function demoLogin() {
 
         user = {
 
-            name: "Demo Employee",
+            name: "Tech Spark Employee",
 
-            email: "employee@techspark.gov.in",
+            email: "employee@techspark.com",
 
             role: "employee",
 
-            loginTime: new Date().toISOString(),
+            loginTime:
+                new Date().toISOString(),
 
             demo: true
 
@@ -298,58 +365,133 @@ function demoLogin() {
 
 
     /*
-     * Save demo user
+     * Save demo session
      */
-    localStorage.setItem(
-        "currentUser",
-        JSON.stringify(user)
-    );
 
+    try {
 
-    localStorage.setItem(
-        "userRole",
-        role
-    );
+        localStorage.setItem(
+            "techSparkUser",
+            JSON.stringify(user)
+        );
 
+        localStorage.setItem(
+            "isLoggedIn",
+            "true"
+        );
 
-    /*
-     * Show message
-     */
-    showLoginMessage(
-        "Demo mode activated. Redirecting...",
-        "success"
-    );
+    } catch (error) {
+
+        console.error(
+            "Demo login failed:",
+            error
+        );
+
+        return false;
+
+    }
 
 
     /*
      * Redirect
      */
-    setTimeout(function () {
 
-        redirectByRole(role);
-
-    }, 500);
+    redirectByRole(
+        role
+    );
 
 }
 
 
 /* =========================================================
-   REDIRECT BASED ON ROLE
-========================================================= */
+   4. REDIRECT BY ROLE
+   ========================================================= */
 
 function redirectByRole(role) {
 
+    /*
+     * Normalize role
+     */
+
+    role =
+        String(role || "")
+            .toLowerCase()
+            .trim();
+
+
+    /*
+     * Determine current page
+     */
+
+    const currentPath =
+        window.location.pathname
+            .replace(/\\/g, "/");
+
+
+    /*
+     * Admin dashboard
+     */
+
     if (role === "admin") {
 
+        if (
+            currentPath.includes(
+                "/pages/login.html"
+            ) ||
+            currentPath.endsWith(
+                "/index.html"
+            ) ||
+            currentPath === "/"
+        ) {
+
+            window.location.href =
+                "admin/dashboard.html";
+
+            return;
+
+        }
+
+
+        /*
+         * If already inside pages,
+         * use relative admin path.
+         */
+
+        if (
+            currentPath.includes(
+                "/pages/"
+            )
+        ) {
+
+            window.location.href =
+                "admin/dashboard.html";
+
+            return;
+
+        }
+
+
         window.location.href =
-            "admin/dashboard.html";
+            "pages/admin/dashboard.html";
 
         return;
 
     }
 
 
-    if (role === "employee") {
+    /*
+     * Employee dashboard
+     */
+
+    if (
+        currentPath.includes(
+            "/pages/login.html"
+        ) ||
+        currentPath.endsWith(
+            "/index.html"
+        ) ||
+        currentPath === "/"
+    ) {
 
         window.location.href =
             "employee/dashboard.html";
@@ -359,53 +501,126 @@ function redirectByRole(role) {
     }
 
 
-    /*
-     * Default
-     */
+    if (
+        currentPath.includes(
+            "/pages/"
+        )
+    ) {
+
+        window.location.href =
+            "employee/dashboard.html";
+
+        return;
+
+    }
+
+
     window.location.href =
-        "../index.html";
+        "pages/employee/dashboard.html";
 
 }
 
 
 /* =========================================================
-   LOGIN MESSAGE
-========================================================= */
+   5. LOGIN MESSAGE
+   ========================================================= */
 
-function showLoginMessage(message, type) {
+function showLoginMessage(
+    message,
+    type
+) {
 
-    const messageBox =
-        document.getElementById("loginMessage");
+    /*
+     * Try existing message container
+     */
+
+    let messageElement =
+        document.getElementById(
+            "loginMessage"
+        );
 
 
-    if (!messageBox) {
-        return;
+    /*
+     * If it does not exist,
+     * create one.
+     */
+
+    if (!messageElement) {
+
+        messageElement =
+            document.createElement(
+                "div"
+            );
+
+        messageElement.id =
+            "loginMessage";
+
+        const form =
+            document.querySelector(
+                "form"
+            );
+
+        if (form) {
+
+            form.prepend(
+                messageElement
+            );
+
+        } else {
+
+            document.body.prepend(
+                messageElement
+            );
+
+        }
+
     }
 
 
-    messageBox.textContent =
+    /*
+     * Set message
+     */
+
+    messageElement.textContent =
         message;
 
 
-    messageBox.className =
-        "login-message-box " + type;
+    /*
+     * Set message type
+     */
 
-
-    messageBox.style.display =
-        "block";
+    messageElement.className =
+        "login-message " +
+        (type || "info");
 
 
     /*
-     * Auto hide error messages
+     * Automatically remove
+     * temporary message
      */
-    if (type === "error") {
 
-        setTimeout(function () {
+    if (
+        type === "success" ||
+        type === "error"
+    ) {
 
-            messageBox.style.display =
-                "none";
+        setTimeout(
+            function () {
 
-        }, 4000);
+                if (
+                    messageElement &&
+                    messageElement.parentNode
+                ) {
+
+                    messageElement.classList.add(
+                        "message-hidden"
+                    );
+
+                }
+
+            },
+            4000
+        );
 
     }
 
@@ -413,68 +628,35 @@ function showLoginMessage(message, type) {
 
 
 /* =========================================================
-   EMAIL VALIDATION
-========================================================= */
-
-function isValidEmail(email) {
-
-    const emailPattern =
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    return emailPattern.test(email);
-
-}
-
-
-/* =========================================================
-   GET NAME FROM EMAIL
-========================================================= */
-
-function getNameFromEmail(email) {
-
-    const username =
-        email.split("@")[0];
-
-
-    if (!username) {
-        return "User";
-    }
-
-
-    /*
-     * Convert:
-     * prajwal.cn
-     *
-     * to:
-     * Prajwal Cn
-     */
-    return username
-        .replace(/[._-]+/g, " ")
-        .replace(/\b\w/g, function (letter) {
-            return letter.toUpperCase();
-        });
-
-}
-
-
-/* =========================================================
-   GET CURRENT USER
-========================================================= */
+   6. GET CURRENT USER
+   ========================================================= */
 
 function getCurrentUser() {
 
-    const userData =
-        localStorage.getItem("currentUser");
-
-
-    if (!userData) {
-        return null;
-    }
-
-
     try {
 
-        return JSON.parse(userData);
+        const storedUser =
+            localStorage.getItem(
+                "techSparkUser"
+            );
+
+        if (!storedUser) {
+            return null;
+        }
+
+        const user =
+            JSON.parse(
+                storedUser
+            );
+
+        if (
+            !user ||
+            typeof user !== "object"
+        ) {
+            return null;
+        }
+
+        return user;
 
     } catch (error) {
 
@@ -483,10 +665,6 @@ function getCurrentUser() {
             error
         );
 
-        localStorage.removeItem(
-            "currentUser"
-        );
-
         return null;
 
     }
@@ -495,116 +673,93 @@ function getCurrentUser() {
 
 
 /* =========================================================
-   CHECK LOGIN STATUS
-========================================================= */
+   7. CHECK LOGIN
+   ========================================================= */
 
 function isLoggedIn() {
 
     const user =
         getCurrentUser();
 
-    return user !== null;
+    const loginFlag =
+        localStorage.getItem(
+            "isLoggedIn"
+        );
+
+
+    return (
+        loginFlag === "true" &&
+        user !== null
+    );
 
 }
 
 
 /* =========================================================
-   GET USER ROLE
-========================================================= */
+   8. REQUIRE LOGIN
+   ========================================================= */
 
-function getUserRole() {
-
-    const user =
-        getCurrentUser();
-
-
-    if (!user) {
-        return null;
-    }
-
-
-    return user.role || null;
-
-}
-
-
-/* =========================================================
-   GET USER NAME
-========================================================= */
-
-function getUserName() {
-
-    const user =
-        getCurrentUser();
-
-
-    if (!user) {
-        return "User";
-    }
-
-
-    return user.name || "User";
-
-}
-
-
-/* =========================================================
-   GET USER EMAIL
-========================================================= */
-
-function getUserEmail() {
-
-    const user =
-        getCurrentUser();
-
-
-    if (!user) {
-        return "";
-
-    }
-
-
-    return user.email || "";
-
-}
-
-
-/* =========================================================
-   REQUIRE LOGIN
-========================================================= */
-
-function requireLogin(requiredRole) {
-
-    const user =
-        getCurrentUser();
-
+function requireLogin(
+    requiredRole
+) {
 
     /*
-     * No user logged in
+     * User is not logged in
      */
-    if (!user) {
 
-        window.location.href =
-            "../login.html";
+    if (!isLoggedIn()) {
+
+        redirectToLogin();
 
         return false;
 
     }
 
 
+    const user =
+        getCurrentUser();
+
+
     /*
-     * Check role
+     * If no role requirement,
+     * login is enough.
      */
+
+    if (!requiredRole) {
+        return true;
+    }
+
+
+    /*
+     * Normalize roles
+     */
+
+    const actualRole =
+        String(
+            user.role || ""
+        )
+            .toLowerCase()
+            .trim();
+
+    const expectedRole =
+        String(
+            requiredRole
+        )
+            .toLowerCase()
+            .trim();
+
+
+    /*
+     * Wrong role
+     */
+
     if (
-        requiredRole &&
-        user.role !== requiredRole
+        actualRole !== expectedRole
     ) {
 
-        /*
-         * Employee trying to access admin
-         * or admin trying to access employee
-         */
-        redirectByRole(user.role);
+        redirectByRole(
+            actualRole
+        );
 
         return false;
 
@@ -617,40 +772,249 @@ function requireLogin(requiredRole) {
 
 
 /* =========================================================
-   LOGOUT
-========================================================= */
+   9. REDIRECT TO LOGIN
+   ========================================================= */
 
-function logout() {
+function redirectToLogin() {
 
-    /*
-     * Remove authentication data
-     */
-    localStorage.removeItem(
-        "currentUser"
-    );
-
-    localStorage.removeItem(
-        "userRole"
-    );
-
-
-    sessionStorage.removeItem(
-        "selectedRole"
-    );
+    const path =
+        window.location.pathname
+            .replace(/\\/g, "/");
 
 
     /*
-     * Redirect to login
+     * Dashboard pages
      */
+
+    if (
+        path.includes(
+            "/pages/admin/"
+        ) ||
+        path.includes(
+            "/pages/employee/"
+        )
+    ) {
+
+        window.location.href =
+            "../login.html";
+
+        return;
+
+    }
+
+
+    /*
+     * Already inside pages
+     */
+
+    if (
+        path.includes(
+            "/pages/"
+        )
+    ) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    /*
+     * Root frontend
+     */
+
     window.location.href =
-        "../login.html";
+        "pages/login.html";
 
 }
 
 
 /* =========================================================
-   LOAD USER INFORMATION
-========================================================= */
+   10. LOGOUT
+   ========================================================= */
+
+function logout() {
+
+    try {
+
+        localStorage.removeItem(
+            "techSparkUser"
+        );
+
+        localStorage.removeItem(
+            "isLoggedIn"
+        );
+
+        /*
+         * Remove any temporary
+         * authentication data.
+         */
+
+        sessionStorage.clear();
+
+    } catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Redirect to login page
+     */
+
+    const path =
+        window.location.pathname
+            .replace(/\\/g, "/");
+
+
+    if (
+        path.includes(
+            "/pages/admin/"
+        ) ||
+        path.includes(
+            "/pages/employee/"
+        )
+    ) {
+
+        window.location.href =
+            "../login.html";
+
+        return;
+
+    }
+
+
+    if (
+        path.includes(
+            "/pages/"
+        )
+    ) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    window.location.href =
+        "pages/login.html";
+
+}
+
+
+/* =========================================================
+   11. GET USER NAME
+   ========================================================= */
+
+function getUserName() {
+
+    const user =
+        getCurrentUser();
+
+    if (!user) {
+        return "";
+    }
+
+    return user.name || "";
+
+}
+
+
+/* =========================================================
+   12. GET USER EMAIL
+   ========================================================= */
+
+function getUserEmail() {
+
+    const user =
+        getCurrentUser();
+
+    if (!user) {
+        return "";
+    }
+
+    return user.email || "";
+
+}
+
+
+/* =========================================================
+   13. GET USER ROLE
+   ========================================================= */
+
+function getUserRole() {
+
+    const user =
+        getCurrentUser();
+
+    if (!user) {
+        return "";
+    }
+
+    return user.role || "";
+
+}
+
+
+/* =========================================================
+   14. CREATE USER NAME
+   ========================================================= */
+
+function createUserName(
+    email
+) {
+
+    if (!email) {
+        return "Tech Spark User";
+    }
+
+
+    const username =
+        email
+            .split("@")[0]
+            .replace(/[._-]+/g, " ")
+            .trim();
+
+
+    if (!username) {
+        return "Tech Spark User";
+    }
+
+
+    return username
+        .split(" ")
+        .map(function (word) {
+
+            if (!word) {
+                return "";
+            }
+
+            return (
+                word
+                    .charAt(0)
+                    .toUpperCase() +
+                word
+                    .slice(1)
+                    .toLowerCase()
+            );
+
+        })
+        .join(" ");
+
+}
+
+
+/* =========================================================
+   15. LOAD USER INFORMATION
+   ========================================================= */
 
 function loadUserInformation() {
 
@@ -664,270 +1028,219 @@ function loadUserInformation() {
 
 
     /*
-     * User name
+     * Possible name elements
      */
-    document
-        .querySelectorAll("[data-user-name]")
-        .forEach(function (element) {
+
+    const nameElements =
+        document.querySelectorAll(
+            "[data-user-name]"
+        );
+
+    nameElements.forEach(
+        function (element) {
 
             element.textContent =
                 user.name || "User";
 
-        });
+        }
+    );
 
 
     /*
-     * User email
+     * Possible email elements
      */
-    document
-        .querySelectorAll("[data-user-email]")
-        .forEach(function (element) {
+
+    const emailElements =
+        document.querySelectorAll(
+            "[data-user-email]"
+        );
+
+    emailElements.forEach(
+        function (element) {
 
             element.textContent =
                 user.email || "";
 
-        });
+        }
+    );
 
 
     /*
-     * User role
+     * Possible role elements
      */
-    document
-        .querySelectorAll("[data-user-role]")
-        .forEach(function (element) {
 
-            if (user.role === "admin") {
+    const roleElements =
+        document.querySelectorAll(
+            "[data-user-role]"
+        );
 
-                element.textContent =
-                    "System Administrator";
-
-            } else {
-
-                element.textContent =
-                    "Employee";
-
-            }
-
-        });
-
-
-    /*
-     * User avatar
-     */
-    document
-        .querySelectorAll("[data-user-avatar]")
-        .forEach(function (element) {
+    roleElements.forEach(
+        function (element) {
 
             element.textContent =
-                getInitials(user.name);
-
-        });
-
-}
-
-
-/* =========================================================
-   GET USER INITIALS
-========================================================= */
-
-function getInitials(name) {
-
-    if (!name) {
-        return "U";
-    }
-
-
-    const words =
-        name.trim().split(/\s+/);
-
-
-    if (words.length === 1) {
-
-        return words[0]
-            .substring(0, 2)
-            .toUpperCase();
-
-    }
-
-
-    return (
-        words[0].charAt(0) +
-        words[words.length - 1].charAt(0)
-    ).toUpperCase();
-
-}
-
-
-/* =========================================================
-   RESTORE SELECTED ROLE
-========================================================= */
-
-function restoreSelectedRole() {
-
-    const savedRole =
-        sessionStorage.getItem(
-            "selectedRole"
-        );
-
-
-    if (!savedRole) {
-        return;
-    }
-
-
-    const roleInput =
-        document.getElementById(
-            "selectedRole"
-        );
-
-
-    if (roleInput) {
-
-        roleInput.value =
-            savedRole;
-
-    }
-
-
-    const roleButtons =
-        document.querySelectorAll(
-            ".role-option"
-        );
-
-
-    roleButtons.forEach(function (button) {
-
-        button.classList.remove("active");
-
-
-        if (
-            button.dataset.role ===
-            savedRole
-        ) {
-
-            button.classList.add("active");
+                user.role === "admin"
+                    ? "Administrator"
+                    : "Employee";
 
         }
+    );
 
-    });
+
+    /*
+     * Common IDs
+     */
+
+    const userName =
+        document.getElementById(
+            "userName"
+        );
+
+    if (userName) {
+
+        userName.textContent =
+            user.name || "User";
+
+    }
+
+
+    const userEmail =
+        document.getElementById(
+            "userEmail"
+        );
+
+    if (userEmail) {
+
+        userEmail.textContent =
+            user.email || "";
+
+    }
+
+
+    const userRole =
+        document.getElementById(
+            "userRole"
+        );
+
+    if (userRole) {
+
+        userRole.textContent =
+            user.role === "admin"
+                ? "Administrator"
+                : "Employee";
+
+    }
 
 }
 
 
 /* =========================================================
-   PASSWORD VISIBILITY
-========================================================= */
-
-function togglePassword() {
-
-    const password =
-        document.getElementById("password");
-
-
-    if (!password) {
-        return;
-    }
-
-
-    if (password.type === "password") {
-
-        password.type = "text";
-
-    } else {
-
-        password.type = "password";
-
-    }
-
-}
-
-
-/* =========================================================
-   AUTO INITIALIZATION
-========================================================= */
+   16. INITIALIZE AUTH PAGE
+   ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
         /*
-         * Load user information
+         * Load current user information
+         * if this page contains user fields.
          */
+
         loadUserInformation();
 
 
         /*
-         * Restore selected login role
+         * Login form
          */
-        restoreSelectedRole();
 
-
-        /*
-         * Add password toggle if
-         * a toggle button exists
-         */
-        const passwordToggle =
-            document.querySelector(
-                "[data-password-toggle]"
+        const loginForm =
+            document.getElementById(
+                "loginForm"
             );
 
 
-        if (passwordToggle) {
+        if (loginForm) {
 
-            passwordToggle.addEventListener(
-                "click",
-                togglePassword
+            loginForm.addEventListener(
+                "submit",
+                handleLogin
             );
 
         }
 
 
         /*
-         * Enter key support
+         * Logout buttons
          */
-        const passwordInput =
-            document.getElementById(
-                "password"
+
+        const logoutButtons =
+            document.querySelectorAll(
+                '[data-action="logout"], ' +
+                ".logout-btn, " +
+                "#logoutBtn"
             );
 
 
-        if (passwordInput) {
+        logoutButtons.forEach(
+            function (button) {
 
-            passwordInput.addEventListener(
-                "keydown",
-                function (event) {
+                button.addEventListener(
+                    "click",
+                    function (event) {
 
-                    if (event.key === "Enter") {
+                        event.preventDefault();
 
-                        const form =
-                            document.getElementById(
-                                "loginForm"
-                            );
-
-
-                        if (form) {
-
-                            /*
-                             * requestSubmit triggers
-                             * normal form validation
-                             */
-                            if (
-                                typeof form.requestSubmit ===
-                                "function"
-                            ) {
-
-                                form.requestSubmit();
-
-                            }
-
-                        }
+                        logout();
 
                     }
+                );
 
-                }
-            );
-
-        }
+            }
+        );
 
     }
 );
+
+
+/* =========================================================
+   17. EXPORT FUNCTIONS TO WINDOW
+   ========================================================= */
+
+window.selectRole =
+    selectRole;
+
+window.handleLogin =
+    handleLogin;
+
+window.demoLogin =
+    demoLogin;
+
+window.redirectByRole =
+    redirectByRole;
+
+window.showLoginMessage =
+    showLoginMessage;
+
+window.getCurrentUser =
+    getCurrentUser;
+
+window.isLoggedIn =
+    isLoggedIn;
+
+window.requireLogin =
+    requireLogin;
+
+window.logout =
+    logout;
+
+window.getUserName =
+    getUserName;
+
+window.getUserEmail =
+    getUserEmail;
+
+window.getUserRole =
+    getUserRole;
+
+window.loadUserInformation =
+    loadUserInformation;
