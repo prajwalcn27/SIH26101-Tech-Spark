@@ -1,4 +1,6 @@
 import json
+import os
+
 from topic_matcher import TopicMatcher
 
 
@@ -16,6 +18,9 @@ class RecommendationEngine:
             content_index_file
         )
 
+    # ---------------------------------------------------------
+    # GENERATE RECOMMENDATIONS
+    # ---------------------------------------------------------
     def generate_recommendations(
         self,
         gap_analysis,
@@ -28,174 +33,300 @@ class RecommendationEngine:
 
         if not gap_analysis:
 
-            print("❌ No gap analysis available.")
-
-            return []
-
-        weak_topics = gap_analysis.get(
-            "weak_topics",
-            []
-        )
-
-        if not weak_topics:
-
-            print(
-                "✅ No weak topics found. "
-                "No recommendations required."
-            )
+            print("❌ No gap analysis provided.")
 
             return []
 
         recommendations = []
 
-        for topic in weak_topics:
+        # -----------------------------------------------------
+        # READ GAP ANALYSIS
+        # -----------------------------------------------------
+        for gap in gap_analysis:
 
-            print(
-                f"\n🔎 Finding learning material "
-                f"for: {topic}"
+            # Support different possible field names
+            topic = (
+                gap.get("topic")
+                or gap.get("competency")
+                or gap.get("name")
             )
 
-            # Search relevant sections
+            if not topic:
+                continue
+
+            level = (
+                gap.get("level")
+                or gap.get("gap_level")
+                or gap.get("status")
+                or "UNKNOWN"
+            )
+
+            score = (
+                gap.get("score")
+                or gap.get("percentage")
+                or gap.get("competency_score")
+            )
+
+            # -------------------------------------------------
+            # SEARCH RELEVANT CONTENT
+            # -------------------------------------------------
             results = self.matcher.search(
                 topic,
                 top_k=top_k
             )
 
+            # -------------------------------------------------
+            # CREATE RECOMMENDATION
+            # -------------------------------------------------
+            topic_recommendation = {
+                "topic": topic,
+                "gap_level": level,
+                "current_score": score,
+                "recommended_materials": []
+            }
+
             for result in results:
 
-                recommendation = {
-
-                    "topic": topic,
+                topic_recommendation[
+                    "recommended_materials"
+                ].append({
 
                     "section_id": result.get(
                         "section_id"
                     ),
 
                     "pages": result.get(
-                        "pages"
+                        "pages",
+                        []
                     ),
 
-                    "score": result.get(
-                        "score",
-                        0
-                    ),
-
-                    "final_score": result.get(
+                    "relevance_score": result.get(
                         "final_score",
-                        result.get("score", 0)
-                    ),
-
-                    "word_count": result.get(
-                        "word_count",
                         0
                     ),
 
-                    "preview": result.get(
+                    "tfidf_score": result.get(
+                        "tfidf_score",
+                        0
+                    ),
+
+                    "keyword_score": result.get(
+                        "keyword_score",
+                        0
+                    ),
+
+                    "phrase_score": result.get(
+                        "phrase_score",
+                        0
+                    ),
+
+                    "text_preview": result.get(
                         "text",
                         ""
-                    )[:500]
-                }
+                    )[:300]
+                })
 
-                recommendations.append(
-                    recommendation
-                )
+            recommendations.append(
+                topic_recommendation
+            )
 
         return recommendations
 
-    def save_recommendations(
+    # ---------------------------------------------------------
+    # DISPLAY RECOMMENDATIONS
+    # ---------------------------------------------------------
+    def display_recommendations(
         self,
-        recommendations,
-        output_file="recommendations.json"
+        recommendations
     ):
 
-        data = {
-            "recommendations": recommendations
-        }
+        print("\n" + "=" * 60)
+        print("PERSONALIZED LEARNING RECOMMENDATIONS")
+        print("=" * 60)
 
-        with open(
-            output_file,
-            "w",
-            encoding="utf-8"
-        ) as file:
+        if not recommendations:
 
-            json.dump(
-                data,
-                file,
-                indent=4,
-                ensure_ascii=False
+            print("\n❌ No recommendations generated.")
+
+            return
+
+        for index, recommendation in enumerate(
+            recommendations,
+            start=1
+        ):
+
+            print(
+                f"\nRecommendation {index}"
             )
 
-        print(
-            f"💾 Recommendations saved to: "
-            f"{output_file}"
-        )
+            print("-" * 60)
 
+            print(
+                f"Topic: "
+                f"{recommendation.get('topic')}"
+            )
+
+            print(
+                f"Gap Level: "
+                f"{recommendation.get('gap_level')}"
+            )
+
+            print(
+                f"Current Score: "
+                f"{recommendation.get('current_score')}"
+            )
+
+            materials = recommendation.get(
+                "recommended_materials",
+                []
+            )
+
+            if not materials:
+
+                print(
+                    "\nNo matching learning material found."
+                )
+
+                continue
+
+            print(
+                "\nRecommended Learning Sections:"
+            )
+
+            for material_index, material in enumerate(
+                materials,
+                start=1
+            ):
+
+                print(
+                    f"\n  Material {material_index}"
+                )
+
+                print(
+                    f"  Section ID: "
+                    f"{material.get('section_id')}"
+                )
+
+                print(
+                    f"  Pages: "
+                    f"{material.get('pages', [])}"
+                )
+
+                print(
+                    f"  Relevance Score: "
+                    f"{material.get('relevance_score', 0)}"
+                )
+
+                print(
+                    f"  Text: "
+                    f"{material.get('text_preview', '')}..."
+                )
+
+
+# =============================================================
+# TEST RECOMMENDATION ENGINE
+# =============================================================
 
 if __name__ == "__main__":
 
     print("=" * 60)
-    print("             RECOMMENDATION ENGINE")
+    print("          RECOMMENDATION ENGINE")
     print("=" * 60)
 
-    # Load gap analysis
-    try:
+    # ---------------------------------------------------------
+    # Create recommendation engine
+    # ---------------------------------------------------------
+    engine = RecommendationEngine(
+        "content_index.json"
+    )
 
-        with open(
-            "gap_analysis.json",
-            "r",
-            encoding="utf-8"
-        ) as file:
+    # ---------------------------------------------------------
+    # Sample gap analysis
+    #
+    # This simulates the output of GapAnalyzer.
+    # In the complete system, this data will come from
+    # the employee's assessment results.
+    # ---------------------------------------------------------
+    sample_gap_analysis = [
 
-            gap_analysis = json.load(file)
+        {
+            "topic": "Data Cleaning",
+            "score": 45,
+            "level": "HIGH"
+        }
 
-    except FileNotFoundError:
+    ]
 
-        print(
-            "❌ gap_analysis.json not found."
+    print("\n[STEP 1] Gap Analysis")
+    print("-" * 60)
+
+    print(
+        json.dumps(
+            sample_gap_analysis,
+            indent=4
         )
+    )
 
-        exit()
-
-    # Create engine
-    engine = RecommendationEngine()
-
+    # ---------------------------------------------------------
     # Generate recommendations
+    # ---------------------------------------------------------
+    print("\n[STEP 2] Generating Recommendations")
+    print("-" * 60)
+
     recommendations = (
         engine.generate_recommendations(
-            gap_analysis,
+            sample_gap_analysis,
             top_k=2
         )
     )
 
-    print("\n📚 RECOMMENDATIONS")
-    print("-" * 60)
+    print(
+        "✅ Recommendation generation completed."
+    )
 
-    for recommendation in recommendations:
+    # ---------------------------------------------------------
+    # Display recommendations
+    # ---------------------------------------------------------
+    print("\n[STEP 3] Recommendations")
 
-        print(
-            f"\n📘 Topic: "
-            f"{recommendation['topic']}"
-        )
-
-        print(
-            f"   Section: "
-            f"{recommendation['section_id']}"
-        )
-
-        print(
-            f"   Pages: "
-            f"{recommendation['pages']}"
-        )
-
-        print(
-            f"   Score: "
-            f"{recommendation['final_score']}"
-        )
-
-    engine.save_recommendations(
+    engine.display_recommendations(
         recommendations
     )
 
+    # ---------------------------------------------------------
+    # Save result
+    # ---------------------------------------------------------
+    output_file = (
+        "recommendation_result.json"
+    )
+
+    final_result = {
+
+        "gap_analysis":
+            sample_gap_analysis,
+
+        "recommendations":
+            recommendations
+    }
+
+    with open(
+        output_file,
+        "w",
+        encoding="utf-8"
+    ) as file:
+
+        json.dump(
+            final_result,
+            file,
+            indent=4,
+            ensure_ascii=False
+        )
+
     print("\n" + "=" * 60)
-    print("      RECOMMENDATION ENGINE TEST COMPLETED")
+
+    print(
+        f"✅ Recommendation result saved as: "
+        f"{output_file}"
+    )
+
     print("=" * 60)

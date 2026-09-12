@@ -55,7 +55,7 @@ class TopicMatcher:
             )
 
         print(
-            f"✅ Loaded {len(self.sections)} sections"
+            f"Loaded {len(self.sections)} sections"
         )
 
     # ========================================================
@@ -78,7 +78,7 @@ class TopicMatcher:
             self.vectorizer.fit_transform(documents)
         )
 
-        print("✅ TF-IDF index created")
+        print("TF-IDF index created")
 
     # ========================================================
     # NORMALIZE TEXT
@@ -89,14 +89,14 @@ class TopicMatcher:
         text = text.lower()
 
         text = re.sub(
-            r'[^a-z0-9\s]',
-            ' ',
+            r"[^a-z0-9\s]",
+            " ",
             text
         )
 
         text = re.sub(
-            r'\s+',
-            ' ',
+            r"\s+",
+            " ",
             text
         )
 
@@ -112,7 +112,6 @@ class TopicMatcher:
 
         words = normalized.split()
 
-        # Remove very common words
         stop_words = {
             "the",
             "a",
@@ -143,11 +142,16 @@ class TopicMatcher:
     # KEYWORD SCORE
     # ========================================================
 
-    def keyword_score(self, topic, section_text):
+    def keyword_score(
+        self,
+        topic,
+        section_text
+    ):
 
         keywords = self.get_keywords(topic)
 
         if not keywords:
+
             return 0.0
 
         section_text = self.normalize_text(
@@ -163,6 +167,7 @@ class TopicMatcher:
         for keyword in keywords:
 
             if keyword in section_words:
+
                 matched += 1
 
         score = matched / len(keywords)
@@ -173,7 +178,11 @@ class TopicMatcher:
     # PHRASE SCORE
     # ========================================================
 
-    def phrase_score(self, topic, section_text):
+    def phrase_score(
+        self,
+        topic,
+        section_text
+    ):
 
         topic_normalized = self.normalize_text(
             topic
@@ -220,7 +229,7 @@ class TopicMatcher:
         results = []
 
         # ----------------------------------------------------
-        # Calculate combined scores
+        # Calculate hybrid scores
         # ----------------------------------------------------
 
         for index, tfidf_score in enumerate(
@@ -245,11 +254,11 @@ class TopicMatcher:
             )
 
             # ------------------------------------------------
-            # Hybrid scoring
+            # HYBRID SCORE
             #
-            # TF-IDF      = 50%
-            # Keyword     = 30%
-            # Phrase      = 20%
+            # TF-IDF  = 50%
+            # Keyword = 30%
+            # Phrase  = 20%
             # ------------------------------------------------
 
             final_score = (
@@ -261,6 +270,7 @@ class TopicMatcher:
             )
 
             if final_score < min_score:
+
                 continue
 
             results.append({
@@ -311,7 +321,7 @@ class TopicMatcher:
             })
 
         # ----------------------------------------------------
-        # Sort by final score
+        # SORT BY FINAL SCORE
         # ----------------------------------------------------
 
         results.sort(
@@ -336,126 +346,88 @@ def display_results(
     print("HYBRID TOPIC SEARCH RESULTS")
     print("=" * 60)
 
-    print(f"\n🔎 Topic: {topic}")
+    print(
+        f"\nTopic: {topic}"
+    )
 
     if not results:
 
-        print("\n❌ No relevant sections found.")
+        print(
+            "\nNo matching sections found."
+        )
 
         return
 
-    print(
-        f"\n📚 Relevant sections: "
-        f"{len(results)}"
-    )
-
-    for number, result in enumerate(
+    for index, result in enumerate(
         results,
         start=1
     ):
 
-        pages = ", ".join(
-            str(page)
-            for page in result["pages"]
+        print(
+            f"\nResult {index}"
         )
 
-        print(
-            "\n" + "-" * 60
-        )
-
-        print(
-            f"Result {number}"
-        )
+        print("-" * 60)
 
         print(
             f"Section ID: "
-            f"{result['section_id']}"
+            f"{result.get('section_id')}"
         )
 
         print(
-            f"Pages: {pages}"
+            f"Pages: "
+            f"{result.get('pages', [])}"
+        )
+
+        print(
+            f"Word Count: "
+            f"{result.get('word_count', 0)}"
         )
 
         print(
             f"TF-IDF Score: "
-            f"{result['tfidf_score']}"
+            f"{result.get('tfidf_score', 0)}"
         )
 
         print(
             f"Keyword Score: "
-            f"{result['keyword_score']}"
+            f"{result.get('keyword_score', 0)}"
         )
 
         print(
             f"Phrase Score: "
-            f"{result['phrase_score']}"
+            f"{result.get('phrase_score', 0)}"
         )
 
         print(
-            f"⭐ Final Score: "
-            f"{result['final_score']}"
+            f"Final Score: "
+            f"{result.get('final_score', 0)}"
         )
-
-        print("\nPreview:")
 
         print(
-            result["text"][:500]
+            f"Text Preview: "
+            f"{result.get('text', '')[:200]}..."
         )
-
-        if len(result["text"]) > 500:
-
-            print("...")
 
 
 # ============================================================
-# MAIN PROGRAM
+# LOCAL TEST
 # ============================================================
 
 if __name__ == "__main__":
 
-    print("=" * 60)
-    print("              HYBRID TOPIC MATCHER")
-    print("=" * 60)
+    matcher = TopicMatcher(
+        "content_index.json"
+    )
 
-    try:
+    test_topic = "Data Cleaning"
 
-        matcher = TopicMatcher(
-            "content_index.json"
-        )
+    results = matcher.search(
+        test_topic,
+        top_k=3
+    )
 
-        # ----------------------------------------------------
-        # Test topics
-        # ----------------------------------------------------
-
-        test_topics = [
-
-            "Decision Tree",
-
-            "Supervised Learning",
-
-            "Naive Bayes",
-
-            "Machine Learning"
-
-        ]
-
-        for topic in test_topics:
-
-            results = matcher.search(
-                topic,
-                top_k=3
-            )
-
-            display_results(
-                topic,
-                results
-            )
-
-    except Exception as error:
-
-        print("\n❌ Error:")
-        print(error)
-
-    print("\n" + "=" * 60)
-    print("✅ HYBRID TOPIC MATCHER TEST COMPLETED!")
-    print("=" * 60)
+    display_results(
+        test_topic,
+        results
+    )

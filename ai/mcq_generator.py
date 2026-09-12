@@ -1,109 +1,64 @@
+import pymupdf
 import os
-import json
-
-from dotenv import load_dotenv
-from google import genai
-from google.genai import types
 
 
-# ---------------------------------------
-# LOAD API KEY
-# ---------------------------------------
+def extract_text_from_pdf(pdf_path):
+    """
+    Extract text from all pages of a PDF file.
+    """
 
-load_dotenv()
+    if not os.path.exists(pdf_path):
+        print(f"❌ PDF not found: {pdf_path}")
+        return ""
 
-api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        document = pymupdf.open(pdf_path)
 
-if not api_key:
-    raise ValueError("GEMINI_API_KEY not found in .env file")
+        all_text = []
 
+        for page_number, page in enumerate(document, start=1):
+            text = page.get_text()
 
-# ---------------------------------------
-# CONNECT TO GEMINI
-# ---------------------------------------
+            if text.strip():
+                all_text.append(
+                    f"\n--- Page {page_number} ---\n{text}"
+                )
 
-client = genai.Client(api_key=api_key)
+        document.close()
 
+        extracted_text = "\n".join(all_text)
 
-# ---------------------------------------
-# GENERATE MCQs
-# ---------------------------------------
+        return extracted_text
 
-def generate_mcqs(learning_material, number_of_questions=5):
+    except Exception as error:
+        print(f"❌ Error reading PDF: {error}")
+        return ""
 
-    prompt = f"""
-You are an AI learning assessment generator.
-
-Use ONLY the learning material provided below.
-
-Generate exactly {number_of_questions} multiple-choice questions.
-
-For every question provide:
-
-1. question
-2. options: exactly four options A, B, C, D
-3. correct_answer: A, B, C, or D
-4. explanation
-5. topic
-6. difficulty: Easy, Medium, or Hard
-
-Rules:
-- Every answer must be directly supported by the learning material.
-- Do not use outside knowledge.
-- Each question must have only one intended correct answer.
-- Options must be meaningful and relevant.
-- Avoid ambiguous questions.
-- Avoid duplicate questions.
-- Return valid JSON only.
-
-Learning Material:
-------------------
-{learning_material}
-------------------
-
-Return this exact JSON structure:
-
-{{
-    "questions": [
-        {{
-            "question": "Question text",
-            "options": {{
-                "A": "Option A",
-                "B": "Option B",
-                "C": "Option C",
-                "D": "Option D"
-            }},
-            "correct_answer": "A",
-            "explanation": "Explanation based only on the material",
-            "topic": "Topic name",
-            "difficulty": "Easy"
-        }}
-    ]
-}}
-"""
-
-    response = client.models.generate_content(
-        model="gemini-3.6-flash",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_mime_type="application/json"
-        )
-    )
-
-    return json.loads(response.text)
-
-
-# ---------------------------------------
-# TEST WITH SAMPLE MATERIAL
-# ---------------------------------------
 
 if __name__ == "__main__":
 
-    with open("sample_material.txt", "r", encoding="utf-8") as file:
-        material = file.read()
+    print("=" * 50)
+    print("          PDF TEXT EXTRACTOR")
+    print("=" * 50)
 
-    result = generate_mcqs(material, 5)
+    # Your actual learning material
+    pdf_path = "../learning_materials/Data_Cleaning.pdf"
 
-    print("\n===== GENERATED 5 MCQs =====\n")
+    output_file = "extracted_text.txt"
 
-    print(json.dumps(result, indent=4, ensure_ascii=False))
+    print("\nReading PDF...")
+    print("-" * 50)
+
+    text = extract_text_from_pdf(pdf_path)
+
+    if not text.strip():
+        print("❌ No text extracted from PDF.")
+    else:
+        with open(output_file, "w", encoding="utf-8") as file:
+            file.write(text)
+
+        print("✅ PDF text extracted successfully.")
+        print(f"Characters extracted: {len(text)}")
+        print(f"Saved as: {output_file}")
+
+    print("=" * 50)

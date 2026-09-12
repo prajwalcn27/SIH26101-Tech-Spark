@@ -12,7 +12,94 @@ SAMPLE_MATERIAL_PATH = "sample_material.txt"
 
 NUMBER_OF_QUESTIONS = 5
 
+# True  = Use local MCQs (does not call Gemini)
+# False = Use Gemini API
+USE_MOCK_MODE = True
+
 OUTPUT_FILE = "ai_pipeline_result.json"
+
+
+# ============================================================
+# LOCAL MOCK MCQs
+# ============================================================
+
+def get_mock_mcqs():
+
+    return {
+        "questions": [
+
+            {
+                "question": "What is the purpose of removing duplicate records?",
+                "options": {
+                    "A": "To improve data quality",
+                    "B": "To increase missing values",
+                    "C": "To create inconsistent data",
+                    "D": "To remove all outliers"
+                },
+                "correct_answer": "A",
+                "explanation": "Removing duplicate records helps improve data quality.",
+                "topic": "Data Cleaning",
+                "difficulty": "Easy"
+            },
+
+            {
+                "question": "How can missing values be handled?",
+                "options": {
+                    "A": "Only by deleting the entire dataset",
+                    "B": "By removing records or replacing values",
+                    "C": "By creating duplicate records",
+                    "D": "By ignoring all data validation"
+                },
+                "correct_answer": "B",
+                "explanation": "Missing values can be handled by removing records, replacing values, or using statistical methods.",
+                "topic": "Missing Values",
+                "difficulty": "Easy"
+            },
+
+            {
+                "question": "What should be done with outliers?",
+                "options": {
+                    "A": "They should always be deleted",
+                    "B": "They should be examined carefully",
+                    "C": "They should always be duplicated",
+                    "D": "They should be ignored"
+                },
+                "correct_answer": "B",
+                "explanation": "Outliers should be examined carefully because they may represent errors or genuine unusual observations.",
+                "topic": "Outliers",
+                "difficulty": "Medium"
+            },
+
+            {
+                "question": "What does data validation check?",
+                "options": {
+                    "A": "Whether data follows predefined rules and constraints",
+                    "B": "Whether data contains only duplicate records",
+                    "C": "Whether all values are missing",
+                    "D": "Whether data has no numerical values"
+                },
+                "correct_answer": "A",
+                "explanation": "Data validation checks whether data follows predefined rules, formats, and constraints.",
+                "topic": "Data Validation",
+                "difficulty": "Easy"
+            },
+
+            {
+                "question": "What may data preprocessing include?",
+                "options": {
+                    "A": "Only data deletion",
+                    "B": "Data cleaning, transformation, and normalization",
+                    "C": "Only duplicate creation",
+                    "D": "Only data collection"
+                },
+                "correct_answer": "B",
+                "explanation": "Data preprocessing may include data cleaning, transformation, and normalization before the data is used for analysis or machine learning.",
+                "topic": "Data Preprocessing",
+                "difficulty": "Medium"
+            }
+
+        ]
+    }
 
 
 # ============================================================
@@ -26,13 +113,14 @@ def run_ai_pipeline():
     print("=" * 60)
 
     # --------------------------------------------------------
-    # STEP 1: READ SAMPLE LEARNING MATERIAL
+    # STEP 1: READ LEARNING MATERIAL
     # --------------------------------------------------------
 
-    print("\n📄 Step 1: Reading learning material...")
+    print("\n[STEP 1] Reading learning material...")
     print("-" * 60)
 
     try:
+
         with open(
             SAMPLE_MATERIAL_PATH,
             "r",
@@ -44,7 +132,7 @@ def run_ai_pipeline():
     except FileNotFoundError:
 
         print(
-            f"❌ File not found: "
+            f"ERROR: File not found: "
             f"{SAMPLE_MATERIAL_PATH}"
         )
 
@@ -52,10 +140,11 @@ def run_ai_pipeline():
 
     if not learning_material.strip():
 
-        print("❌ Learning material is empty.")
+        print("ERROR: Learning material is empty.")
+
         return
 
-    print("✅ Learning material loaded successfully.")
+    print("SUCCESS: Learning material loaded.")
 
     print(
         f"Characters extracted: "
@@ -66,38 +155,76 @@ def run_ai_pipeline():
     # STEP 2: GENERATE MCQs
     # --------------------------------------------------------
 
-    print("\n🤖 Step 2: Generating MCQs...")
+    print("\n[STEP 2] Generating MCQs...")
     print("-" * 60)
 
-    mcqs = generate_mcqs(
-        learning_material,
-        NUMBER_OF_QUESTIONS
-    )
+    if USE_MOCK_MODE:
 
-    if not mcqs:
+        print(
+            "MOCK MODE: Using local sample MCQs."
+        )
 
-        print("❌ MCQ generation failed.")
+        mcq_result = get_mock_mcqs()
+
+    else:
+
+        print(
+            "GEMINI MODE: Generating MCQs using Gemini..."
+        )
+
+        try:
+
+            mcq_result = generate_mcqs(
+                learning_material,
+                NUMBER_OF_QUESTIONS
+            )
+
+        except Exception as error:
+
+            print(
+                "ERROR: MCQ generation failed."
+            )
+
+            print(
+                f"Details: {error}"
+            )
+
+            return
+
+    # --------------------------------------------------------
+    # CHECK MCQ RESULT
+    # --------------------------------------------------------
+
+    if not mcq_result:
+
+        print(
+            "ERROR: No MCQ result received."
+        )
+
         return
 
-    questions = mcqs.get(
+    questions = mcq_result.get(
         "questions",
         []
     )
 
     if not questions:
 
-        print("❌ No questions were generated.")
+        print(
+            "ERROR: No questions were generated."
+        )
+
         return
 
     print(
-        f"✅ {len(questions)} MCQs generated successfully!"
+        f"SUCCESS: {len(questions)} MCQs generated."
     )
 
     # --------------------------------------------------------
     # STEP 3: DISPLAY GENERATED MCQs
     # --------------------------------------------------------
 
-    print("\n📝 Generated MCQs")
+    print("\n[STEP 3] Generated MCQs")
     print("=" * 60)
 
     for index, question in enumerate(
@@ -123,7 +250,12 @@ def run_ai_pipeline():
             {}
         )
 
-        for option in ["A", "B", "C", "D"]:
+        for option in [
+            "A",
+            "B",
+            "C",
+            "D"
+        ]:
 
             print(
                 f"  {option}. "
@@ -131,22 +263,22 @@ def run_ai_pipeline():
             )
 
         print(
-            f"\nCorrect Answer : "
+            f"\nCorrect Answer: "
             f"{question.get('correct_answer', 'N/A')}"
         )
 
         print(
-            f"Explanation    : "
+            f"Explanation: "
             f"{question.get('explanation', 'N/A')}"
         )
 
         print(
-            f"Topic          : "
+            f"Topic: "
             f"{question.get('topic', 'N/A')}"
         )
 
         print(
-            f"Difficulty     : "
+            f"Difficulty: "
             f"{question.get('difficulty', 'N/A')}"
         )
 
@@ -156,7 +288,7 @@ def run_ai_pipeline():
     # STEP 4: VALIDATE MCQs
     # --------------------------------------------------------
 
-    print("\n🔍 Step 3: Validating MCQs...")
+    print("\n[STEP 4] Validating MCQs...")
     print("-" * 60)
 
     validation_results = []
@@ -171,27 +303,28 @@ def run_ai_pipeline():
             learning_material
         )
 
-        validation_results.append({
+        validation_results.append(
+            {
+                "question_number": index,
 
-            "question_number": index,
+                "question": question.get(
+                    "question",
+                    ""
+                ),
 
-            "question": question.get(
-                "question",
-                ""
-            ),
-
-            "validation": validation
-        })
+                "validation": validation
+            }
+        )
 
     print(
-        "✅ MCQ validation completed!"
+        "SUCCESS: MCQ validation completed."
     )
 
     # --------------------------------------------------------
     # STEP 5: DISPLAY VALIDATION RESULTS
     # --------------------------------------------------------
 
-    print("\n📋 Validation Results")
+    print("\n[STEP 5] Validation Results")
     print("=" * 60)
 
     valid_count = 0
@@ -200,7 +333,9 @@ def run_ai_pipeline():
 
     for result in validation_results:
 
-        validation = result["validation"]
+        validation = result[
+            "validation"
+        ]
 
         status = validation.get(
             "status",
@@ -223,20 +358,20 @@ def run_ai_pipeline():
         )
 
         print(
-            f"Status         : {status}"
+            f"Status: {status}"
         )
 
         print(
-            f"Confidence     : {confidence}%"
+            f"Confidence: {confidence}%"
         )
 
         print(
-            f"Source Support : "
+            f"Source Support: "
             f"{source_support}%"
         )
 
         print(
-            f"Issues         : "
+            f"Issues: "
             f"{validation.get('issues', [])}"
         )
 
@@ -256,31 +391,28 @@ def run_ai_pipeline():
     # STEP 6: VALIDATION SUMMARY
     # --------------------------------------------------------
 
-    print("\n📊 Validation Summary")
+    print("\n[STEP 6] Validation Summary")
     print("=" * 60)
 
     print(
-        f"Total Questions : "
+        f"Total Questions: "
         f"{len(questions)}"
     )
 
     print(
-        f"VALID           : "
-        f"{valid_count}"
+        f"VALID: {valid_count}"
     )
 
     print(
-        f"REVIEW          : "
-        f"{review_count}"
+        f"REVIEW: {review_count}"
     )
 
     print(
-        f"INVALID         : "
-        f"{invalid_count}"
+        f"INVALID: {invalid_count}"
     )
 
     # --------------------------------------------------------
-    # STEP 7: SAVE COMPLETE RESULT
+    # STEP 7: SAVE RESULT
     # --------------------------------------------------------
 
     final_result = {
@@ -321,14 +453,16 @@ def run_ai_pipeline():
         )
 
     print(
-        f"\n💾 Result saved to: "
+        f"\nResult saved to: "
         f"{OUTPUT_FILE}"
     )
 
     print("\n" + "=" * 60)
+
     print(
         "       AI PIPELINE COMPLETED"
     )
+
     print("=" * 60)
 
 
