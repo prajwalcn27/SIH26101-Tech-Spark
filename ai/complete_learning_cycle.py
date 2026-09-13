@@ -7,22 +7,15 @@ from assessment_engine import (
     display_results as display_assessment_results
 )
 
-from gap_analyzer import CompetencyGapAnalyzer
+from gap_analyzer import GapAnalyzer
 
-from recommendation_engine import (
-    RecommendationEngine
-)
+from recommendation_engine import RecommendationEngine
 
 from quiz_manager import QuizManager
 
-from quiz_result_analyzer import (
-    QuizResultAnalyzer,
-    display_results as display_quiz_results
-)
+from quiz_result_analyzer import QuizResultAnalyzer
 
-from competency_updater import (
-    CompetencyUpdater
-)
+from competency_updater import CompetencyUpdater
 
 
 def run_complete_learning_cycle():
@@ -49,15 +42,17 @@ def run_complete_learning_cycle():
 
     if not assessment_questions:
 
-        print(
-            "❌ No assessment questions available."
-        )
+        print("❌ No assessment questions available.")
 
-        return
+        return None
 
     print(
-        f"✅ Selected "
-        f"{len(assessment_questions)} "
+        f"✅ Loaded {len(question_manager.questions)} "
+        f"questions from question bank."
+    )
+
+    print(
+        f"✅ Selected {len(assessment_questions)} "
         f"assessment questions."
     )
 
@@ -67,13 +62,10 @@ def run_complete_learning_cycle():
 
     print("\n📝 STEP 2: Initial Assessment...")
 
-    # Demo answers
-    #
-    # In the real system these will come
-    # from the frontend.
+    # Demo employee answers.
+    # Later these answers will come from the frontend.
 
     demo_answers = {
-
         "1": "B",
         "2": "A",
         "3": "A",
@@ -84,18 +76,33 @@ def run_complete_learning_cycle():
 
     assessment_answers = {}
 
-    for question in assessment_questions:
+    for index, question in enumerate(
+        assessment_questions,
+        start=1
+    ):
 
         question_id = str(
-            question["id"]
+            question.get("id", "")
         )
 
-        assessment_answers[question_id] = (
-            demo_answers.get(
-                question_id,
-                ""
+        # First try actual question ID.
+        if question_id in demo_answers:
+
+            assessment_answers[question_id] = (
+                demo_answers[question_id]
             )
-        )
+
+        # Otherwise use question number.
+        else:
+
+            question_number = str(index)
+
+            assessment_answers[question_id] = (
+                demo_answers.get(
+                    question_number,
+                    ""
+                )
+            )
 
     assessment_engine = AssessmentEngine()
 
@@ -112,14 +119,14 @@ def run_complete_learning_cycle():
             "❌ Assessment calculation failed."
         )
 
-        return
+        return None
 
     display_assessment_results(
         assessment_results
     )
 
     # ==========================================================
-    # STEP 3: GAP ANALYSIS
+    # STEP 3: COMPETENCY GAP ANALYSIS
     # ==========================================================
 
     print(
@@ -139,7 +146,7 @@ def run_complete_learning_cycle():
             data["percentage"]
         )
 
-    gap_analyzer = CompetencyGapAnalyzer(
+    gap_analyzer = GapAnalyzer(
         gap_threshold=60
     )
 
@@ -151,23 +158,28 @@ def run_complete_learning_cycle():
         "\n📌 IDENTIFIED COMPETENCY GAPS"
     )
 
-    for result in gap_analysis[
-        "competency_results"
-    ]:
+    for result in (
+        gap_analysis[
+            "competency_results"
+        ]
+    ):
 
         print(
             f"📘 {result['topic']:<20} "
             f"{result['score']}% → "
-            f"{result['status']}"
+            f"{result['status']} "
+            f"[{result['priority']}]"
         )
 
     print("\n⚠️ Weak Topics:")
 
     if gap_analysis["weak_topics"]:
 
-        for topic in gap_analysis[
-            "weak_topics"
-        ]:
+        for topic in (
+            gap_analysis[
+                "weak_topics"
+            ]
+        ):
 
             print(
                 f"   • {topic}"
@@ -180,7 +192,7 @@ def run_complete_learning_cycle():
         )
 
     # ==========================================================
-    # STEP 4: RECOMMENDATION
+    # STEP 4: PERSONALIZED LEARNING RECOMMENDATION
     # ==========================================================
 
     print(
@@ -195,12 +207,16 @@ def run_complete_learning_cycle():
     recommendations = (
         recommendation_engine
         .generate_recommendations(
-            gap_analysis,
+            gap_analysis[
+                "competency_results"
+            ],
             top_k=2
         )
     )
 
-    print("\n📚 RECOMMENDED MATERIAL")
+    print(
+        "\n📚 RECOMMENDED MATERIAL"
+    )
 
     if recommendations:
 
@@ -214,19 +230,47 @@ def run_complete_learning_cycle():
             )
 
             print(
-                f"   Section: "
-                f"{recommendation['section_id']}"
+                f"   Gap Level: "
+                f"{recommendation['gap_level']}"
             )
 
             print(
-                f"   Pages: "
-                f"{recommendation['pages']}"
+                f"   Current Score: "
+                f"{recommendation['current_score']}"
             )
 
-            print(
-                f"   Relevance Score: "
-                f"{recommendation['final_score']}"
+            materials = (
+                recommendation.get(
+                    "recommended_materials",
+                    []
+                )
             )
+
+            if not materials:
+
+                print(
+                    "   No matching learning "
+                    "material found."
+                )
+
+                continue
+
+            for material in materials:
+
+                print(
+                    f"   Section ID: "
+                    f"{material['section_id']}"
+                )
+
+                print(
+                    f"   Pages: "
+                    f"{material['pages']}"
+                )
+
+                print(
+                    f"   Relevance Score: "
+                    f"{material['relevance_score']}"
+                )
 
     else:
 
@@ -247,13 +291,41 @@ def run_complete_learning_cycle():
         question_manager
     )
 
-    weak_topics = gap_analysis[
-        "weak_topics"
-    ]
+    weak_topics = (
+        gap_analysis[
+            "weak_topics"
+        ]
+    )
+
+    target_topic = None
 
     if weak_topics:
 
-        target_topic = weak_topics[0]
+        # ------------------------------------------------------
+        # Select the weakest topic based on lowest score.
+        # ------------------------------------------------------
+
+        weak_topic_results = [
+
+            result
+
+            for result in (
+                gap_analysis[
+                    "competency_results"
+                ]
+            )
+
+            if result["topic"]
+            in weak_topics
+        ]
+
+        weak_topic_results.sort(
+            key=lambda item: item["score"]
+        )
+
+        target_topic = (
+            weak_topic_results[0]["topic"]
+        )
 
         print(
             f"\n🎯 Target Topic: "
@@ -261,16 +333,13 @@ def run_complete_learning_cycle():
         )
 
         targeted_quiz = (
-            quiz_manager
-            .create_targeted_quiz(
+            quiz_manager.create_targeted_quiz(
                 topic=target_topic,
                 number_of_questions=2
             )
         )
 
     else:
-
-        target_topic = None
 
         targeted_quiz = (
             quiz_manager.create_quiz(
@@ -284,7 +353,7 @@ def run_complete_learning_cycle():
             "❌ Could not create targeted quiz."
         )
 
-        return
+        return None
 
     quiz_manager.display_quiz(
         targeted_quiz
@@ -299,32 +368,23 @@ def run_complete_learning_cycle():
         "Quiz Attempt..."
     )
 
-    # Demo answers
+    # ----------------------------------------------------------
+    # Demo employee answers all questions correctly.
     #
-    # These will later come from
-    # the frontend.
-
-    quiz_demo_answers = {
-
-        "1": "B",
-        "2": "C",
-        "3": "A",
-        "4": "C",
-        "5": "A",
-        "6": "A"
-    }
+    # Later these answers will come from the frontend.
+    # ----------------------------------------------------------
 
     quiz_answers = {}
 
     for question in targeted_quiz:
 
         question_id = str(
-            question["id"]
+            question.get("id", "")
         )
 
         quiz_answers[question_id] = (
-            quiz_demo_answers.get(
-                question_id,
+            question.get(
+                "correct_answer",
                 ""
             )
         )
@@ -349,16 +409,48 @@ def run_complete_learning_cycle():
         quiz_answers
     )
 
-    if not quiz_results:
+    if (
+        not quiz_results
+        or quiz_results.get("status")
+        != "success"
+    ):
 
         print(
             "❌ Quiz result analysis failed."
         )
 
-        return
+        return None
 
-    display_quiz_results(
-        quiz_results
+    print(
+        "\n==================================="
+    )
+
+    print(
+        "          QUIZ RESULT"
+    )
+
+    print(
+        "==================================="
+    )
+
+    print(
+        f"Score: "
+        f"{quiz_results['score_percentage']}%"
+    )
+
+    print(
+        f"Correct Answers: "
+        f"{quiz_results['correct_answers']}"
+    )
+
+    print(
+        f"Wrong Answers: "
+        f"{quiz_results['wrong_answers']}"
+    )
+
+    print(
+        f"Weak Topics: "
+        f"{quiz_results['weak_topics']}"
     )
 
     # ==========================================================
@@ -374,6 +466,29 @@ def run_complete_learning_cycle():
         competency_scores.copy()
     )
 
+    # ----------------------------------------------------------
+    # Convert QuizResultAnalyzer format:
+    #
+    # topic_analysis
+    #
+    # into CompetencyUpdater format.
+    # ----------------------------------------------------------
+
+    competency_quiz_results = {}
+
+    for topic, data in (
+        quiz_results[
+            "topic_analysis"
+        ].items()
+    ):
+
+        competency_quiz_results[topic] = {
+
+            "percentage":
+                data["percentage"]
+
+        }
+
     competency_updater = (
         CompetencyUpdater(
             learning_weight=0.4
@@ -381,10 +496,9 @@ def run_complete_learning_cycle():
     )
 
     updated_competency = (
-        competency_updater
-        .update_competency(
+        competency_updater.update_competency(
             previous_scores,
-            quiz_results
+            competency_quiz_results
         )
     )
 
@@ -472,6 +586,10 @@ def run_complete_learning_cycle():
             updated_competency
     }
 
+    # ----------------------------------------------------------
+    # Save final result
+    # ----------------------------------------------------------
+
     output_file = (
         "complete_learning_cycle_result.json"
     )
@@ -499,25 +617,66 @@ def run_complete_learning_cycle():
     # ==========================================================
 
     print("\n")
-    print("=" * 70)
+
+    print(
+        "=" * 70
+    )
+
     print(
         "          COMPLETE LEARNING CYCLE FINISHED"
     )
-    print("=" * 70)
 
-    print("\n✅ Question selection")
-    print("✅ Initial assessment")
-    print("✅ Competency gap analysis")
-    print("✅ Personalized recommendation")
-    print("✅ Targeted quiz")
-    print("✅ Quiz result analysis")
-    print("✅ Competency update")
-    print("✅ Final learning profile")
+    print(
+        "=" * 70
+    )
+
+    print(
+        "\n✅ Question selection"
+    )
+
+    print(
+        "✅ Initial assessment"
+    )
+
+    print(
+        "✅ Competency gap analysis"
+    )
+
+    print(
+        "✅ Personalized recommendation"
+    )
+
+    print(
+        "✅ Targeted quiz"
+    )
+
+    print(
+        "✅ Quiz result analysis"
+    )
+
+    print(
+        "✅ Competency update"
+    )
+
+    print(
+        "✅ Final learning profile"
+    )
 
     print(
         "\n🚀 AI LEARNING LOOP COMPLETED!"
     )
 
+    # ==========================================================
+    # IMPORTANT:
+    # Return result to Flask API
+    # ==========================================================
+
+    return final_result
+
+
+# ==============================================================
+# RUN DIRECTLY
+# ==============================================================
 
 if __name__ == "__main__":
 

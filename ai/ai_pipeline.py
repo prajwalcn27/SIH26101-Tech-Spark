@@ -1,4 +1,5 @@
 import json
+import os
 
 from mcq_generator import generate_mcqs
 from validator import validate_mcq
@@ -8,13 +9,14 @@ from validator import validate_mcq
 # CONFIGURATION
 # ============================================================
 
-SAMPLE_MATERIAL_PATH = "sample_material.txt"
-
+SAMPLE_MATERIAL_PATH = "document_processing/Data_Cleaning_extracted.txt"
 NUMBER_OF_QUESTIONS = 5
 
-# True  = Use local MCQs (does not call Gemini)
-# False = Use Gemini API
-USE_MOCK_MODE = True
+# True  = Always use local mock MCQs
+# False = Try Gemini first, then use fallback if Gemini fails
+USE_MOCK_MODE = False
+
+FALLBACK_FILE = "demo_fallback_questions.json"
 
 OUTPUT_FILE = "ai_pipeline_result.json"
 
@@ -103,6 +105,79 @@ def get_mock_mcqs():
 
 
 # ============================================================
+# FALLBACK MCQs
+# ============================================================
+
+def load_fallback_mcqs():
+
+    print("\n[FALLBACK] Loading offline demo questions...")
+    print("-" * 60)
+
+    # Build path relative to this Python file.
+    current_directory = os.path.dirname(
+        os.path.abspath(__file__)
+    )
+
+    fallback_path = os.path.join(
+        current_directory,
+        FALLBACK_FILE
+    )
+
+    try:
+
+        with open(
+            fallback_path,
+            "r",
+            encoding="utf-8"
+        ) as file:
+
+            fallback_data = json.load(file)
+
+    except FileNotFoundError:
+
+        print(
+            f"ERROR: Fallback file not found: "
+            f"{fallback_path}"
+        )
+
+        return None
+
+    except json.JSONDecodeError as error:
+
+        print(
+            "ERROR: Fallback JSON file is invalid."
+        )
+
+        print(
+            f"Details: {error}"
+        )
+
+        return None
+
+    questions = fallback_data.get(
+        "questions",
+        []
+    )
+
+    if not questions:
+
+        print(
+            "ERROR: No fallback questions found."
+        )
+
+        return None
+
+    print(
+        f"SUCCESS: Loaded "
+        f"{len(questions)} fallback questions."
+    )
+
+    return {
+        "questions": questions
+    }
+
+
+# ============================================================
 # MAIN AI PIPELINE
 # ============================================================
 
@@ -158,6 +233,13 @@ def run_ai_pipeline():
     print("\n[STEP 2] Generating MCQs...")
     print("-" * 60)
 
+    mcq_result = None
+    generation_source = "unknown"
+
+    # --------------------------------------------------------
+    # MOCK MODE
+    # --------------------------------------------------------
+
     if USE_MOCK_MODE:
 
         print(
@@ -166,10 +248,16 @@ def run_ai_pipeline():
 
         mcq_result = get_mock_mcqs()
 
+        generation_source = "mock"
+
+    # --------------------------------------------------------
+    # GEMINI MODE + AUTOMATIC FALLBACK
+    # --------------------------------------------------------
+
     else:
 
         print(
-            "GEMINI MODE: Generating MCQs using Gemini..."
+            "GEMINI MODE: Trying Gemini API..."
         )
 
         try:
@@ -179,17 +267,48 @@ def run_ai_pipeline():
                 NUMBER_OF_QUESTIONS
             )
 
+            if mcq_result and mcq_result.get(
+                "questions",
+                []
+            ):
+
+                print(
+                    "SUCCESS: Gemini generated MCQs."
+                )
+
+                generation_source = "gemini"
+
+            else:
+
+                print(
+                    "WARNING: Gemini returned no questions."
+                )
+
+                print(
+                    "Switching to fallback questions..."
+                )
+
+                mcq_result = load_fallback_mcqs()
+
+                generation_source = "fallback"
+
         except Exception as error:
 
             print(
-                "ERROR: MCQ generation failed."
+                "WARNING: Gemini MCQ generation failed."
             )
 
             print(
-                f"Details: {error}"
+                f"Reason: {error}"
             )
 
-            return
+            print(
+                "\nSwitching to offline fallback..."
+            )
+
+            mcq_result = load_fallback_mcqs()
+
+            generation_source = "fallback"
 
     # --------------------------------------------------------
     # CHECK MCQ RESULT
@@ -198,7 +317,7 @@ def run_ai_pipeline():
     if not mcq_result:
 
         print(
-            "ERROR: No MCQ result received."
+            "\nERROR: No MCQ result available."
         )
 
         return
@@ -211,13 +330,22 @@ def run_ai_pipeline():
     if not questions:
 
         print(
-            "ERROR: No questions were generated."
+            "\nERROR: No questions are available."
         )
 
         return
 
+    # Limit questions to requested number.
+    questions = questions[
+        :NUMBER_OF_QUESTIONS
+    ]
+
     print(
-        f"SUCCESS: {len(questions)} MCQs generated."
+        f"\nSUCCESS: {len(questions)} MCQs ready."
+    )
+
+    print(
+        f"Question source: {generation_source.upper()}"
     )
 
     # --------------------------------------------------------
@@ -418,6 +546,8 @@ def run_ai_pipeline():
     final_result = {
 
         "source_file": SAMPLE_MATERIAL_PATH,
+
+        "generation_source": generation_source,
 
         "number_of_questions": len(
             questions

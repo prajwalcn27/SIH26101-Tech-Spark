@@ -1,65 +1,90 @@
-import json
-
-
 class QuizResultAnalyzer:
 
     def analyze(self, questions, answers):
-        """
-        Analyze quiz answers.
-
-        questions:
-            List of quiz questions.
-
-        answers:
-            Dictionary containing employee answers.
-
-        Example:
-        {
-            "1": "B",
-            "2": "A"
-        }
-        """
 
         if not questions:
-            print("❌ No quiz questions provided.")
-            return None
+
+            return {
+                "status": "error",
+                "message": "No questions provided."
+            }
 
         total_questions = len(questions)
-        correct_answers = 0
+
+        correct_count = 0
+        wrong_count = 0
 
         wrong_questions = []
+
         topic_results = {}
 
-        for question in questions:
+        # ======================================================
+        # ANALYZE EACH QUESTION
+        # ======================================================
 
-            question_id = str(question["id"])
-            topic = question.get(
-                "topic",
-                "General"
+        for index, question in enumerate(
+            questions,
+            start=1
+        ):
+
+            # --------------------------------------------------
+            # First try the actual question ID.
+            # If not available, use question number.
+            # --------------------------------------------------
+
+            question_id = str(
+                question.get("id", "")
             )
 
-            correct_answer = question[
-                "correct_answer"
-            ]
+            question_number = str(index)
 
-            employee_answer = answers.get(
-                question_id
-            )
+            if question_id in answers:
 
-            # Create topic entry
+                employee_answer = str(
+                    answers.get(question_id, "")
+                ).strip().upper()
+
+            else:
+
+                employee_answer = str(
+                    answers.get(question_number, "")
+                ).strip().upper()
+
+            correct_answer = str(
+                question.get(
+                    "correct_answer",
+                    ""
+                )
+            ).strip().upper()
+
+            topic = str(
+                question.get(
+                    "topic",
+                    "Unknown"
+                )
+            ).strip()
+
+            # --------------------------------------------------
+            # Create topic entry if it doesn't exist
+            # --------------------------------------------------
+
             if topic not in topic_results:
 
                 topic_results[topic] = {
                     "correct": 0,
+                    "wrong": 0,
                     "total": 0
                 }
 
             topic_results[topic]["total"] += 1
 
+            # --------------------------------------------------
             # Check answer
+            # --------------------------------------------------
+
             if employee_answer == correct_answer:
 
-                correct_answers += 1
+                correct_count += 1
 
                 topic_results[topic][
                     "correct"
@@ -67,20 +92,23 @@ class QuizResultAnalyzer:
 
             else:
 
+                wrong_count += 1
+
+                topic_results[topic][
+                    "wrong"
+                ] += 1
+
                 wrong_questions.append({
 
-                    "question_id": question_id,
+                    "question_number": index,
+
+                    "question_id": question.get(
+                        "id"
+                    ),
 
                     "question": question.get(
                         "question",
                         ""
-                    ),
-
-                    "topic": topic,
-
-                    "difficulty": question.get(
-                        "difficulty",
-                        "Unknown"
                     ),
 
                     "employee_answer":
@@ -89,6 +117,9 @@ class QuizResultAnalyzer:
                     "correct_answer":
                         correct_answer,
 
+                    "topic":
+                        topic,
+
                     "explanation":
                         question.get(
                             "explanation",
@@ -96,282 +127,187 @@ class QuizResultAnalyzer:
                         )
                 })
 
-        # Calculate overall percentage
-        score = (
-            correct_answers /
+        # ======================================================
+        # OVERALL SCORE
+        # ======================================================
+
+        score_percentage = (
+            correct_count /
             total_questions
         ) * 100
 
-        # Calculate topic percentages
-        for topic in topic_results:
+        # ======================================================
+        # TOPIC-WISE ANALYSIS
+        # ======================================================
 
-            correct = topic_results[
-                topic
-            ]["correct"]
+        topic_analysis = {}
 
-            total = topic_results[
-                topic
-            ]["total"]
-
-            percentage = (
-                correct / total
-            ) * 100
-
-            topic_results[topic][
-                "percentage"
-            ] = round(
-                percentage,
-                2
-            )
-
-        # Identify weak topics
         weak_topics = []
 
-        for topic, data in topic_results.items():
+        for topic, result in (
+            topic_results.items()
+        ):
 
-            if data["percentage"] < 60:
+            topic_percentage = (
+                result["correct"] /
+                result["total"]
+            ) * 100
 
-                weak_topics.append(topic)
+            # --------------------------------------------------
+            # Determine gap level
+            # --------------------------------------------------
 
-        result = {
+            if topic_percentage < 50:
+
+                level = "HIGH"
+
+                weak_topics.append(
+                    topic
+                )
+
+            elif topic_percentage < 70:
+
+                level = "MEDIUM"
+
+                weak_topics.append(
+                    topic
+                )
+
+            else:
+
+                level = "LOW"
+
+            topic_analysis[topic] = {
+
+                "correct":
+                    result["correct"],
+
+                "wrong":
+                    result["wrong"],
+
+                "total":
+                    result["total"],
+
+                "percentage":
+                    round(
+                        topic_percentage,
+                        2
+                    ),
+
+                "gap_level":
+                    level
+            }
+
+        # ======================================================
+        # FINAL RESULT
+        # ======================================================
+
+        return {
+
+            "status":
+                "success",
 
             "total_questions":
                 total_questions,
 
             "correct_answers":
-                correct_answers,
+                correct_count,
 
             "wrong_answers":
-                total_questions -
-                correct_answers,
+                wrong_count,
 
-            "score":
-                round(score, 2),
-
-            "topic_results":
-                topic_results,
-
-            "weak_topics":
-                weak_topics,
+            "score_percentage":
+                round(
+                    score_percentage,
+                    2
+                ),
 
             "wrong_questions":
-                wrong_questions
+                wrong_questions,
+
+            "topic_analysis":
+                topic_analysis,
+
+            "weak_topics":
+                weak_topics
         }
 
-        return result
 
-
-def display_results(results):
-
-    if not results:
-
-        print("❌ No quiz result.")
-
-        return
-
-    print("\n")
-    print("=" * 60)
-    print("              QUIZ RESULT ANALYSIS")
-    print("=" * 60)
-
-    print(
-        f"\n📊 Total Questions : "
-        f"{results['total_questions']}"
-    )
-
-    print(
-        f"✅ Correct Answers : "
-        f"{results['correct_answers']}"
-    )
-
-    print(
-        f"❌ Wrong Answers   : "
-        f"{results['wrong_answers']}"
-    )
-
-    print(
-        f"🎯 Quiz Score      : "
-        f"{results['score']}%"
-    )
-
-    print("\n📚 TOPIC RESULTS")
-    print("-" * 60)
-
-    for topic, data in results[
-        "topic_results"
-    ].items():
-
-        print(
-            f"📘 {topic:<20} "
-            f"{data['correct']}/"
-            f"{data['total']} "
-            f"→ {data['percentage']}%"
-        )
-
-    print("\n⚠️ WEAK TOPICS")
-
-    if results["weak_topics"]:
-
-        for topic in results[
-            "weak_topics"
-        ]:
-
-            print(
-                f"   • {topic}"
-            )
-
-    else:
-
-        print(
-            "   ✅ No weak topics identified."
-        )
-
-    print("\n❌ WRONG QUESTIONS")
-    print("-" * 60)
-
-    if results["wrong_questions"]:
-
-        for item in results[
-            "wrong_questions"
-        ]:
-
-            print(
-                f"\nQuestion ID : "
-                f"{item['question_id']}"
-            )
-
-            print(
-                f"Topic       : "
-                f"{item['topic']}"
-            )
-
-            print(
-                f"Your Answer : "
-                f"{item['employee_answer']}"
-            )
-
-            print(
-                f"Correct     : "
-                f"{item['correct_answer']}"
-            )
-
-    else:
-
-        print(
-            "   🎉 All answers are correct!"
-        )
-
-    print("=" * 60)
-
+# ==============================================================
+# TEST
+# ==============================================================
 
 if __name__ == "__main__":
 
-    print("=" * 60)
-    print("           QUIZ RESULT ANALYZER")
-    print("=" * 60)
+    questions = [
 
-    # Import QuestionManager and QuizManager
-    from question_manager import QuestionManager
-    from quiz_manager import QuizManager
+        {
+            "id": 10,
 
-    # Create QuestionManager
-    question_manager = QuestionManager()
+            "question":
+                "Which is commonly handled during data cleaning?",
 
-    # Remove duplicate questions
-    question_manager.remove_duplicates()
+            "correct_answer":
+                "A",
 
-    # Create QuizManager
-    quiz_manager = QuizManager(
-        question_manager
-    )
+            "topic":
+                "Data Cleaning",
 
-    # Create a Data Cleaning quiz
-    quiz = quiz_manager.create_targeted_quiz(
-        topic="Data Cleaning",
-        number_of_questions=2
-    )
+            "explanation":
+                "Missing values are commonly handled during data cleaning."
+        },
 
-    # Display quiz
-    quiz_manager.display_quiz(quiz)
+        {
+            "id": 15,
 
-    # --------------------------------------------------
-    # DEMO EMPLOYEE ANSWERS
-    # --------------------------------------------------
+            "question":
+                "What is the purpose of data cleaning?",
 
-    print("\n📝 Processing employee answers...")
+            "correct_answer":
+                "B",
 
-    # For Data Cleaning:
-    #
-    # Question 4 correct answer = B
-    # Question 5 correct answer = A
-    #
-    # We intentionally give:
-    #
-    # Question 4 → C (wrong)
-    # Question 5 → A (correct)
+            "topic":
+                "Data Cleaning",
 
-    answers = {}
+            "explanation":
+                "Data cleaning removes or corrects incorrect and inconsistent data."
+        }
+    ]
 
-    demo_answers = {
-        "4": "C",
-        "5": "A"
+    answers = {
+
+        "10": "A",
+
+        "15": "B"
     }
-
-    for question in quiz:
-
-        question_id = str(
-            question["id"]
-        )
-
-        answers[question_id] = (
-            demo_answers.get(
-                question_id,
-                ""
-            )
-        )
-
-    print("✅ Employee answers received.")
-
-    # --------------------------------------------------
-    # ANALYZE RESULTS
-    # --------------------------------------------------
 
     analyzer = QuizResultAnalyzer()
 
-    results = analyzer.analyze(
-        quiz,
+    result = analyzer.analyze(
+        questions,
         answers
     )
 
-    # Display results
-    display_results(results)
-
-    # --------------------------------------------------
-    # SAVE RESULT
-    # --------------------------------------------------
-
-    output_file = "quiz_result_analysis.json"
-
-    with open(
-        output_file,
-        "w",
-        encoding="utf-8"
-    ) as file:
-
-        json.dump(
-            results,
-            file,
-            indent=4,
-            ensure_ascii=False
-        )
+    print("\n===================================")
+    print("          QUIZ RESULT")
+    print("===================================")
 
     print(
-        f"\n💾 Result saved to: "
-        f"{output_file}"
+        f"Score: "
+        f"{result['score_percentage']}%"
     )
 
-    print("\n" + "=" * 60)
     print(
-        "      QUIZ RESULT ANALYZER TEST COMPLETED"
+        f"Correct Answers: "
+        f"{result['correct_answers']}"
     )
-    print("=" * 60)
+
+    print(
+        f"Wrong Answers: "
+        f"{result['wrong_answers']}"
+    )
+
+    print(
+        f"Weak Topics: "
+        f"{result['weak_topics']}"
+    )

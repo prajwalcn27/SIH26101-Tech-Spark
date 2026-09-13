@@ -1,99 +1,104 @@
 import json
-import os
 import re
+from pathlib import Path
 
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
-
-# ============================================================
-# HYBRID TOPIC MATCHER
-# ============================================================
 
 class TopicMatcher:
 
-    def __init__(self, index_file="content_index.json"):
+    def __init__(self, index_path=None):
 
-        self.index_file = index_file
+        # Always locate content_index.json relative
+        # to this Python file.
+        BASE_DIR = Path(__file__).resolve().parent
+
+        if index_path is None:
+            self.index_path = BASE_DIR / "content_index.json"
+        else:
+            self.index_path = Path(index_path)
+
         self.index = None
         self.sections = []
-        self.vectorizer = None
-        self.section_vectors = None
 
         self.load_index()
-        self.build_index()
 
-    # ========================================================
+    # =========================================================
     # LOAD CONTENT INDEX
-    # ========================================================
+    # =========================================================
 
     def load_index(self):
 
-        if not os.path.exists(self.index_file):
+        if not self.index_path.exists():
 
             raise FileNotFoundError(
-                f"Content index not found: {self.index_file}"
+                f"Content index not found: {self.index_path}"
             )
 
-        with open(
-            self.index_file,
-            "r",
-            encoding="utf-8"
-        ) as file:
+        try:
 
-            self.index = json.load(file)
+            with open(
+                self.index_path,
+                "r",
+                encoding="utf-8"
+            ) as file:
 
-        self.sections = self.index.get(
-            "sections",
-            []
-        )
+                self.index = json.load(file)
 
-        if not self.sections:
+        except json.JSONDecodeError as error:
 
             raise ValueError(
-                "No sections found in content index."
+                f"Invalid content_index.json: {error}"
             )
 
+        # -----------------------------------------------------
+        # Read sections from the actual index structure
+        # -----------------------------------------------------
+
+        if isinstance(self.index, dict):
+
+            self.sections = self.index.get(
+                "sections",
+                []
+            )
+
+        elif isinstance(self.index, list):
+
+            self.sections = self.index
+
+        else:
+
+            self.sections = []
+
         print(
-            f"Loaded {len(self.sections)} sections"
+            f"✅ Content index loaded: "
+            f"{self.index_path.name}"
         )
 
-    # ========================================================
-    # BUILD TF-IDF INDEX
-    # ========================================================
-
-    def build_index(self):
-
-        documents = [
-            section.get("text", "")
-            for section in self.sections
-        ]
-
-        self.vectorizer = TfidfVectorizer(
-            lowercase=True,
-            stop_words="english"
+        print(
+            f"📚 Indexed sections: "
+            f"{len(self.sections)}"
         )
 
-        self.section_vectors = (
-            self.vectorizer.fit_transform(documents)
-        )
+    # =========================================================
+    # GET ALL CONTENT
+    # =========================================================
 
-        print("TF-IDF index created")
+    def get_all_content(self):
 
-    # ========================================================
+        return self.sections
+
+    # =========================================================
     # NORMALIZE TEXT
-    # ========================================================
+    # =========================================================
 
     def normalize_text(self, text):
 
-        text = text.lower()
+        if text is None:
 
-        text = re.sub(
-            r"[^a-z0-9\s]",
-            " ",
-            text
-        )
+            return ""
 
+        text = str(text).lower()
+
+        # Remove extra spaces
         text = re.sub(
             r"\s+",
             " ",
@@ -102,332 +107,369 @@ class TopicMatcher:
 
         return text.strip()
 
-    # ========================================================
-    # GET KEYWORDS
-    # ========================================================
+    # =========================================================
+    # MATCH TOPIC
+    # =========================================================
 
-    def get_keywords(self, topic):
-
-        normalized = self.normalize_text(topic)
-
-        words = normalized.split()
-
-        stop_words = {
-            "the",
-            "a",
-            "an",
-            "of",
-            "and",
-            "with",
-            "for",
-            "to",
-            "in",
-            "on",
-            "is",
-            "are",
-            "using",
-            "basic",
-            "introduction"
-        }
-
-        keywords = [
-            word
-            for word in words
-            if word not in stop_words
-        ]
-
-        return keywords
-
-    # ========================================================
-    # KEYWORD SCORE
-    # ========================================================
-
-    def keyword_score(
+    def match_topic(
         self,
         topic,
-        section_text
+        top_k=5
     ):
+        """
+        Find sections relevant to a topic.
 
-        keywords = self.get_keywords(topic)
+        Returns:
+            section_id
+            pages
+            text
+            relevance
+        """
 
-        if not keywords:
-
-            return 0.0
-
-        section_text = self.normalize_text(
-            section_text
-        )
-
-        section_words = set(
-            section_text.split()
-        )
-
-        matched = 0
-
-        for keyword in keywords:
-
-            if keyword in section_words:
-
-                matched += 1
-
-        score = matched / len(keywords)
-
-        return score
-
-    # ========================================================
-    # PHRASE SCORE
-    # ========================================================
-
-    def phrase_score(
-        self,
-        topic,
-        section_text
-    ):
-
-        topic_normalized = self.normalize_text(
-            topic
-        )
-
-        section_normalized = self.normalize_text(
-            section_text
-        )
-
-        if topic_normalized in section_normalized:
-
-            return 1.0
-
-        return 0.0
-
-    # ========================================================
-    # SEARCH
-    # ========================================================
-
-    def search(
-        self,
-        topic,
-        top_k=5,
-        min_score=0.05
-    ):
-
-        if not topic or not topic.strip():
+        if not topic:
 
             return []
 
-        # ----------------------------------------------------
-        # TF-IDF similarity
-        # ----------------------------------------------------
-
-        topic_vector = self.vectorizer.transform(
-            [topic]
-        )
-
-        tfidf_scores = cosine_similarity(
-            topic_vector,
-            self.section_vectors
-        )[0]
+        topic_text = self.normalize_text(topic)
 
         results = []
 
-        # ----------------------------------------------------
-        # Calculate hybrid scores
-        # ----------------------------------------------------
+        for section in self.sections:
 
-        for index, tfidf_score in enumerate(
-            tfidf_scores
-        ):
-
-            section = self.sections[index]
-
-            section_text = section.get(
-                "text",
-                ""
-            )
-
-            keyword_score = self.keyword_score(
-                topic,
-                section_text
-            )
-
-            phrase_score = self.phrase_score(
-                topic,
-                section_text
-            )
-
-            # ------------------------------------------------
-            # HYBRID SCORE
-            #
-            # TF-IDF  = 50%
-            # Keyword = 30%
-            # Phrase  = 20%
-            # ------------------------------------------------
-
-            final_score = (
-                (float(tfidf_score) * 0.50)
-                +
-                (keyword_score * 0.30)
-                +
-                (phrase_score * 0.20)
-            )
-
-            if final_score < min_score:
+            if not isinstance(section, dict):
 
                 continue
 
-            results.append({
+            section_text = self.normalize_text(
+                section.get("text", "")
+            )
 
-                "section_id":
-                    section.get(
-                        "section_id"
+            if not section_text:
+
+                continue
+
+            score = 0
+
+            # -------------------------------------------------
+            # Exact phrase match
+            # -------------------------------------------------
+
+            if topic_text in section_text:
+
+                score += 50
+
+            # -------------------------------------------------
+            # Individual keyword matching
+            # -------------------------------------------------
+
+            words = topic_text.split()
+
+            matched_words = 0
+
+            for word in words:
+
+                if len(word) < 3:
+
+                    continue
+
+                if word in section_text:
+
+                    matched_words += 1
+
+            if words:
+
+                keyword_score = (
+                    matched_words / len(words)
+                ) * 50
+
+                score += keyword_score
+
+            # -------------------------------------------------
+            # Topic-specific keywords
+            # -------------------------------------------------
+
+            topic_keywords = {
+
+                "data cleaning": [
+                    "data cleaning",
+                    "missing values",
+                    "duplicate",
+                    "incorrect data",
+                    "inconsistent",
+                    "outliers",
+                    "standardization",
+                    "validation"
+                ],
+
+                "data validation": [
+                    "data validation",
+                    "validation",
+                    "required fields",
+                    "unique",
+                    "valid numbers"
+                ],
+
+                "decision tree": [
+                    "decision tree",
+                    "node",
+                    "root",
+                    "leaf",
+                    "classification"
+                ],
+
+                "naive bayes": [
+                    "naive bayes",
+                    "bayes",
+                    "probability",
+                    "conditional probability"
+                ],
+
+                "statistics": [
+                    "statistics",
+                    "mean",
+                    "median",
+                    "mode",
+                    "variance",
+                    "standard deviation"
+                ]
+            }
+
+            keywords = topic_keywords.get(
+                topic_text,
+                []
+            )
+
+            keyword_matches = 0
+
+            for keyword in keywords:
+
+                if keyword in section_text:
+
+                    keyword_matches += 1
+
+            if keywords:
+
+                score += (
+                    keyword_matches /
+                    len(keywords)
+                ) * 50
+
+            # -------------------------------------------------
+            # Add matching section
+            # -------------------------------------------------
+
+            if score > 0:
+
+                pages = section.get(
+                    "pages",
+                    []
+                )
+
+                section_id = section.get(
+                    "section_id"
+                )
+
+                word_count = section.get(
+                    "word_count",
+                    0
+                )
+
+                results.append({
+
+                    "section_id": section_id,
+
+                    "pages": pages,
+
+                    "page": (
+                        pages[0]
+                        if pages
+                        else None
                     ),
 
-                "pages":
-                    section.get(
-                        "pages",
-                        []
+                    "text": section.get(
+                        "text",
+                        ""
                     ),
 
-                "word_count":
-                    section.get(
-                        "word_count",
-                        0
+                    "word_count": word_count,
+
+                    "relevance": round(
+                        min(score, 100),
+                        2
                     ),
 
-                "tfidf_score":
-                    round(
-                        float(tfidf_score),
-                        4
+                    "score": round(
+                        min(score, 100),
+                        2
                     ),
 
-                "keyword_score":
-                    round(
-                        keyword_score,
-                        4
-                    ),
+                    "topic": topic
 
-                "phrase_score":
-                    round(
-                        phrase_score,
-                        4
-                    ),
+                })
 
-                "final_score":
-                    round(
-                        final_score,
-                        4
-                    ),
-
-                "text":
-                    section_text
-            })
-
-        # ----------------------------------------------------
-        # SORT BY FINAL SCORE
-        # ----------------------------------------------------
-
+        # Sort highest relevance first
         results.sort(
-            key=lambda item:
-                item["final_score"],
+            key=lambda item: item.get(
+                "relevance",
+                0
+            ),
             reverse=True
         )
 
         return results[:top_k]
 
+    # =========================================================
+    # SEARCH
+    # =========================================================
 
-# ============================================================
-# DISPLAY RESULTS
-# ============================================================
-
-def display_results(
-    topic,
-    results
-):
-
-    print("\n" + "=" * 60)
-    print("HYBRID TOPIC SEARCH RESULTS")
-    print("=" * 60)
-
-    print(
-        f"\nTopic: {topic}"
-    )
-
-    if not results:
-
-        print(
-            "\nNo matching sections found."
-        )
-
-        return
-
-    for index, result in enumerate(
-        results,
-        start=1
+    def search(
+        self,
+        query,
+        top_k=5
     ):
+        """
+        Search for a word or phrase
+        across all indexed sections.
+        """
 
-        print(
-            f"\nResult {index}"
+        if not query:
+
+            return []
+
+        query_text = self.normalize_text(
+            query
         )
 
-        print("-" * 60)
+        results = []
 
-        print(
-            f"Section ID: "
-            f"{result.get('section_id')}"
-        )
+        for section in self.sections:
 
-        print(
-            f"Pages: "
-            f"{result.get('pages', [])}"
-        )
+            if not isinstance(section, dict):
 
-        print(
-            f"Word Count: "
-            f"{result.get('word_count', 0)}"
-        )
+                continue
 
-        print(
-            f"TF-IDF Score: "
-            f"{result.get('tfidf_score', 0)}"
-        )
+            text = self.normalize_text(
+                section.get(
+                    "text",
+                    ""
+                )
+            )
 
-        print(
-            f"Keyword Score: "
-            f"{result.get('keyword_score', 0)}"
-        )
+            if query_text in text:
 
-        print(
-            f"Phrase Score: "
-            f"{result.get('phrase_score', 0)}"
-        )
+                pages = section.get(
+                    "pages",
+                    []
+                )
 
-        print(
-            f"Final Score: "
-            f"{result.get('final_score', 0)}"
-        )
+                results.append({
 
-        print(
-            f"Text Preview: "
-            f"{result.get('text', '')[:200]}..."
-        )
+                    "section_id": section.get(
+                        "section_id"
+                    ),
+
+                    "pages": pages,
+
+                    "page": (
+                        pages[0]
+                        if pages
+                        else None
+                    ),
+
+                    "text": section.get(
+                        "text",
+                        ""
+                    ),
+
+                    "relevance": 100,
+
+                    "score": 100
+
+                })
+
+        return results[:top_k]
 
 
-# ============================================================
-# LOCAL TEST
-# ============================================================
+# =============================================================
+# TEST
+# =============================================================
 
 if __name__ == "__main__":
 
-    matcher = TopicMatcher(
-        "content_index.json"
-    )
+    print("=" * 60)
+    print("TOPIC MATCHER TEST")
+    print("=" * 60)
 
-    test_topic = "Data Cleaning"
+    try:
 
-    results = matcher.search(
-        test_topic,
-        top_k=3
-    )
+        matcher = TopicMatcher()
 
-    display_results(
-        test_topic,
-        results
-    )
+        print(
+            "\n✅ TopicMatcher initialized successfully."
+        )
+
+        print(
+            f"📚 Total indexed sections: "
+            f"{len(matcher.sections)}"
+        )
+
+        # -----------------------------------------------------
+        # Test Data Cleaning
+        # -----------------------------------------------------
+
+        test_topic = "Data Cleaning"
+
+        results = matcher.match_topic(
+            test_topic,
+            top_k=5
+        )
+
+        print(
+            f"\n🔎 Search topic: {test_topic}"
+        )
+
+        print(
+            f"✅ Matches found: {len(results)}"
+        )
+
+        for index, result in enumerate(
+            results,
+            start=1
+        ):
+
+            print(
+                f"\n{index}. "
+                f"Section {result.get('section_id')}"
+            )
+
+            print(
+                f"   Pages: "
+                f"{result.get('pages')}"
+            )
+
+            print(
+                f"   Relevance: "
+                f"{result.get('relevance')}%"
+            )
+
+            preview = result.get(
+                "text",
+                ""
+            )[:200]
+
+            print(
+                f"   Preview: "
+                f"{preview}..."
+            )
+
+        print("\n" + "=" * 60)
+        print("✅ TOPIC MATCHER TEST COMPLETED")
+        print("=" * 60)
+
+    except Exception as error:
+
+        print(
+            "\n❌ Topic Matcher Test Failed:"
+        )
+
+        print(error)

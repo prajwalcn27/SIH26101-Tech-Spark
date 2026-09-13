@@ -1,201 +1,251 @@
 import json
 import random
+from pathlib import Path
 
 
 class QuestionManager:
 
-    def __init__(self, question_bank_file="question_bank.json"):
+    def __init__(self, question_bank_path=None):
 
-        self.question_bank_file = question_bank_file
+        BASE_DIR = Path(__file__).resolve().parent
 
-        self.questions = self.load_question_bank()
+        if question_bank_path is None:
+            self.question_bank_path = BASE_DIR / "question_bank.json"
+        else:
+            self.question_bank_path = Path(question_bank_path)
 
-    # ========================================================
-    # LOAD QUESTION BANK
-    # ========================================================
+            if not self.question_bank_path.is_absolute():
+                self.question_bank_path = (
+                    BASE_DIR / self.question_bank_path
+                )
 
-    def load_question_bank(self):
+        self.questions = []
+
+        self.load_questions()
+
+    # =========================================================
+    # LOAD QUESTIONS
+    # =========================================================
+
+    def load_questions(self):
 
         try:
 
+            if not self.question_bank_path.exists():
+
+                print(
+                    f"❌ Question bank not found: "
+                    f"{self.question_bank_path}"
+                )
+
+                self.questions = []
+                return
+
             with open(
-                self.question_bank_file,
+                self.question_bank_path,
                 "r",
                 encoding="utf-8"
             ) as file:
 
                 data = json.load(file)
 
-            questions = data.get(
-                "questions",
-                []
-            )
+            if isinstance(data, list):
+
+                self.questions = data
+
+            elif isinstance(data, dict):
+
+                if "questions" in data:
+
+                    self.questions = data["questions"]
+
+                elif "question_bank" in data:
+
+                    self.questions = data["question_bank"]
+
+                else:
+
+                    self.questions = []
+
+            else:
+
+                self.questions = []
 
             print(
-                f"✅ Loaded {len(questions)} questions "
-                f"from question bank."
+                f"✅ Loaded {len(self.questions)} "
+                f"questions from question bank."
             )
 
-            return questions
-
-        except FileNotFoundError:
+        except json.JSONDecodeError as error:
 
             print(
-                f"❌ Question bank not found: "
-                f"{self.question_bank_file}"
+                f"❌ Invalid question_bank.json: {error}"
             )
 
-            return []
+            self.questions = []
 
-        except json.JSONDecodeError:
+        except Exception as error:
 
             print(
-                "❌ Invalid question_bank.json file."
+                f"❌ Error loading question bank: {error}"
             )
 
-            return []
+            self.questions = []
 
-
-    # ========================================================
+    # =========================================================
     # GET ALL QUESTIONS
-    # ========================================================
+    # =========================================================
 
     def get_all_questions(self):
 
         return self.questions
 
-
-    # ========================================================
-    # GET QUESTIONS BY TOPIC
-    # ========================================================
-
-    def get_by_topic(self, topic, limit=None):
-
-        matching_questions = [
-
-            question
-            for question in self.questions
-
-            if question.get("topic", "").lower()
-            == topic.lower()
-
-        ]
-
-        if limit:
-
-            matching_questions = matching_questions[:limit]
-
-        return matching_questions
-
-
-    # ========================================================
-    # GET QUESTIONS BY DIFFICULTY
-    # ========================================================
-
-    def get_by_difficulty(
-        self,
-        difficulty,
-        limit=None
-    ):
-
-        matching_questions = [
-
-            question
-            for question in self.questions
-
-            if question.get("difficulty", "").lower()
-            == difficulty.lower()
-
-        ]
-
-        if limit:
-
-            matching_questions = matching_questions[:limit]
-
-        return matching_questions
-
-
-    # ========================================================
-    # GET QUESTIONS BY TOPIC AND DIFFICULTY
-    # ========================================================
+    # =========================================================
+    # GET QUESTIONS
+    # =========================================================
 
     def get_questions(
         self,
         topic=None,
         difficulty=None,
-        limit=None
+        number_of_questions=None,
+        count=None
     ):
+        """
+        Flexible question retrieval method.
 
-        matching_questions = self.questions
+        Supports:
 
+            get_questions()
+
+            get_questions(topic="Data Cleaning")
+
+            get_questions(
+                topic="Data Cleaning",
+                number_of_questions=2
+            )
+
+            get_questions(count=5)
+        """
+
+        selected_questions = self.questions.copy()
+
+        # -----------------------------------------------------
         # Filter by topic
+        # -----------------------------------------------------
+
         if topic:
 
-            matching_questions = [
+            topic_lower = str(
+                topic
+            ).strip().lower()
+
+            selected_questions = [
 
                 question
-                for question in matching_questions
 
-                if question.get("topic", "").lower()
-                == topic.lower()
+                for question in selected_questions
+
+                if str(
+                    question.get(
+                        "topic",
+                        ""
+                    )
+                ).strip().lower()
+                == topic_lower
 
             ]
 
+        # -----------------------------------------------------
         # Filter by difficulty
+        # -----------------------------------------------------
+
         if difficulty:
 
-            matching_questions = [
+            difficulty_lower = str(
+                difficulty
+            ).strip().lower()
+
+            selected_questions = [
 
                 question
-                for question in matching_questions
 
-                if question.get("difficulty", "").lower()
-                == difficulty.lower()
+                for question in selected_questions
+
+                if str(
+                    question.get(
+                        "difficulty",
+                        ""
+                    )
+                ).strip().lower()
+                == difficulty_lower
 
             ]
 
-        # Limit number of questions
-        if limit:
+        # -----------------------------------------------------
+        # Determine requested number
+        # -----------------------------------------------------
 
-            matching_questions = matching_questions[:limit]
+        if number_of_questions is not None:
 
-        return matching_questions
+            requested_count = number_of_questions
 
+        elif count is not None:
 
-    # ========================================================
-    # RANDOM QUESTION SELECTION
-    # ========================================================
+            requested_count = count
 
-    def get_random_questions(
-        self,
-        number_of_questions=5,
-        topic=None,
-        difficulty=None
-    ):
+        else:
 
-        matching_questions = self.get_questions(
-            topic=topic,
-            difficulty=difficulty
+            # If no number is specified,
+            # return all matching questions.
+            requested_count = len(
+                selected_questions
+            )
+
+        try:
+
+            requested_count = int(
+                requested_count
+            )
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            requested_count = len(
+                selected_questions
+            )
+
+        # -----------------------------------------------------
+        # Randomize only when a limited number is requested
+        # -----------------------------------------------------
+
+        if requested_count < len(
+            selected_questions
+        ):
+
+            random.shuffle(
+                selected_questions
+            )
+
+        return selected_questions[
+            :requested_count
+        ]
+
+    # =========================================================
+    # GET QUESTION COUNT
+    # =========================================================
+
+    def get_question_count(self):
+
+        return len(
+            self.questions
         )
 
-        if not matching_questions:
-
-            return []
-
-        number_of_questions = min(
-            number_of_questions,
-            len(matching_questions)
-        )
-
-        return random.sample(
-            matching_questions,
-            number_of_questions
-        )
-
-
-    # ========================================================
-    # REMOVE DUPLICATE QUESTIONS
-    # ========================================================
+    # =========================================================
+    # REMOVE DUPLICATES
+    # =========================================================
 
     def remove_duplicates(self):
 
@@ -205,14 +255,21 @@ class QuestionManager:
 
         for question in self.questions:
 
-            question_text = question.get(
-                "question",
-                ""
+            question_text = str(
+                question.get(
+                    "question",
+                    ""
+                )
             ).strip().lower()
 
-            if question_text not in seen:
+            if (
+                question_text
+                and question_text not in seen
+            ):
 
-                seen.add(question_text)
+                seen.add(
+                    question_text
+                )
 
                 unique_questions.append(
                     question
@@ -220,154 +277,216 @@ class QuestionManager:
 
         self.questions = unique_questions
 
-        return unique_questions
+        return self.questions
 
+    # =========================================================
+    # GET RANDOM QUESTIONS
+    # =========================================================
 
-    # ========================================================
-    # DISPLAY QUESTIONS
-    # ========================================================
+    def get_random_questions(
+        self,
+        count=None,
+        number_of_questions=None
+    ):
+        """
+        Get random questions.
 
-    def display_questions(self, questions):
+        Supports both:
 
-        print("\n" + "=" * 60)
-        print("                 SELECTED QUESTIONS")
-        print("=" * 60)
+            get_random_questions(count=5)
 
-        if not questions:
+        and:
 
-            print("❌ No questions found.")
+            get_random_questions(
+                number_of_questions=5
+            )
+        """
 
-            return
+        if number_of_questions is not None:
 
-        for index, question in enumerate(
-            questions,
-            start=1
+            count = number_of_questions
+
+        if count is None:
+
+            count = 5
+
+        if not self.questions:
+
+            return []
+
+        try:
+
+            count = int(count)
+
+        except (
+            ValueError,
+            TypeError
         ):
 
-            print(
-                f"\n📘 Question {index}"
+            count = 5
+
+        available_questions = (
+            self.questions.copy()
+        )
+
+        random.shuffle(
+            available_questions
+        )
+
+        return available_questions[
+            :min(
+                count,
+                len(available_questions)
             )
+        ]
 
-            print(
-                f"   ID         : "
-                f"{question.get('id')}"
-            )
+    # =========================================================
+    # GET QUESTIONS BY TOPIC
+    # =========================================================
 
-            print(
-                f"   Topic      : "
-                f"{question.get('topic')}"
-            )
+    def get_questions_by_topic(
+        self,
+        topic
+    ):
 
-            print(
-                f"   Difficulty : "
-                f"{question.get('difficulty')}"
-            )
+        if not topic:
 
-            print(
-                f"   Question   : "
-                f"{question.get('question')}"
-            )
+            return []
 
-            options = question.get(
-                "options",
-                {}
-            )
+        topic_lower = str(
+            topic
+        ).strip().lower()
 
-            for key, value in options.items():
+        return [
 
-                print(
-                    f"      {key}. {value}"
+            question
+
+            for question in self.questions
+
+            if str(
+                question.get(
+                    "topic",
+                    ""
                 )
+            ).strip().lower()
+            == topic_lower
+
+        ]
+
+    # =========================================================
+    # GET QUESTIONS BY DIFFICULTY
+    # =========================================================
+
+    def get_questions_by_difficulty(
+        self,
+        difficulty
+    ):
+
+        if not difficulty:
+
+            return []
+
+        difficulty_lower = str(
+            difficulty
+        ).strip().lower()
+
+        return [
+
+            question
+
+            for question in self.questions
+
+            if str(
+                question.get(
+                    "difficulty",
+                    ""
+                )
+            ).strip().lower()
+            == difficulty_lower
+
+        ]
+
+    # =========================================================
+    # GET TARGETED QUESTIONS
+    # =========================================================
+
+    def get_targeted_questions(
+        self,
+        topic=None,
+        difficulty=None,
+        count=5
+    ):
+
+        return self.get_questions(
+            topic=topic,
+            difficulty=difficulty,
+            count=count
+        )
 
 
-# ============================================================
-# TEST QUESTION MANAGER
-# ============================================================
+# =============================================================
+# TEST
+# =============================================================
 
 if __name__ == "__main__":
 
     print("=" * 60)
-    print("                 QUESTION MANAGER")
+    print("QUESTION MANAGER TEST")
     print("=" * 60)
 
     manager = QuestionManager()
 
-    # --------------------------------------------------------
-    # Remove duplicate questions
-    # --------------------------------------------------------
+    print(
+        f"\n📚 Total Questions: "
+        f"{manager.get_question_count()}"
+    )
 
     manager.remove_duplicates()
 
     print(
-        f"\n✅ Unique questions: "
-        f"{len(manager.get_all_questions())}"
+        f"📚 After duplicate removal: "
+        f"{manager.get_question_count()}"
     )
 
-    # --------------------------------------------------------
-    # Test 1: Get Decision Tree questions
-    # --------------------------------------------------------
+    # Test normal get_questions()
+    questions = manager.get_questions()
 
     print(
-        "\n🔎 Searching for Decision Tree questions..."
+        f"\n✅ get_questions(): "
+        f"{len(questions)} questions"
     )
 
-    decision_tree_questions = manager.get_by_topic(
-        "Decision Tree"
-    )
-
-    manager.display_questions(
-        decision_tree_questions
-    )
-
-    # --------------------------------------------------------
-    # Test 2: Get Easy questions
-    # --------------------------------------------------------
-
-    print(
-        "\n🔎 Searching for Easy questions..."
-    )
-
-    easy_questions = manager.get_by_difficulty(
-        "Easy"
-    )
-
-    manager.display_questions(
-        easy_questions
-    )
-
-    # --------------------------------------------------------
-    # Test 3: Random questions
-    # --------------------------------------------------------
-
-    print(
-        "\n🎲 Selecting random questions..."
-    )
-
-    random_questions = manager.get_random_questions(
+    # Test limited questions
+    questions = manager.get_questions(
         number_of_questions=3
     )
 
-    manager.display_questions(
-        random_questions
+    print(
+        f"✅ get_questions(number_of_questions=3): "
+        f"{len(questions)} questions"
     )
 
-    # --------------------------------------------------------
-    # Test 4: Topic + difficulty
-    # --------------------------------------------------------
+    # Test topic
+    questions = manager.get_questions(
+        topic="Data Cleaning",
+        number_of_questions=2
+    )
 
     print(
-        "\n🎯 Searching for Easy Decision Tree questions..."
+        f"✅ Data Cleaning questions: "
+        f"{len(questions)}"
     )
 
-    filtered_questions = manager.get_questions(
-        topic="Decision Tree",
-        difficulty="Easy"
+    # Test random questions
+    questions = manager.get_random_questions(
+        number_of_questions=3
     )
 
-    manager.display_questions(
-        filtered_questions
+    print(
+        f"✅ Random questions: "
+        f"{len(questions)}"
     )
 
     print("\n" + "=" * 60)
-    print("           QUESTION MANAGER TEST COMPLETED")
+    print("✅ QUESTION MANAGER TEST COMPLETED")
     print("=" * 60)
