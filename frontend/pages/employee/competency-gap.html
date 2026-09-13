@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Competency Gap - Tech Spark</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #168f5b;
+            --green-dark: #087443;
+            --green-light: #e9f8f0;
+            --green-soft: #f1faf5;
+            --text: #18352a;
+            --muted: #708078;
+            --border: #dfe9e4;
+            --white: #ffffff;
+            --bg: #f5f9f7;
+            --orange: #f59e0b;
+            --red: #dc3545;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* =========================
+           HERO
+        ========================== */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(
+                135deg,
+                #063e29,
+                #087443,
+                #18a76b
+            );
+            color: white;
+            padding: 25px 6% 45px;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 50%;
+            right: -160px;
+            top: -250px;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 50%;
+            left: -130px;
+            bottom: -190px;
+        }
+
+        .hero-top {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 45px;
+            height: 45px;
+            background: white;
+            color: var(--green-dark);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+
+        .brand h2 {
+            font-size: 21px;
+        }
+
+        .brand span {
+            display: block;
+            font-size: 12px;
+            opacity: .75;
+        }
+
+        .back-btn {
+            border: 1px solid rgba(255, 255, 255, .35);
+            background: rgba(255, 255, 255, .1);
+            color: white;
+            padding: 10px 17px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: var(--green-dark);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            margin-top: 38px;
+            max-width: 720px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 7px 12px;
+            background: rgba(255, 255, 255, .14);
+            border-radius: 30px;
+            font-size: 11px;
+            letter-spacing: .5px;
+            margin-bottom: 13px;
+        }
+
+        .hero-content h1 {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .hero-content p {
+            color: rgba(255, 255, 255, .82);
+            line-height: 1.7;
+        }
+
+        /* =========================
+           ROBOT
+        ========================== */
+
+        .robot {
+            position: absolute;
+            right: 9%;
+            bottom: 25px;
+            width: 110px;
+            height: 135px;
+            z-index: 3;
+            animation: floatRobot 3s ease-in-out infinite;
+        }
+
+        .robot-head {
+            position: absolute;
+            left: 20px;
+            top: 15px;
+            width: 70px;
+            height: 54px;
+            background: white;
+            border: 4px solid #a2e9c4;
+            border-radius: 18px;
+        }
+
+        .robot-head::before {
+            content: "";
+            position: absolute;
+            left: 29px;
+            top: -19px;
+            width: 6px;
+            height: 17px;
+            background: #a2e9c4;
+            border-radius: 5px;
+        }
+
+        .robot-head::after {
+            content: "";
+            position: absolute;
+            left: 26px;
+            top: -28px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #bdf2d4;
+        }
+
+        .eye {
+            position: absolute;
+            top: 17px;
+            width: 9px;
+            height: 9px;
+            background: var(--green);
+            border-radius: 50%;
+        }
+
+        .eye.left {
+            left: 16px;
+        }
+
+        .eye.right {
+            right: 16px;
+        }
+
+        .smile {
+            position: absolute;
+            width: 24px;
+            height: 10px;
+            border-bottom: 3px solid var(--green);
+            border-radius: 50%;
+            bottom: 9px;
+            left: 19px;
+        }
+
+        .robot-body {
+            position: absolute;
+            top: 73px;
+            left: 27px;
+            width: 57px;
+            height: 45px;
+            background: #dff8ea;
+            border: 4px solid #a2e9c4;
+            border-radius: 14px;
+        }
+
+        .robot-body::after {
+            content: "AI";
+            position: absolute;
+            left: 18px;
+            top: 12px;
+            color: var(--green-dark);
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .arm {
+            position: absolute;
+            top: 76px;
+            width: 13px;
+            height: 34px;
+            background: white;
+            border: 3px solid #a2e9c4;
+            border-radius: 10px;
+        }
+
+        .arm.left {
+            left: 10px;
+            transform: rotate(18deg);
+        }
+
+        .arm.right {
+            right: 10px;
+            transform: rotate(-18deg);
+        }
+
+        @keyframes floatRobot {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* =========================
+           MAIN
+        ========================== */
+
+        .container {
+            width: 88%;
+            max-width: 1250px;
+            margin: -18px auto 70px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 22px;
+            box-shadow: 0 7px 22px rgba(17, 70, 45, .05);
+        }
+
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .card-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           SCORE
+        ========================== */
+
+        .score-section {
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .score-circle {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            margin: auto;
+
+            background:
+                conic-gradient(
+                    var(--green) 58%,
+                    #e7efeb 0
+                );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: "";
+            position: absolute;
+            width: 145px;
+            height: 145px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .score-number {
+            position: relative;
+            text-align: center;
+        }
+
+        .score-number strong {
+            display: block;
+            font-size: 40px;
+            color: var(--green-dark);
+        }
+
+        .score-number span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .analysis-box {
+            background: var(--green-soft);
+            border: 1px solid #cfeadd;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .analysis-label {
+            color: var(--green-dark);
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .analysis-box p {
+            color: #557064;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           TOPIC GRID
+        ========================== */
+
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .topic-card {
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 18px;
+            transition: .2s;
+        }
+
+        .topic-card:hover {
+            border-color: #b7ddc9;
+            transform: translateY(-2px);
+        }
+
+        .topic-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .topic-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .topic-score {
+            font-weight: 800;
+            color: var(--green-dark);
+        }
+
+        .bar {
+            width: 100%;
+            height: 8px;
+            background: #edf3ef;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar span {
+            display: block;
+            height: 100%;
+            border-radius: 20px;
+
+            background: linear-gradient(
+                90deg,
+                #0c7d4c,
+                #39bd82
+            );
+
+            transition: width 1s ease;
+        }
+
+        .topic-status {
+            display: inline-block;
+            margin-top: 9px;
+            font-size: 11px;
+            padding: 5px 9px;
+            border-radius: 20px;
+        }
+
+        .weak {
+            background: #ffe9eb;
+            color: #b52c39;
+        }
+
+        .medium {
+            background: #fff3dc;
+            color: #996000;
+        }
+
+        .good {
+            background: #e7f8ee;
+            color: #087443;
+        }
+
+        /* =========================
+           PRIORITY
+        ========================== */
+
+        .priority {
+            border-left: 4px solid var(--red);
+            background: #fff8f8;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 18px;
+        }
+
+        .priority h3 {
+            color: #a92331;
+            font-size: 15px;
+            margin-bottom: 7px;
+        }
+
+        .priority p {
+            color: #6d5558;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           RECOMMENDATION
+        ========================== */
+
+        .recommendation {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .material {
+            border: 1px solid #cde7d9;
+            background: var(--green-soft);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .material-label {
+            font-size: 11px;
+            color: var(--green-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .material h3 {
+            margin-bottom: 7px;
+        }
+
+        .material p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .material-tags {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-top: 13px;
+        }
+
+        .material-tags span {
+            background: white;
+            border: 1px solid #d7e9df;
+            border-radius: 20px;
+            padding: 5px 9px;
+            font-size: 10px;
+            color: #557064;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================== */
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: .2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--green-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--green-dark);
+            border: 1px solid #bcdcca;
+        }
+
+        .btn-outline:hover {
+            background: var(--green-soft);
+        }
+
+        /* =========================
+           LEARNING PATH
+        ========================== */
+
+        .path {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .path-step {
+            position: relative;
+            text-align: center;
+            padding: 17px 10px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .path-number {
+            width: 36px;
+            height: 36px;
+            margin: auto auto 9px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--green-light);
+            color: var(--green-dark);
+            font-weight: 800;
+        }
+
+        .path-step h4 {
+            font-size: 12px;
+        }
+
+        .path-step p {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================== */
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            padding: 20px;
+        }
+
+        /* =========================
+           QUIZ BUTTON EFFECT
+        ========================== */
+
+        #takeQuizBtn {
+            min-width: 145px;
+            position: relative;
+            z-index: 20;
+        }
+
+        #takeQuizBtn:active {
+            transform: scale(.97);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 850px) {
+
+            .robot {
+                display: none;
+            }
+
+            .score-section {
+                grid-template-columns: 1fr;
+            }
+
+            .topic-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .recommendation {
+                grid-template-columns: 1fr;
+            }
+
+            .path {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+            }
+
+            .hero {
+                padding-left: 4%;
+                padding-right: 4%;
+            }
+
+            .hero-content h1 {
+                font-size: 29px;
+            }
+
+            .hero-top {
+                align-items: flex-start;
+            }
+
+            .brand h2 {
+                font-size: 18px;
+            }
+
+            .back-btn {
+                padding: 8px 11px;
+                font-size: 11px;
+            }
+
+            .path {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                width: 100%;
+            }
+
+            #takeQuizBtn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         HERO
+    ========================== -->
+
+    <header class="hero">
+
+        <div class="hero-top">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    TS
+                </div>
+
+                <div>
+                    <h2>Tech Spark</h2>
+                    <span>AI Learning Platform</span>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="back-btn"
+                onclick="goDashboard()"
+            >
+                ← Dashboard
+            </button>
+
+        </div>
+
+
+        <div class="hero-content">
+
+            <span class="tag">
+                AI COMPETENCY ANALYSIS
+            </span>
+
+            <h1>
+                Your Competency Gap
+            </h1>
+
+            <p>
+                Our AI has analyzed your assessment performance and identified
+                the topics where focused learning can improve your competency.
+            </p>
+
+        </div>
+
+
+        <!-- CSS ROBOT -->
+
+        <div class="robot">
+
+            <div class="robot-head">
+
+                <span class="eye left"></span>
+                <span class="eye right"></span>
+
+                <span class="smile"></span>
+
+            </div>
+
+            <div class="robot-body"></div>
+
+            <div class="arm left"></div>
+            <div class="arm right"></div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="container">
+
+
+        <!-- =========================
+             OVERALL SCORE
+        ========================== -->
+
+        <section class="card">
+
+            <div class="score-section">
+
+                <div>
+
+                    <div class="score-circle">
+
+                        <div class="score-number">
+
+                            <strong>58%</strong>
+
+                            <span>
+                                Overall Competency
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <h2 class="card-title">
+                        AI Competency Analysis
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Your current competency level is moderate. The AI has
+                        identified specific topics that need additional learning.
+                    </p>
+
+
+                    <div
+                        class="analysis-box"
+                        style="margin-top:18px;"
+                    >
+
+                        <div class="analysis-label">
+                            AI Analysis
+                        </div>
+
+                        <p>
+                            Your strongest performance is in Data Validation and
+                            Data Formatting. The largest learning gap is in
+                            Missing Values and Duplicate Records. The system has
+                            therefore prioritized Data Cleaning Fundamentals
+                            for your next learning activity.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             TOPIC ANALYSIS
+        ========================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                Topic-Level Competency
+            </h2>
+
+            <p class="card-subtitle">
+                AI breaks your overall competency into individual topics so that
+                learning can be targeted to the exact area that needs improvement.
+            </p>
+
+
+            <div class="topic-grid">
+
+
+                <!-- TOPIC 1 -->
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Missing Values
+                        </span>
+
+                        <span class="topic-score">
+                            32%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:32%;"></span>
+                    </div>
+
+                    <span class="topic-status weak">
+                        Priority Gap
+                    </span>
+
+                </div>
+
+
+                <!-- TOPIC 2 -->
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Duplicate Records
+                        </span>
+
+                        <span class="topic-score">
+                            38%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:38%;"></span>
+                    </div>
+
+                    <span class="topic-status weak">
+                        Needs Improvement
+                    </span>
+
+                </div>
+
+
+                <!-- TOPIC 3 -->
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Data Formatting
+                        </span>
+
+                        <span class="topic-score">
+                            51%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:51%;"></span>
+                    </div>
+
+                    <span class="topic-status medium">
+                        Developing
+                    </span>
+
+                </div>
+
+
+                <!-- TOPIC 4 -->
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Data Validation
+                        </span>
+
+                        <span class="topic-score">
+                            59%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:59%;"></span>
+                    </div>
+
+                    <span class="topic-status good">
+                        Relatively Strong
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRIORITY GAP -->
+
+            <div class="priority">
+
+                <h3>
+                    ⚠ Priority Learning Gap: Missing Values
+                </h3>
+
+                <p>
+                    Your assessment responses indicate that you need additional
+                    practice with identifying, handling, and validating missing
+                    values in datasets. This topic has therefore been selected
+                    as the first priority in your personalized learning path.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             RECOMMENDATION
+        ========================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                Recommended Learning
+            </h2>
+
+            <p class="card-subtitle">
+                Based on your competency gaps, the AI recommends the following
+                approved learning material.
+            </p>
+
+
+            <div
+                class="recommendation"
+                style="margin-top:20px;"
+            >
+
+                <div class="material">
+
+                    <div class="material-label">
+                        AI Recommended Material
+                    </div>
+
+                    <h3>
+                        Data Cleaning Fundamentals
+                    </h3>
+
+                    <p>
+                        A focused learning resource covering missing values,
+                        duplicate records, data formatting, and validation
+                        techniques.
+                    </p>
+
+
+                    <div class="material-tags">
+
+                        <span>
+                            Missing Values
+                        </span>
+
+                        <span>
+                            Data Cleaning
+                        </span>
+
+                        <span>
+                            Beginner Friendly
+                        </span>
+
+                        <span>
+                            Approved Material
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="actions">
+
+                    <!--
+                        IMPORTANT:
+                        competency-gap.html and quiz.html
+                        are in the SAME folder.
+
+                        Therefore:
+                        ./quiz.html
+
+                        directly opens quiz.html.
+                    -->
+
+                    <a
+                        href="./quiz.html"
+                        class="btn btn-primary"
+                        id="takeQuizBtn"
+                    >
+                        Take AI Quiz →
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             LEARNING PATH
+        ========================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                Personalized Learning Path
+            </h2>
+
+            <p class="card-subtitle">
+                Your learning journey automatically adapts based on competency
+                performance.
+            </p>
+
+
+            <div class="path">
+
+
+                <div class="path-step">
+
+                    <div class="path-number">
+                        1
+                    </div>
+
+                    <h4>
+                        Identify Gap
+                    </h4>
+
+                    <p>
+                        AI analyzes assessment
+                    </p>
+
+                </div>
+
+
+                <div class="path-step">
+
+                    <div class="path-number">
+                        2
+                    </div>
+
+                    <h4>
+                        Learn
+                    </h4>
+
+                    <p>
+                        Study targeted material
+                    </p>
+
+                </div>
+
+
+                <div class="path-step">
+
+                    <div class="path-number">
+                        3
+                    </div>
+
+                    <h4>
+                        Take Quiz
+                    </h4>
+
+                    <p>
+                        Test your understanding
+                    </p>
+
+                </div>
+
+
+                <div class="path-step">
+
+                    <div class="path-number">
+                        4
+                    </div>
+
+                    <h4>
+                        Update Competency
+                    </h4>
+
+                    <p>
+                        AI updates your profile
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             STRENGTHS
+        ========================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                Your Strength Areas
+            </h2>
+
+            <p class="card-subtitle">
+                These topics currently show stronger performance.
+            </p>
+
+
+            <div class="topic-grid">
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Data Validation
+                        </span>
+
+                        <span class="topic-score">
+                            59%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:59%;"></span>
+                    </div>
+
+                    <span class="topic-status good">
+                        Stronger Area
+                    </span>
+
+                </div>
+
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Data Formatting
+                        </span>
+
+                        <span class="topic-score">
+                            51%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:51%;"></span>
+                    </div>
+
+                    <span class="topic-status medium">
+                        Developing
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <footer>
+
+        Tech Spark • SIH26101 • AI-Enabled Learning Platform
+
+    </footer>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script>
+
+        /*
+         * ==========================================
+         * DASHBOARD NAVIGATION
+         * ==========================================
+         */
+
+        function goDashboard() {
+
+            window.location.href = "./dashboard.html";
+
+        }
+
+
+        /*
+         * ==========================================
+         * QUIZ NAVIGATION
+         * ==========================================
+         *
+         * This function is kept as an additional
+         * fallback.
+         *
+         * Main button already uses:
+         *
+         * ./quiz.html
+         *
+         * ==========================================
+         */
+
+        function startQuiz() {
+
+            window.location.assign("./quiz.html");
+
+        }
+
+
+        /*
+         * ==========================================
+         * SAVE COMPETENCY GAP INFORMATION
+         * ==========================================
+         */
+
+        localStorage.setItem(
+            "techSparkCompetencyGap",
+
+            JSON.stringify({
+
+                overallScore: 58,
+
+                priorityTopic: "Missing Values",
+
+                priorityScore: 32,
+
+                recommendedMaterial: "Data Cleaning Fundamentals"
+
+            })
+        );
+
+
+        /*
+         * ==========================================
+         * PAGE LOAD
+         * ==========================================
+         */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+
+            function () {
+
+                /*
+                 * Animate competency bars
+                 */
+
+                const bars =
+                    document.querySelectorAll(".bar span");
+
+
+                bars.forEach(
+
+                    function (bar) {
+
+                        const width =
+                            bar.style.width;
+
+
+                        bar.style.width = "0";
+
+
+                        setTimeout(
+
+                            function () {
+
+                                bar.style.width = width;
+
+                            },
+
+                            250
+
+                        );
+
+                    }
+
+                );
+
+
+                /*
+                 * Extra quiz click protection
+                 *
+                 * If the browser handles the
+                 * anchor normally, it opens quiz.html.
+                 *
+                 * This listener also forces navigation.
+                 */
+
+                const quizButton =
+                    document.getElementById("takeQuizBtn");
+
+
+                if (quizButton) {
+
+                    quizButton.addEventListener(
+
+                        "click",
+
+                        function () {
+
+                            window.location.assign("./quiz.html");
+
+                        }
+
+                    );
+
+                }
+
+            }
+
+        );
+
+    </script>
+
+</body>
+
+</html>

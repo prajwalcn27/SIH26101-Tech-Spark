@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Material Verification | Tech Spark</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, Arial, sans-serif;
+            background: #f4f8f5;
+            color: #173b2a;
+        }
+
+        /* =========================
+           TOP BAR
+        ========================= */
+
+        .topbar {
+            height: 72px;
+            background: #ffffff;
+            border-bottom: 1px solid #dce9df;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #16834b, #35b96f);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .brand-text h2 {
+            font-size: 20px;
+            color: #12633a;
+        }
+
+        .brand-text span {
+            font-size: 11px;
+            color: #789184;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dff4e7;
+            color: #147442;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .admin-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .admin-role {
+            font-size: 11px;
+            color: #789184;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            margin: 28px 35px 25px;
+            min-height: 210px;
+            border-radius: 25px;
+            background:
+                radial-gradient(circle at 85% 20%, rgba(255,255,255,.18), transparent 25%),
+                linear-gradient(135deg, #0c683b, #159957 55%, #42bd78);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            padding: 35px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border: 1px solid rgba(255,255,255,.13);
+            border-radius: 50%;
+            right: 130px;
+            top: -110px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 650px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,.14);
+            border: 1px solid rgba(255,255,255,.25);
+            padding: 7px 13px;
+            border-radius: 30px;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+
+        .hero h1 {
+            font-size: 34px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: rgba(255,255,255,.86);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* =========================
+           ROBOT
+        ========================= */
+
+        .robot-area {
+            width: 210px;
+            height: 180px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .robot-ring {
+            position: absolute;
+            width: 155px;
+            height: 155px;
+            border: 2px solid rgba(255,255,255,.18);
+            border-radius: 50%;
+            animation: rotate 12s linear infinite;
+        }
+
+        .robot {
+            width: 85px;
+            height: 75px;
+            background: white;
+            border-radius: 25px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,.15);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .robot::before,
+        .robot::after {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 30px;
+            background: white;
+            top: 23px;
+            border-radius: 10px;
+        }
+
+        .robot::before {
+            left: -9px;
+        }
+
+        .robot::after {
+            right: -9px;
+        }
+
+        .robot-face {
+            position: absolute;
+            left: 15px;
+            right: 15px;
+            top: 18px;
+            height: 37px;
+            background: #dff8e8;
+            border-radius: 15px;
+        }
+
+        .eye {
+            position: absolute;
+            width: 9px;
+            height: 9px;
+            background: #16834b;
+            border-radius: 50%;
+            top: 11px;
+        }
+
+        .eye.left {
+            left: 13px;
+        }
+
+        .eye.right {
+            right: 13px;
+        }
+
+        .robot-mouth {
+            position: absolute;
+            width: 22px;
+            height: 9px;
+            border-bottom: 3px solid #16834b;
+            border-radius: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 5px;
+        }
+
+        .antenna {
+            position: absolute;
+            width: 3px;
+            height: 15px;
+            background: white;
+            top: -14px;
+            left: 50%;
+        }
+
+        .antenna::after {
+            content: "";
+            width: 8px;
+            height: 8px;
+            background: #a8f0c5;
+            border-radius: 50%;
+            position: absolute;
+            top: -6px;
+            left: -2.5px;
+        }
+
+        @keyframes float {
+            0%,100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+            padding: 0 35px 45px;
+        }
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #dfebe2;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(24,70,43,.05);
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 13px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #e7f7ed;
+            color: #16834b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .stat-card h3 {
+            font-size: 28px;
+            color: #164d30;
+        }
+
+        .stat-card p {
+            color: #7a8e83;
+            font-size: 12px;
+        }
+
+        /* =========================
+           TOOLBAR
+        ========================= */
+
+        .toolbar {
+            background: white;
+            border: 1px solid #dfebe2;
+            border-radius: 18px;
+            padding: 17px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .search {
+            flex: 1;
+            position: relative;
+        }
+
+        .search input {
+            width: 100%;
+            height: 45px;
+            border: 1px solid #d9e6dd;
+            border-radius: 12px;
+            padding: 0 15px;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .search input:focus {
+            border-color: #2ca867;
+            box-shadow: 0 0 0 3px rgba(44,168,103,.08);
+        }
+
+        select {
+            height: 45px;
+            min-width: 170px;
+            border: 1px solid #d9e6dd;
+            border-radius: 12px;
+            padding: 0 13px;
+            background: white;
+            color: #385a47;
+            outline: none;
+        }
+
+        .back-btn {
+            height: 45px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 12px;
+            background: #edf7f1;
+            color: #147442;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: #dff1e6;
+        }
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .panel {
+            background: white;
+            border: 1px solid #dfebe2;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(24,70,43,.05);
+        }
+
+        .panel-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #e8efe9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h2 {
+            font-size: 18px;
+            color: #164d30;
+        }
+
+        .panel-header p {
+            font-size: 12px;
+            color: #84958b;
+            margin-top: 4px;
+        }
+
+        .review-count {
+            background: #fff4dc;
+            color: #a96c00;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            background: #f7faf8;
+            padding: 14px 18px;
+            font-size: 11px;
+            color: #72877a;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        td {
+            padding: 16px 18px;
+            border-top: 1px solid #edf2ee;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: #fbfdfb;
+        }
+
+        .material {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            min-width: 250px;
+        }
+
+        .file-icon {
+            width: 42px;
+            height: 42px;
+            background: #e8f7ed;
+            color: #158048;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .material-name {
+            font-weight: 700;
+            color: #214c35;
+            margin-bottom: 4px;
+        }
+
+        .material-meta {
+            font-size: 11px;
+            color: #8a998f;
+        }
+
+        .competency {
+            color: #426050;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status.pending {
+            background: #fff4dc;
+            color: #a96c00;
+        }
+
+        .status.approved {
+            background: #e4f7eb;
+            color: #177442;
+        }
+
+        .status.rejected {
+            background: #fde9e8;
+            color: #bb443f;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .actions {
+            display: flex;
+            gap: 7px;
+        }
+
+        .action-btn {
+            border: none;
+            border-radius: 9px;
+            padding: 8px 11px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .view-btn {
+            background: #edf5f0;
+            color: #37614a;
+        }
+
+        .approve-btn {
+            background: #dcf5e5;
+            color: #137341;
+        }
+
+        .reject-btn {
+            background: #fde7e6;
+            color: #b6403b;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* =========================
+           EMPTY STATE
+        ========================= */
+
+        .empty {
+            display: none;
+            text-align: center;
+            padding: 55px 20px;
+            color: #7f9086;
+        }
+
+        .empty-icon {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .empty h3 {
+            color: #426050;
+            margin-bottom: 6px;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10,35,22,.55);
+            backdrop-filter: blur(5px);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            width: min(620px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 22px;
+            box-shadow: 0 25px 70px rgba(0,0,0,.2);
+        }
+
+        .modal-header {
+            padding: 21px 24px;
+            border-bottom: 1px solid #e5eee8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            color: #164d30;
+        }
+
+        .close {
+            border: none;
+            background: #f0f5f2;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #496456;
+            font-size: 18px;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 145px 1fr;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf2ee;
+        }
+
+        .detail-label {
+            color: #809087;
+            font-size: 12px;
+        }
+
+        .detail-value {
+            color: #244d37;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .verification-note {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 13px;
+            background: #f1f8f4;
+            color: #456554;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            padding: 17px 24px;
+            border-top: 1px solid #e5eee8;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .modal-btn.cancel {
+            background: #eef3ef;
+            color: #50665a;
+        }
+
+        .modal-btn.approve {
+            background: #16834b;
+            color: white;
+        }
+
+        .modal-btn.reject {
+            background: #c94c46;
+            color: white;
+        }
+
+        /* =========================
+           TOAST
+        ========================= */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #173b2a;
+            color: white;
+            padding: 14px 19px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,.18);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: .3s;
+            z-index: 900;
+            font-size: 13px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid #39b875;
+        }
+
+        .toast.error {
+            border-left: 4px solid #e25a53;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media(max-width: 1000px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero {
+                padding: 30px;
+            }
+
+            .robot-area {
+                display: none;
+            }
+        }
+
+        @media(max-width: 700px) {
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .admin-info .admin-name,
+            .admin-info .admin-role {
+                display: none;
+            }
+
+            .hero {
+                margin: 18px;
+            }
+
+            .container {
+                padding: 0 18px 35px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            select,
+            .back-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =========================
+     TOP BAR
+========================= -->
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-logo">TS</div>
+
+        <div class="brand-text">
+            <h2>Tech Spark</h2>
+            <span>AI Learning Platform</span>
+        </div>
+    </div>
+
+    <div class="admin-info">
+        <div>
+            <div class="admin-name">Admin</div>
+            <div class="admin-role">Platform Administrator</div>
+        </div>
+
+        <div class="admin-avatar">A</div>
+    </div>
+
+</header>
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <div class="hero-badge">
+            🛡️ ADMIN VERIFICATION
+        </div>
+
+        <h1>Learning Material Verification</h1>
+
+        <p>
+            Review and verify learning materials before they become
+            available to employees. Only approved materials should enter
+            the personalized learning flow.
+        </p>
+
+    </div>
+
+
+    <div class="robot-area">
+
+        <div class="robot-ring"></div>
+
+        <div class="robot">
+
+            <div class="antenna"></div>
+
+            <div class="robot-face">
+
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+
+                <div class="robot-mouth"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="container">
+
+
+    <!-- STATS -->
+
+    <section class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div>
+                    <h3 id="totalMaterials">0</h3>
+                    <p>Total Materials</p>
+                </div>
+
+                <div class="stat-icon">📚</div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div>
+                    <h3 id="pendingMaterials">0</h3>
+                    <p>Pending Verification</p>
+                </div>
+
+                <div class="stat-icon">⏳</div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div>
+                    <h3 id="approvedMaterials">0</h3>
+                    <p>Approved</p>
+                </div>
+
+                <div class="stat-icon">✓</div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div>
+                    <h3 id="rejectedMaterials">0</h3>
+                    <p>Rejected</p>
+                </div>
+
+                <div class="stat-icon">✕</div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TOOLBAR -->
+
+    <section class="toolbar">
+
+        <div class="search">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search learning materials..."
+                oninput="filterMaterials()"
+            >
+
+        </div>
+
+
+        <select id="statusFilter" onchange="filterMaterials()">
+
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+
+        </select>
+
+
+        <select id="competencyFilter" onchange="filterMaterials()">
+
+            <option value="all">All Competencies</option>
+            <option value="Data Cleaning">Data Cleaning</option>
+            <option value="Data Validation">Data Validation</option>
+            <option value="Statistical Computing">Statistical Computing</option>
+            <option value="Survey Methodology">Survey Methodology</option>
+
+        </select>
+
+
+        <button class="back-btn" onclick="goDashboard()">
+            ← Dashboard
+        </button>
+
+    </section>
+
+
+    <!-- MATERIAL TABLE -->
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2>Material Review Queue</h2>
+
+                <p>
+                    Verify content quality before employee access.
+                </p>
+
+            </div>
+
+            <div class="review-count" id="reviewCount">
+                0 pending review
+            </div>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Learning Material</th>
+                        <th>Competency</th>
+                        <th>Uploaded By</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="materialTable">
+
+                </tbody>
+
+            </table>
+
+
+            <div class="empty" id="emptyState">
+
+                <div class="empty-icon">📂</div>
+
+                <h3>No materials found</h3>
+
+                <p>
+                    Try changing the search or filter.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     DETAIL MODAL
+========================= -->
+
+<div class="modal" id="detailModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>Material Verification</h2>
+
+            <button class="close" onclick="closeModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Material
+                </div>
+
+                <div class="detail-value" id="detailTitle">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Competency
+                </div>
+
+                <div class="detail-value" id="detailCompetency">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Primary Topic
+                </div>
+
+                <div class="detail-value" id="detailTopic">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Target Role
+                </div>
+
+                <div class="detail-value" id="detailRole">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Uploaded By
+                </div>
+
+                <div class="detail-value" id="detailUploader">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    File
+                </div>
+
+                <div class="detail-value" id="detailFile">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Status
+                </div>
+
+                <div class="detail-value" id="detailStatus">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="verification-note">
+
+                <strong>🔍 Verification checklist</strong>
+
+                <br><br>
+
+                ✓ Material belongs to the selected competency<br>
+                ✓ Content is relevant to the target employee role<br>
+                ✓ Learning content is appropriate for training<br>
+                ✓ Material is suitable for AI-generated assessment<br>
+                ✓ No unsupported or irrelevant content
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="modal-btn cancel"
+                onclick="closeModal()"
+            >
+                Close
+            </button>
+
+
+            <button
+                class="modal-btn reject"
+                id="modalRejectBtn"
+                onclick="rejectCurrentMaterial()"
+            >
+                Reject
+            </button>
+
+
+            <button
+                class="modal-btn approve"
+                id="modalApproveBtn"
+                onclick="approveCurrentMaterial()"
+            >
+                ✓ Approve Material
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     TOAST
+========================= -->
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+    /* =========================================
+       SAMPLE MATERIALS
+    ========================================= */
+
+    const defaultMaterials = [
+
+        {
+            id: 1,
+            title: "Data Cleaning Fundamentals",
+            competency: "Data Cleaning",
+            topic: "Missing Values",
+            role: "Data Analyst",
+            uploader: "Admin",
+            file: "data_cleaning_fundamentals.pdf",
+            date: "12 Sep 2026",
+            status: "pending"
+        },
+
+        {
+            id: 2,
+            title: "Statistical Analysis Basics",
+            competency: "Statistical Computing",
+            topic: "Descriptive Statistics",
+            role: "Statistical Officer",
+            uploader: "Admin",
+            file: "statistical_analysis_basics.pdf",
+            date: "11 Sep 2026",
+            status: "pending"
+        },
+
+        {
+            id: 3,
+            title: "Data Validation Techniques",
+            competency: "Data Validation",
+            topic: "Validation Rules",
+            role: "Data Quality Specialist",
+            uploader: "Admin",
+            file: "data_validation.pdf",
+            date: "10 Sep 2026",
+            status: "approved"
+        },
+
+        {
+            id: 4,
+            title: "Survey Methodology Guide",
+            competency: "Survey Methodology",
+            topic: "Sampling Methods",
+            role: "Survey Officer",
+            uploader: "Admin",
+            file: "survey_methodology.pdf",
+            date: "09 Sep 2026",
+            status: "approved"
+        },
+
+        {
+            id: 5,
+            title: "Advanced Data Processing",
+            competency: "Data Cleaning",
+            topic: "Outlier Detection",
+            role: "Data Analyst",
+            uploader: "Admin",
+            file: "advanced_data_processing.pptx",
+            date: "08 Sep 2026",
+            status: "rejected"
+        }
+
+    ];
+
+
+    /* =========================================
+       LOAD MATERIALS
+    ========================================= */
+
+    function getMaterials() {
+
+        const saved = localStorage.getItem("techSparkMaterials");
+
+        if (saved) {
+
+            try {
+
+                const parsed = JSON.parse(saved);
+
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    return parsed;
+                }
+
+            } catch (error) {
+
+                console.log("Could not read saved materials.");
+
+            }
+
+        }
+
+        localStorage.setItem(
+            "techSparkMaterials",
+            JSON.stringify(defaultMaterials)
+        );
+
+        return defaultMaterials;
+
+    }
+
+
+    let materials = getMaterials();
+
+    let currentMaterialId = null;
+
+
+    /* =========================================
+       SAVE MATERIALS
+    ========================================= */
+
+    function saveMaterials() {
+
+        localStorage.setItem(
+            "techSparkMaterials",
+            JSON.stringify(materials)
+        );
+
+    }
+
+
+    /* =========================================
+       UPDATE STATISTICS
+    ========================================= */
+
+    function updateStats() {
+
+        const total = materials.length;
+
+        const pending =
+            materials.filter(
+                item => item.status === "pending"
+            ).length;
+
+        const approved =
+            materials.filter(
+                item => item.status === "approved"
+            ).length;
+
+        const rejected =
+            materials.filter(
+                item => item.status === "rejected"
+            ).length;
+
+
+        document.getElementById("totalMaterials").textContent =
+            total;
+
+        document.getElementById("pendingMaterials").textContent =
+            pending;
+
+        document.getElementById("approvedMaterials").textContent =
+            approved;
+
+        document.getElementById("rejectedMaterials").textContent =
+            rejected;
+
+
+        document.getElementById("reviewCount").textContent =
+            pending + (pending === 1 ? " pending review" : " pending reviews");
+
+    }
+
+
+    /* =========================================
+       RENDER TABLE
+    ========================================= */
+
+    function renderMaterials(list = materials) {
+
+        const table =
+            document.getElementById("materialTable");
+
+        const empty =
+            document.getElementById("emptyState");
+
+
+        table.innerHTML = "";
+
+
+        if (list.length === 0) {
+
+            empty.style.display = "block";
+
+            return;
+
+        }
+
+
+        empty.style.display = "none";
+
+
+        list.forEach(material => {
+
+            const row =
+                document.createElement("tr");
+
+
+            let statusClass =
+                material.status;
+
+            let statusText =
+                material.status.charAt(0).toUpperCase() +
+                material.status.slice(1);
+
+
+            let actions = `
+                <button
+                    class="action-btn view-btn"
+                    onclick="viewMaterial(${material.id})"
+                >
+                    View
+                </button>
+            `;
+
+
+            if (material.status === "pending") {
+
+                actions += `
+                    <button
+                        class="action-btn approve-btn"
+                        onclick="approveMaterial(${material.id})"
+                    >
+                        ✓ Approve
+                    </button>
+
+                    <button
+                        class="action-btn reject-btn"
+                        onclick="rejectMaterial(${material.id})"
+                    >
+                        ✕ Reject
+                    </button>
+                `;
+
+            }
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    <div class="material">
+
+                        <div class="file-icon">
+                            ${getFileType(material.file)}
+                        </div>
+
+                        <div>
+
+                            <div class="material-name">
+                                ${escapeHtml(material.title)}
+                            </div>
+
+                            <div class="material-meta">
+                                ${escapeHtml(material.file)}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+
+                <td class="competency">
+                    ${escapeHtml(material.competency)}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(material.uploader || "Admin")}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(material.date || "-")}
+                </td>
+
+
+                <td>
+
+                    <span class="status ${statusClass}">
+
+                        <span class="status-dot"></span>
+
+                        ${statusText}
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <div class="actions">
+                        ${actions}
+                    </div>
+
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        });
+
+    }
+
+
+    /* =========================================
+       FILE TYPE
+    ========================================= */
+
+    function getFileType(filename) {
+
+        if (!filename) {
+            return "DOC";
+        }
+
+        const extension =
+            filename
+                .split(".")
+                .pop()
+                .toUpperCase();
+
+
+        if (extension === "PDF") {
+            return "PDF";
+        }
+
+        if (
+            extension === "PPT" ||
+            extension === "PPTX"
+        ) {
+            return "PPT";
+        }
+
+        if (
+            extension === "DOC" ||
+            extension === "DOCX"
+        ) {
+            return "DOC";
+        }
+
+        return extension.substring(0, 4);
+
+    }
+
+
+    /* =========================================
+       ESCAPE HTML
+    ========================================= */
+
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* =========================================
+       FILTER
+    ========================================= */
+
+    function filterMaterials() {
+
+        const search =
+            document
+                .getElementById("searchInput")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const status =
+            document
+                .getElementById("statusFilter")
+                .value;
+
+
+        const competency =
+            document
+                .getElementById("competencyFilter")
+                .value;
+
+
+        const filtered =
+            materials.filter(material => {
+
+                const matchesSearch =
+                    !search ||
+                    material.title
+                        .toLowerCase()
+                        .includes(search) ||
+                    material.file
+                        .toLowerCase()
+                        .includes(search) ||
+                    material.topic
+                        .toLowerCase()
+                        .includes(search);
+
+
+                const matchesStatus =
+                    status === "all" ||
+                    material.status === status;
+
+
+                const matchesCompetency =
+                    competency === "all" ||
+                    material.competency === competency;
+
+
+                return (
+                    matchesSearch &&
+                    matchesStatus &&
+                    matchesCompetency
+                );
+
+            });
+
+
+        renderMaterials(filtered);
+
+    }
+
+
+    /* =========================================
+       VIEW MATERIAL
+    ========================================= */
+
+    function viewMaterial(id) {
+
+        const material =
+            materials.find(
+                item => Number(item.id) === Number(id)
+            );
+
+
+        if (!material) {
+            return;
+        }
+
+
+        currentMaterialId = material.id;
+
+
+        document.getElementById("detailTitle").textContent =
+            material.title || "-";
+
+
+        document.getElementById("detailCompetency").textContent =
+            material.competency || "-";
+
+
+        document.getElementById("detailTopic").textContent =
+            material.topic || "-";
+
+
+        document.getElementById("detailRole").textContent =
+            material.role || "-";
+
+
+        document.getElementById("detailUploader").textContent =
+            material.uploader || "Admin";
+
+
+        document.getElementById("detailFile").textContent =
+            material.file || "-";
+
+
+        document.getElementById("detailStatus").textContent =
+            material.status.charAt(0).toUpperCase() +
+            material.status.slice(1);
+
+
+        const approveButton =
+            document.getElementById("modalApproveBtn");
+
+        const rejectButton =
+            document.getElementById("modalRejectBtn");
+
+
+        if (material.status === "pending") {
+
+            approveButton.style.display = "inline-block";
+            rejectButton.style.display = "inline-block";
+
+        } else {
+
+            approveButton.style.display = "none";
+            rejectButton.style.display = "none";
+
+        }
+
+
+        document
+            .getElementById("detailModal")
+            .classList
+            .add("show");
+
+    }
+
+
+    /* =========================================
+       APPROVE MATERIAL
+    ========================================= */
+
+    function approveMaterial(id) {
+
+        const material =
+            materials.find(
+                item => Number(item.id) === Number(id)
+            );
+
+
+        if (!material) {
+            return;
+        }
+
+
+        material.status = "approved";
+
+        material.verifiedBy = "Admin";
+
+        material.verifiedAt =
+            new Date().toLocaleString();
+
+
+        saveMaterials();
+
+        updateStats();
+
+        filterMaterials();
+
+
+        showToast(
+            "✓ Material approved successfully. Employees can now access it.",
+            "success"
+        );
+
+    }
+
+
+    /* =========================================
+       REJECT MATERIAL
+    ========================================= */
+
+    function rejectMaterial(id) {
+
+        const material =
+            materials.find(
+                item => Number(item.id) === Number(id)
+            );
+
+
+        if (!material) {
+            return;
+        }
+
+
+        material.status = "rejected";
+
+        material.verifiedBy = "Admin";
+
+        material.verifiedAt =
+            new Date().toLocaleString();
+
+
+        saveMaterials();
+
+        updateStats();
+
+        filterMaterials();
+
+
+        showToast(
+            "Material rejected successfully.",
+            "error"
+        );
+
+    }
+
+
+    /* =========================================
+       MODAL APPROVE
+    ========================================= */
+
+    function approveCurrentMaterial() {
+
+        if (currentMaterialId === null) {
+            return;
+        }
+
+
+        approveMaterial(currentMaterialId);
+
+        closeModal();
+
+    }
+
+
+    /* =========================================
+       MODAL REJECT
+    ========================================= */
+
+    function rejectCurrentMaterial() {
+
+        if (currentMaterialId === null) {
+            return;
+        }
+
+
+        rejectMaterial(currentMaterialId);
+
+        closeModal();
+
+    }
+
+
+    /* =========================================
+       CLOSE MODAL
+    ========================================= */
+
+    function closeModal() {
+
+        document
+            .getElementById("detailModal")
+            .classList
+            .remove("show");
+
+        currentMaterialId = null;
+
+    }
+
+
+    /* =========================================
+       DASHBOARD
+    ========================================= */
+
+    function goDashboard() {
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+
+
+    /* =========================================
+       TOAST
+    ========================================= */
+
+    function showToast(message, type = "success") {
+
+        const toast =
+            document.getElementById("toast");
+
+
+        toast.textContent = message;
+
+        toast.className =
+            "toast show " + type;
+
+
+        setTimeout(() => {
+
+            toast.classList.remove("show");
+
+        }, 3500);
+
+    }
+
+
+    /* =========================================
+       ESC KEY
+    ========================================= */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Escape") {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================
+       INITIAL LOAD
+    ========================================= */
+
+    updateStats();
+
+    renderMaterials();
+
+</script>
+
+</body>
+</html>
