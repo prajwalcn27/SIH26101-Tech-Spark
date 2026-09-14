@@ -2,25 +2,20 @@
 __pycache__/
 *.pyc
 *.pyo
-*.pyd
 
-# Environment variables
+# Virtual environment
+backend/venv/
+
+# Uploaded learning materials
+backend/uploads/
+
+# Environment variables / secrets
 .env
-.env.*
-
-# Generated files
-extracted_text.txt
-ai_pipeline_result.json
-
-# Virtual environments
-venv/
-.venv/
-env/
+*.env
 
 # IDE
 .vscode/
 .idea/
 
-# OS
-.DS_Store
-Thumbs.db
+# Logs
+*.log
