@@ -161,7 +161,409 @@ def update_competency_score(before_score, quiz_score):
 
     return round(updated_score, 2)
 
+# ============================================================
+# PROCESS QUIZ RESULT
+# Calculates quiz score, identifies mistakes,
+# and updates competency score
+# ============================================================
 
+def process_quiz_result(attempt_id):
+
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+
+        # ----------------------------------------------------
+        # 1. Get quiz attempt
+        # ----------------------------------------------------
+
+        cursor.execute(
+            """
+            SELECT
+                quiz_id,
+                employee_id,
+                total_questions
+            FROM quiz_attempts
+            WHERE id = %s
+            """,
+            (attempt_id,)
+        )
+
+        attempt = cursor.fetchone()
+
+        if not attempt:
+            print("Quiz attempt not found.")
+            return
+
+        quiz_id = attempt["quiz_id"]
+        employee_id = attempt["employee_id"]
+        total_questions = attempt["total_questions"]
+
+        # ----------------------------------------------------
+        # 2. Get quiz answers
+        # ----------------------------------------------------
+
+        cursor.execute(
+            """
+            SELECT
+                qa.question_id,
+                qa.selected_answer,
+                qa.is_correct,
+                q.correct_answer,
+                q.competency_id
+            FROM quiz_answers qa
+            JOIN questions q
+                ON qa.question_id = q.id
+            WHERE qa.attempt_id = %s
+            """,
+            (attempt_id,)
+        )
+
+        answers = cursor.fetchall()
+
+        if not answers:
+            print("No quiz answers found.")
+            return
+
+        # ----------------------------------------------------
+        # 3. Calculate score
+        # ----------------------------------------------------
+
+        correct_count = sum(
+            1 for answer in answers
+            if answer["is_correct"] == 1
+        )
+
+        quiz_score = (
+            correct_count / total_questions
+        ) * 100
+
+        # ----------------------------------------------------
+        # 4. Update quiz attempt score
+        # ----------------------------------------------------
+
+        cursor.execute(
+            """
+            UPDATE quiz_attempts
+            SET score = %s
+            WHERE id = %s
+            """,
+            (
+                round(quiz_score, 2),
+                attempt_id
+            )
+        )
+
+        # ----------------------------------------------------
+        # 5. Count mistakes by competency
+        # ----------------------------------------------------
+
+        competency_correct = {}
+        competency_total = {}
+
+        for answer in answers:
+
+            competency_id = answer["competency_id"]
+
+            competency_total[competency_id] = (
+                competency_total.get(
+                    competency_id, 0
+                ) + 1
+            )
+
+            if answer["is_correct"] == 1:
+
+                competency_correct[competency_id] = (
+                    competency_correct.get(
+                        competency_id, 0
+                    ) + 1
+                )
+
+            else:
+
+                competency_correct.setdefault(
+                    competency_id,
+                    0
+                )
+
+        # ----------------------------------------------------
+        # 6. Update competency score
+        # ----------------------------------------------------
+
+        for competency_id in competency_total:
+
+            total = competency_total[competency_id]
+
+            correct = competency_correct.get(
+                competency_id,
+                0
+            )
+
+            quiz_competency_score = (
+                correct / total
+            ) * 100
+
+            # Get previous competency score
+            cursor.execute(
+                """
+                SELECT score
+                FROM competency_scores
+                WHERE employee_id = %s
+                AND competency_id = %s
+                """,
+                (
+                    employee_id,
+                    competency_id
+                )
+            )
+
+            previous = cursor.fetchone()
+
+            if previous:
+
+                before_score = float(
+                    previous["score"]
+                )
+
+                updated_score = update_competency_score(
+                    before_score,
+                    quiz_competency_score
+                )
+
+            else:
+
+                updated_score = round(
+                    quiz_competency_score,
+                    2
+                )
+
+            cursor.execute(
+                """
+                INSERT INTO competency_scores
+                (
+                    employee_id,
+                    competency_id,
+                    score,
+                    assessed_from
+                )
+                VALUES (%s, %s, %s, %s)
+
+                ON DUPLICATE KEY UPDATE
+                score = VALUES(score),
+                assessed_from = VALUES(assessed_from)
+                """,
+                (
+                    employee_id,
+                    competency_id,
+                    updated_score,
+                    "Quiz"
+                )
+            )
+
+        # ----------------------------------------------------
+        # 7. Commit changes
+        # ----------------------------------------------------
+
+        conn.commit()
+
+        # ----------------------------------------------------
+        # 8. Display result
+        # ----------------------------------------------------
+
+        print("\n======================================")
+        print("             QUIZ RESULT")
+        print("======================================")
+
+        print(
+            f"Quiz Score: {quiz_score:.2f}%"
+        )
+
+        print(
+            f"Correct Answers: "
+            f"{correct_count}/{total_questions}"
+        )
+
+        print(
+            f"Mistakes: "
+            f"{total_questions - correct_count}"
+        )
+
+        print("\nMistake Analysis:")
+
+        for answer in answers:
+
+            if answer["is_correct"] == 0:
+
+                print(
+                    f"Question ID {answer['question_id']}: "
+                    f"Wrong answer "
+                    f"({answer['selected_answer']}) → "
+                    f"Correct answer "
+                    f"({answer['correct_answer']})"
+                )
+
+        print(
+            "\nCompetency scores updated successfully."
+        )
+
+    except Exception as e:
+
+        conn.rollback()
+
+        print(
+            "\nQuiz processing error:",
+            e
+        )
+
+    finally:
+
+        cursor.close()
+        conn.close()
+        
+# ============================================================
+# UPDATE LEARNING PROGRESS
+# ============================================================
+
+def update_learning_progress(
+    employee_id,
+    material_id,
+    progress_percentage
+):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        if progress_percentage >= 100:
+            status = "Completed"
+            completed_at = "NOW()"
+        else:
+            status = "In Progress"
+            completed_at = "NULL"
+
+        cursor.execute(
+            """
+            SELECT id
+            FROM employee_learning_progress
+            WHERE employee_id = %s
+            AND material_id = %s
+            """,
+            (
+                employee_id,
+                material_id
+            )
+        )
+
+        existing = cursor.fetchone()
+
+        if existing:
+
+            if progress_percentage >= 100:
+
+                cursor.execute(
+                    """
+                    UPDATE employee_learning_progress
+                    SET progress_percentage = %s,
+                        status = %s,
+                        completed_at = NOW()
+                    WHERE employee_id = %s
+                    AND material_id = %s
+                    """,
+                    (
+                        round(progress_percentage, 2),
+                        status,
+                        employee_id,
+                        material_id
+                    )
+                )
+
+            else:
+
+                cursor.execute(
+                    """
+                    UPDATE employee_learning_progress
+                    SET progress_percentage = %s,
+                        status = %s
+                    WHERE employee_id = %s
+                    AND material_id = %s
+                    """,
+                    (
+                        round(progress_percentage, 2),
+                        status,
+                        employee_id,
+                        material_id
+                    )
+                )
+
+        else:
+
+            if progress_percentage >= 100:
+
+                cursor.execute(
+                    """
+                    INSERT INTO employee_learning_progress
+                    (
+                        employee_id,
+                        material_id,
+                        progress_percentage,
+                        status,
+                        started_at,
+                        completed_at
+                    )
+                    VALUES (%s, %s, %s, %s, NOW(), NOW())
+                    """,
+                    (
+                        employee_id,
+                        material_id,
+                        round(progress_percentage, 2),
+                        status
+                    )
+                )
+
+            else:
+
+                cursor.execute(
+                    """
+                    INSERT INTO employee_learning_progress
+                    (
+                        employee_id,
+                        material_id,
+                        progress_percentage,
+                        status,
+                        started_at
+                    )
+                    VALUES (%s, %s, %s, %s, NOW())
+                    """,
+                    (
+                        employee_id,
+                        material_id,
+                        round(progress_percentage, 2),
+                        status
+                    )
+                )
+
+        conn.commit()
+
+        print(
+            "\nLearning progress updated successfully."
+        )
+
+    except Exception as e:
+
+        conn.rollback()
+
+        print(
+            "\nProgress update error:",
+            e
+        )
+
+    finally:
+
+        cursor.close()
+        conn.close()
+        
 # ============================================================
 # SAVE ASSESSMENT RESULT TO MYSQL
 # ============================================================
