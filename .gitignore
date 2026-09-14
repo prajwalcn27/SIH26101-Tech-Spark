@@ -4,14 +4,19 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Environment
+# Environment variables / secrets
 .env
 .env.*
+*.env
 
 # Virtual environments
 venv/
 .venv/
 env/
+backend/venv/
+
+# Uploaded learning materials
+backend/uploads/
 
 # IDE
 .vscode/
@@ -24,17 +29,6 @@ Thumbs.db
 # Generated files
 extracted_text.txt
 cleaned_text.txt
-text_sections.txt
-topics.txt
-ai/*_result.json
-ai/*_results.json
-ai/quiz_result_analysis.json
-ai/learning_profile.json
-ai/updated_competency.json
-ai/content_index.json
-ai/content_analysis.json
-ai/gap_analysis.json
-ai/recommendations.json
 
-# Learning materials
-learning_materials/*.pdf
+# Logs
+*.log
