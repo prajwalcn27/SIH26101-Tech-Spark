@@ -1,154 +1,199 @@
-import os
-import json
-import time
-from dotenv import load_dotenv
-from google import genai
-from google.genai import types
-
-load_dotenv()
-
-api_key = os.getenv("GEMINI_API_KEY")
-
-if not api_key:
-    raise ValueError("❌ GEMINI_API_KEY not found in .env file")
-
-client = genai.Client(api_key=api_key)
+import re
 
 
-def validate_mcqs(learning_material, mcqs):
+def validate_mcq(question, source_material):
+    """
+    Simple local validation for an AI-generated MCQ.
+    Checks source support, options, answer, ambiguity,
+    duplicate options, topic and difficulty.
+    """
 
-    prompt = f"""
-You are an AI question validator.
+    issues = []
 
-Your task is to validate the following multiple-choice questions
-using ONLY the provided learning material.
+    # ---------------------------------------
+    # Required fields
+    # ---------------------------------------
 
-DO NOT use outside knowledge.
-
-LEARNING MATERIAL:
-{learning_material}
-
-MCQs:
-{json.dumps(mcqs, indent=2)}
-
-For every question, check:
-
-1. Is the correct answer supported by the learning material?
-2. Does the question topic match the learning material?
-3. Is there exactly one correct answer?
-4. Are all four options meaningful?
-5. Is the question clear and grammatically correct?
-6. Is it a duplicate of another question?
-7. Is the difficulty appropriate?
-8. Give confidence from 0 to 100.
-9. Make sure no outside knowledge was used.
-
-Status rules:
-
-VALID = clearly supported by the material
-REVIEW = uncertain or needs human checking
-INVALID = incorrect or unsupported
-
-Return ONLY valid JSON.
-
-Required format:
-
-{{
-    "validation_results": [
-        {{
-            "question_number": 1,
-            "status": "VALID",
-            "confidence": 95,
-            "answer_supported": true,
-            "topic_match": true,
-            "single_correct_answer": true,
-            "options_meaningful": true,
-            "grammar_clear": true,
-            "duplicate": false,
-            "difficulty_appropriate": true,
-            "reason": "Short explanation"
-        }}
+    required_fields = [
+        "question",
+        "options",
+        "correct_answer",
+        "explanation",
+        "topic",
+        "difficulty"
     ]
-}}
-"""
 
-    max_attempts = 3
+    for field in required_fields:
+        if field not in question:
+            issues.append(f"Missing field: {field}")
 
-    for attempt in range(1, max_attempts + 1):
+    if issues:
+        return {
+            "status": "INVALID",
+            "confidence": 0,
+            "issues": issues
+        }
 
-        try:
-            print(f"Validation attempt {attempt}/{max_attempts}...")
+    # ---------------------------------------
+    # Check options
+    # ---------------------------------------
 
-            response = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json"
-                )
-            )
+    options = question["options"]
 
-            result = json.loads(response.text)
+    if not isinstance(options, dict):
+        issues.append("Options must be a dictionary.")
 
-            print("✅ MCQ validation successful!")
+    else:
+        expected_options = {"A", "B", "C", "D"}
 
-            return result
+        if set(options.keys()) != expected_options:
+            issues.append("MCQ must contain exactly A, B, C and D options.")
 
-        except Exception as e:
+        # Check duplicate options
+        option_values = [
+            str(value).strip().lower()
+            for value in options.values()
+        ]
 
-            error_message = str(e)
+        if len(option_values) != len(set(option_values)):
+            issues.append("Duplicate options found.")
 
-            if "503" in error_message or "UNAVAILABLE" in error_message:
+        # Check empty options
+        for key, value in options.items():
+            if not str(value).strip():
+                issues.append(f"Option {key} is empty.")
 
-                if attempt < max_attempts:
-                    print("⚠️ Gemini server is busy.")
-                    print("⏳ Waiting 5 seconds before retrying...")
-                    time.sleep(5)
+    # ---------------------------------------
+    # Check correct answer
+    # ---------------------------------------
 
-                else:
-                    print("❌ Gemini is still busy after 3 attempts.")
-                    return None
+    correct_answer = str(question["correct_answer"]).strip().upper()
 
-            else:
-                print("❌ MCQ validation error:")
-                print(e)
-                return None
+    if correct_answer not in {"A", "B", "C", "D"}:
+        issues.append("Correct answer must be A, B, C or D.")
 
+    # ---------------------------------------
+    # Check question clarity
+    # ---------------------------------------
+
+    question_text = str(question["question"]).strip()
+
+    if len(question_text) < 10:
+        issues.append("Question is too short.")
+
+    if "?" not in question_text:
+        issues.append("Question may be unclear because it does not contain a question mark.")
+
+    # ---------------------------------------
+    # Check topic
+    # ---------------------------------------
+
+    topic = str(question["topic"]).strip()
+
+    if not topic:
+        issues.append("Topic is empty.")
+
+    # ---------------------------------------
+    # Check difficulty
+    # ---------------------------------------
+
+    difficulty = str(question["difficulty"]).strip().capitalize()
+
+    if difficulty not in {"Easy", "Medium", "Hard"}:
+        issues.append("Difficulty must be Easy, Medium or Hard.")
+
+    # ---------------------------------------
+    # Source support check
+    # ---------------------------------------
+
+    source_lower = source_material.lower()
+
+    # Important words from question and correct answer
+    text_to_check = (
+        question_text + " " +
+        str(question["options"].get(correct_answer, "")) + " " +
+        str(question["explanation"])
+    ).lower()
+
+    words = re.findall(r"[a-zA-Z]{4,}", text_to_check)
+
+    supported_words = 0
+
+    for word in words:
+        if word in source_lower:
+            supported_words += 1
+
+    if words:
+        support_percentage = (supported_words / len(words)) * 100
+    else:
+        support_percentage = 0
+
+    if support_percentage < 30:
+        issues.append("Answer or explanation may not be sufficiently supported by the source material.")
+
+    # ---------------------------------------
+    # Final status
+    # ---------------------------------------
+
+    if not issues:
+        status = "VALID"
+        confidence = 95
+
+    elif any(
+        "not sufficiently supported" in issue.lower()
+        or "unclear" in issue.lower()
+        for issue in issues
+    ):
+        status = "REVIEW"
+        confidence = 60
+
+    else:
+        status = "INVALID"
+        confidence = 30
+
+    return {
+        "status": status,
+        "confidence": confidence,
+        "source_support_percentage": round(support_percentage, 2),
+        "issues": issues
+    }
+
+
+# ---------------------------------------
+# LOCAL TEST
+# ---------------------------------------
 
 if __name__ == "__main__":
 
     sample_material = """
-    Data cleaning is the process of identifying, correcting,
-    removing, or replacing incorrect, incomplete, duplicate,
-    and inconsistent data.
+    Data cleaning is the process of detecting and correcting inaccurate,
+    incomplete, duplicated, or inconsistent data.
 
-    Missing values are values that are not present in a dataset.
+    Missing values can be handled by removing records, replacing values,
+    or using statistical methods.
 
-    Duplicate records are repeated records in a dataset.
-
-    Data validation checks whether data meets predefined rules
-    and requirements.
+    Duplicate records occur when the same data is stored more than once.
+    Removing duplicate records helps improve data quality.
     """
 
-    sample_mcqs = [
-        {
-            "question": "What is data cleaning?",
-            "options": {
-                "A": "Creating a database",
-                "B": "Identifying and correcting incorrect or incomplete data",
-                "C": "Deleting all data",
-                "D": "Creating charts"
-            },
-            "correct_answer": "B",
-            "explanation": "Data cleaning identifies and corrects incorrect or incomplete data.",
-            "topic": "Data Cleaning",
-            "difficulty": "Easy"
-        }
-    ]
+    sample_question = {
+        "question": "What is the purpose of removing duplicate records?",
+        "options": {
+            "A": "To improve data quality",
+            "B": "To create more duplicate records",
+            "C": "To increase missing values",
+            "D": "To remove all statistical methods"
+        },
+        "correct_answer": "A",
+        "explanation": "Removing duplicate records helps improve data quality.",
+        "topic": "Data Cleaning",
+        "difficulty": "Easy"
+    }
 
-    print("Validating MCQs...")
-    print("----------------------------------------")
+    result = validate_mcq(sample_question, sample_material)
 
-    result = validate_mcqs(sample_material, sample_mcqs)
-
-    if result:
-        print(json.dumps(result, indent=2))
+    print("\n===== MCQ VALIDATION =====")
+    print(f"Status: {result['status']}")
+    print(f"Confidence: {result['confidence']}%")
+    print(f"Source Support: {result['source_support_percentage']}%")
+    print(f"Issues: {result['issues']}")

@@ -1,0 +1,2442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Upload Material | Tech Spark</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #18a957;
+            --dark-green: #08783d;
+            --light-green: #eafff2;
+            --text: #173b2b;
+            --muted: #6d7f75;
+            --border: #dcebe3;
+            --background: #f5faf7;
+            --white: #ffffff;
+            --danger: #d95353;
+            --warning: #c78b24;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .topbar {
+            height: 76px;
+            background: rgba(255,255,255,.96);
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 5%;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            backdrop-filter: blur(15px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 44px;
+            height: 44px;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #18b866,
+                    #08783d
+                );
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 900;
+
+            box-shadow:
+                0 8px 20px
+                rgba(24,169,87,.2);
+        }
+
+        .brand-text strong {
+            display: block;
+            font-size: 17px;
+        }
+
+        .brand-text span {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .back-btn {
+            border: 1px solid var(--border);
+            background: white;
+
+            padding: 10px 17px;
+
+            border-radius: 11px;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            transition: .25s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--green);
+            color: var(--green);
+            transform: translateY(-2px);
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            padding: 48px 6% 55px;
+
+            background:
+                radial-gradient(
+                    circle at 85% 20%,
+                    rgba(24,169,87,.15),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #effff5,
+                    #ffffff
+                );
+        }
+
+        .hero-inner {
+            max-width: 1150px;
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 40px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 8px 14px;
+
+            background: #ddfae8;
+            color: var(--dark-green);
+
+            border-radius: 30px;
+
+            font-size: 12px;
+            font-weight: 900;
+
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: clamp(34px,5vw,53px);
+
+            line-height: 1.08;
+
+            letter-spacing: -1.5px;
+
+            margin-bottom: 15px;
+        }
+
+        .hero h1 span {
+            color: var(--green);
+        }
+
+        .hero p {
+            max-width: 680px;
+
+            color: var(--muted);
+
+            line-height: 1.75;
+
+            font-size: 15px;
+        }
+
+        /* =========================
+           CSS ROBOT
+        ========================= */
+
+        .robot {
+            width: 145px;
+            height: 180px;
+
+            position: relative;
+
+            animation:
+                robotFloat
+                3s
+                ease-in-out
+                infinite;
+        }
+
+        .robot-head {
+            width: 125px;
+            height: 82px;
+
+            position: absolute;
+
+            top: 10px;
+            left: 10px;
+
+            background: white;
+
+            border: 4px solid
+                var(--dark-green);
+
+            border-radius: 29px;
+
+            box-shadow:
+                0 12px 30px
+                rgba(8,120,61,.15);
+        }
+
+        .antenna {
+            width: 7px;
+            height: 25px;
+
+            position: absolute;
+
+            top: -28px;
+            left: 57px;
+
+            background:
+                var(--dark-green);
+
+            border-radius: 10px;
+        }
+
+        .antenna::before {
+            content: "";
+
+            width: 15px;
+            height: 15px;
+
+            position: absolute;
+
+            top: -10px;
+            left: -4px;
+
+            border-radius: 50%;
+
+            background:
+                var(--green);
+
+            box-shadow:
+                0 0 18px
+                rgba(24,184,102,.7);
+        }
+
+        .eye {
+            width: 17px;
+            height: 21px;
+
+            position: absolute;
+
+            top: 26px;
+
+            background:
+                var(--dark-green);
+
+            border-radius: 7px;
+
+            animation:
+                blink 4s infinite;
+        }
+
+        .eye.left {
+            left: 28px;
+        }
+
+        .eye.right {
+            right: 28px;
+        }
+
+        .smile {
+            width: 38px;
+            height: 14px;
+
+            position: absolute;
+
+            left: 40px;
+            top: 51px;
+
+            border-bottom:
+                4px solid
+                var(--green);
+
+            border-radius:
+                0 0 30px 30px;
+        }
+
+        .robot-body {
+            width: 82px;
+            height: 70px;
+
+            position: absolute;
+
+            left: 31px;
+            top: 96px;
+
+            border-radius: 22px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #18b866,
+                    #08783d
+                );
+        }
+
+        .robot-body::after {
+            content: "↑";
+
+            width: 36px;
+            height: 25px;
+
+            position: absolute;
+
+            left: 23px;
+            top: 20px;
+
+            background: white;
+
+            color: var(--green);
+
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+            width: min(1150px,92%);
+
+            margin:
+                35px
+                auto
+                70px;
+        }
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                350px;
+
+            gap: 25px;
+
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+
+            border: 1px solid
+                var(--border);
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 12px 35px
+                rgba(20,91,55,.07);
+        }
+
+        /* =========================
+           UPLOAD CARD
+        ========================= */
+
+        .upload-card {
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 21px;
+            margin-bottom: 7px;
+        }
+
+        .section-description {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        /* =========================
+           DROP AREA
+        ========================= */
+
+        .drop-zone {
+            border: 2px dashed
+                #a8d9bb;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f5fff8,
+                    #fbfffc
+                );
+
+            border-radius: 19px;
+
+            min-height: 245px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 30px;
+
+            cursor: pointer;
+
+            transition: .3s;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color:
+                var(--green);
+
+            background:
+                #edfff4;
+
+            transform:
+                translateY(-2px);
+        }
+
+        .upload-icon {
+            width: 65px;
+            height: 65px;
+
+            margin:
+                0
+                auto
+                15px;
+
+            border-radius: 18px;
+
+            background:
+                #ddfae8;
+
+            color:
+                var(--green);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 29px;
+
+            animation:
+                uploadPulse
+                2.5s
+                infinite;
+        }
+
+        .drop-zone h3 {
+            font-size: 18px;
+            margin-bottom: 7px;
+        }
+
+        .drop-zone p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .browse {
+            color: var(--green);
+            font-weight: 900;
+        }
+
+        .file-types {
+            font-size: 11px;
+            color: #8a9991;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* =========================
+           SELECTED FILE
+        ========================= */
+
+        .file-preview {
+            display: none;
+
+            margin-top: 18px;
+
+            padding: 17px;
+
+            border-radius: 15px;
+
+            background:
+                #f2fbf5;
+
+            border:
+                1px solid
+                #cbe9d6;
+        }
+
+        .file-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 11px;
+
+            background:
+                #ddfae8;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 19px;
+        }
+
+        .file-name {
+            font-weight: 800;
+            font-size: 13px;
+            word-break: break-all;
+        }
+
+        .file-size {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .remove-file {
+            border: none;
+            background: transparent;
+
+            color: var(--danger);
+
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form {
+            margin-top: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: var(--danger);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+
+            border: 1px solid
+                var(--border);
+
+            background: #fbfefc;
+
+            padding: 13px 14px;
+
+            border-radius: 11px;
+
+            outline: none;
+
+            color: var(--text);
+
+            font-family: inherit;
+
+            font-size: 13px;
+
+            transition: .2s;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color:
+                var(--green);
+
+            background: white;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(24,169,87,.08);
+        }
+
+        .two-column {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 15px;
+        }
+
+        /* =========================
+           AI SETTINGS
+        ========================= */
+
+        .ai-box {
+            margin-top: 8px;
+
+            padding: 19px;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #effff5,
+                    #f9fffb
+                );
+
+            border:
+                1px solid
+                #cbe9d6;
+        }
+
+        .ai-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            color:
+                var(--dark-green);
+
+            font-weight: 900;
+
+            font-size: 14px;
+
+            margin-bottom: 6px;
+        }
+
+        .ai-box p {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            line-height: 1.6;
+        }
+
+        /* =========================
+           UPLOAD BUTTON
+        ========================= */
+
+        .submit-btn {
+            width: 100%;
+
+            margin-top: 25px;
+
+            border: none;
+
+            padding: 15px;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #18b866,
+                    #08783d
+                );
+
+            color: white;
+
+            font-weight: 900;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 10px 25px
+                rgba(24,169,87,.22);
+
+            transition: .25s;
+        }
+
+        .submit-btn:hover {
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 15px 30px
+                rgba(24,169,87,.28);
+        }
+
+        .submit-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* =========================
+           RIGHT SIDE
+        ========================= */
+
+        .side-card {
+            padding: 25px;
+            position: sticky;
+            top: 100px;
+        }
+
+        .side-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .process-step {
+            display: flex;
+            gap: 13px;
+
+            margin-bottom: 19px;
+        }
+
+        .step-number {
+            min-width: 34px;
+            height: 34px;
+
+            border-radius: 10px;
+
+            background:
+                #e6f8ed;
+
+            color:
+                var(--green);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 900;
+            font-size: 12px;
+        }
+
+        .step-content strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .step-content span {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .security {
+            margin-top: 20px;
+
+            padding: 15px;
+
+            background:
+                #f5faf7;
+
+            border-radius: 13px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.6;
+        }
+
+        /* =========================
+           MATERIAL LIST
+        ========================= */
+
+        .materials-card {
+            margin-top: 25px;
+
+            padding: 28px;
+        }
+
+        .material-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .material-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 17px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 15px;
+
+            transition: .25s;
+        }
+
+        .material-item:hover {
+            border-color:
+                #a8ddbc;
+
+            transform:
+                translateX(4px);
+        }
+
+        .material-info {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .material-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 11px;
+
+            background:
+                #edfff4;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .material-name {
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .material-meta {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .status {
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: 900;
+        }
+
+        .approved {
+            background: #e5faed;
+            color: #08783d;
+        }
+
+        .processing {
+            background: #fff7e8;
+            color: #a16d18;
+        }
+
+        /* =========================
+           PROCESSING MODAL
+        ========================= */
+
+        .modal {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(11,42,26,.55);
+
+            z-index: 500;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .modal-box {
+            width: min(460px,100%);
+
+            background: white;
+
+            border-radius: 23px;
+
+            padding: 35px;
+
+            text-align: center;
+
+            box-shadow:
+                0 25px 70px
+                rgba(0,0,0,.25);
+
+            animation:
+                modalIn
+                .35s
+                ease;
+        }
+
+        .loading-icon {
+            width: 70px;
+            height: 70px;
+
+            margin:
+                0
+                auto
+                20px;
+
+            border-radius: 50%;
+
+            border:
+                5px solid
+                #e3f1e8;
+
+            border-top-color:
+                var(--green);
+
+            animation:
+                spin
+                1s
+                linear
+                infinite;
+        }
+
+        .modal-box h2 {
+            margin-bottom: 9px;
+        }
+
+        .modal-box p {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+        .processing-text {
+            margin-top: 20px;
+
+            color:
+                var(--green);
+
+            font-weight: 800;
+
+            font-size: 13px;
+        }
+
+        /* =========================
+           SUCCESS
+        ========================= */
+
+        .success-modal .loading-icon {
+            border: none;
+
+            background:
+                #e3faeb;
+
+            color:
+                var(--green);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 35px;
+
+            animation:
+                pop
+                .5s
+                ease;
+        }
+
+        .close-modal {
+            margin-top: 22px;
+
+            border: none;
+
+            padding: 12px 25px;
+
+            border-radius: 11px;
+
+            background:
+                var(--green);
+
+            color: white;
+
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            border-top:
+                1px solid
+                var(--border);
+
+            padding: 30px;
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+        /* =========================
+           ANIMATIONS
+        ========================= */
+
+        @keyframes robotFloat {
+
+            0%,100% {
+                transform:
+                    translateY(0);
+            }
+
+            50% {
+                transform:
+                    translateY(-12px);
+            }
+        }
+
+        @keyframes blink {
+
+            0%,45%,50%,100% {
+                transform:
+                    scaleY(1);
+            }
+
+            47% {
+                transform:
+                    scaleY(.1);
+            }
+        }
+
+        @keyframes uploadPulse {
+
+            0%,100% {
+                transform:
+                    scale(1);
+            }
+
+            50% {
+                transform:
+                    scale(1.06);
+            }
+        }
+
+        @keyframes spin {
+
+            to {
+                transform:
+                    rotate(360deg);
+            }
+        }
+
+        @keyframes modalIn {
+
+            from {
+                opacity: 0;
+                transform:
+                    scale(.9)
+                    translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    scale(1)
+                    translateY(0);
+            }
+        }
+
+        @keyframes pop {
+
+            from {
+                transform:
+                    scale(.5);
+            }
+
+            to {
+                transform:
+                    scale(1);
+            }
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media(max-width:850px) {
+
+            .hero-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .side-card {
+                position: static;
+            }
+
+        }
+
+        @media(max-width:600px) {
+
+            .brand-text {
+                display: none;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .upload-card,
+            .materials-card {
+                padding: 20px;
+            }
+
+            .material-item {
+                align-items: flex-start;
+            }
+
+            .status {
+                white-space: nowrap;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            TS
+        </div>
+
+        <div class="brand-text">
+
+            <strong>
+                Tech Spark
+            </strong>
+
+            <span>
+                Competency Intelligence
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="goDashboard()">
+
+        ← Admin Dashboard
+
+    </button>
+
+</header>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero">
+
+    <div class="hero-inner">
+
+        <div>
+
+            <div class="hero-badge">
+                📚 ADMIN MATERIAL MANAGEMENT
+            </div>
+
+            <h1>
+                Upload approved
+                <span>learning content.</span>
+            </h1>
+
+            <p>
+                Add verified learning materials to the Tech Spark
+                knowledge base. AI will analyse the content and use
+                it to provide targeted learning recommendations and
+                generate source-grounded assessments.
+            </p>
+
+        </div>
+
+
+        <!-- CSS ROBOT -->
+
+        <div class="robot">
+
+            <div class="robot-head">
+
+                <div class="antenna"></div>
+
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+
+                <div class="smile"></div>
+
+            </div>
+
+            <div class="robot-body"></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="container">
+
+
+    <div class="grid">
+
+
+        <!-- =================================================
+             UPLOAD FORM
+        ================================================== -->
+
+        <section class="card upload-card">
+
+            <h2 class="section-title">
+                Upload Learning Material
+            </h2>
+
+            <p class="section-description">
+                Upload an approved PDF, PowerPoint presentation,
+                or Word document and provide the information
+                required for AI-powered competency recommendations.
+            </p>
+
+
+            <!-- DROP ZONE -->
+
+            <div
+                class="drop-zone"
+                id="dropZone"
+                onclick="openFilePicker()">
+
+                <div>
+
+                    <div class="upload-icon">
+                        ↑
+                    </div>
+
+                    <h3>
+                        Drop your file here
+                    </h3>
+
+                    <p>
+                        or
+                        <span class="browse">
+                            browse from your computer
+                        </span>
+                    </p>
+
+                    <div class="file-types">
+                        Supported: PDF · PPT · PPTX · DOC · DOCX
+                        &nbsp; | &nbsp; Max 20 MB
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <input
+                type="file"
+                id="fileInput"
+                accept=".pdf,.ppt,.pptx,.doc,.docx">
+
+
+            <!-- FILE PREVIEW -->
+
+            <div
+                class="file-preview"
+                id="filePreview">
+
+                <div class="file-row">
+
+                    <div class="file-info">
+
+                        <div
+                            class="file-icon"
+                            id="fileIcon">
+
+                            📄
+
+                        </div>
+
+                        <div>
+
+                            <div
+                                class="file-name"
+                                id="fileName">
+                            </div>
+
+                            <div
+                                class="file-size"
+                                id="fileSize">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="remove-file"
+                        onclick="removeFile(event)">
+
+                        Remove
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- FORM -->
+
+            <form
+                class="form"
+                id="uploadForm">
+
+
+                <!-- TITLE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Material Title
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="materialTitle"
+                        placeholder="Example: Data Cleaning Fundamentals"
+                        required>
+
+                </div>
+
+
+                <!-- TWO COLUMN -->
+
+                <div class="two-column">
+
+
+                    <!-- COMPETENCY -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Competency
+                            <span class="required">*</span>
+                        </label>
+
+                        <select
+                            id="competency"
+                            required>
+
+                            <option value="">
+                                Select competency
+                            </option>
+
+                            <option>
+                                Data Management
+                            </option>
+
+                            <option>
+                                Statistical Analysis
+                            </option>
+
+                            <option>
+                                Data Interpretation
+                            </option>
+
+                            <option>
+                                Survey Methodology
+                            </option>
+
+                            <option>
+                                Data Visualization
+                            </option>
+
+                            <option>
+                                Statistical Computing
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- TOPIC -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Primary Topic
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="topic"
+                            placeholder="Example: Missing Values"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Target Employee Role
+                        <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="role"
+                        required>
+
+                        <option value="">
+                            Select employee role
+                        </option>
+
+                        <option>
+                            Statistical Officer
+                        </option>
+
+                        <option>
+                            Data Entry Operator
+                        </option>
+
+                        <option>
+                            Data Analyst
+                        </option>
+
+                        <option>
+                            Survey Officer
+                        </option>
+
+                        <option>
+                            Senior Statistical Officer
+                        </option>
+
+                        <option>
+                            All Employees
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group">
+
+                    <label>
+                        Material Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        placeholder="Briefly describe what employees will learn from this material..."></textarea>
+
+                </div>
+
+
+                <!-- AI BOX -->
+
+                <div class="ai-box">
+
+                    <div class="ai-title">
+
+                        🤖 AI Processing Enabled
+
+                    </div>
+
+                    <p>
+                        After upload, the AI pipeline can extract
+                        document content, identify learning topics,
+                        associate the material with competency gaps,
+                        and prepare it for personalized recommendations
+                        and assessments.
+                    </p>
+
+                </div>
+
+
+                <!-- SUBMIT -->
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                    id="submitBtn">
+
+                    Upload & Process Material →
+
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- =================================================
+             PROCESS PANEL
+        ================================================== -->
+
+        <aside class="card side-card">
+
+            <h2 class="side-title">
+                🤖 AI Processing Flow
+            </h2>
+
+
+            <div class="process-step">
+
+                <div class="step-number">
+                    01
+                </div>
+
+                <div class="step-content">
+
+                    <strong>
+                        Upload
+                    </strong>
+
+                    <span>
+                        Admin uploads an approved learning document.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="process-step">
+
+                <div class="step-number">
+                    02
+                </div>
+
+                <div class="step-content">
+
+                    <strong>
+                        Extract
+                    </strong>
+
+                    <span>
+                        Text and relevant learning content are extracted
+                        from the document.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="process-step">
+
+                <div class="step-number">
+                    03
+                </div>
+
+                <div class="step-content">
+
+                    <strong>
+                        Analyse
+                    </strong>
+
+                    <span>
+                        AI identifies topics and competency relevance.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="process-step">
+
+                <div class="step-number">
+                    04
+                </div>
+
+                <div class="step-content">
+
+                    <strong>
+                        Recommend
+                    </strong>
+
+                    <span>
+                        The material becomes available for targeted
+                        employee recommendations.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="process-step">
+
+                <div class="step-number">
+                    05
+                </div>
+
+                <div class="step-content">
+
+                    <strong>
+                        Assess
+                    </strong>
+
+                    <span>
+                        Approved content can be used as the basis for
+                        learning assessments.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="security">
+
+                🔒
+                <strong>Admin controlled content</strong>
+
+                <br><br>
+
+                Only administrator-approved materials should be
+                included in the learning knowledge base.
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+    <!-- =================================================
+         UPLOADED MATERIALS
+    ================================================== -->
+
+    <section class="card materials-card">
+
+        <h2 class="section-title">
+            📚 Recently Added Materials
+        </h2>
+
+        <p class="section-description">
+            Materials currently available in the Tech Spark
+            learning knowledge base.
+        </p>
+
+
+        <div
+            class="material-list"
+            id="materialList">
+
+
+            <!-- MATERIAL 1 -->
+
+            <div class="material-item">
+
+                <div class="material-info">
+
+                    <div class="material-icon">
+                        📄
+                    </div>
+
+                    <div>
+
+                        <div class="material-name">
+                            Data Cleaning Fundamentals
+                        </div>
+
+                        <div class="material-meta">
+                            Data Management · Missing Values · PDF
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="status approved">
+                    ✓ Approved
+                </div>
+
+            </div>
+
+
+            <!-- MATERIAL 2 -->
+
+            <div class="material-item">
+
+                <div class="material-info">
+
+                    <div class="material-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <div class="material-name">
+                            Introduction to Statistical Analysis
+                        </div>
+
+                        <div class="material-meta">
+                            Statistical Analysis · PPTX
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="status approved">
+                    ✓ Approved
+                </div>
+
+            </div>
+
+
+            <!-- MATERIAL 3 -->
+
+            <div class="material-item">
+
+                <div class="material-info">
+
+                    <div class="material-icon">
+                        📘
+                    </div>
+
+                    <div>
+
+                        <div class="material-name">
+                            Survey Data Quality Guidelines
+                        </div>
+
+                        <div class="material-meta">
+                            Survey Methodology · PDF
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="status processing">
+                    AI Processing
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     PROCESSING MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="processingModal">
+
+    <div class="modal-box">
+
+        <div class="loading-icon"></div>
+
+        <h2>
+            AI is processing your material
+        </h2>
+
+        <p>
+            Please wait while the document is being prepared
+            for the Tech Spark learning system.
+        </p>
+
+        <div
+            class="processing-text"
+            id="processingText">
+
+            Extracting document content...
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     SUCCESS MODAL
+===================================================== -->
+
+<div
+    class="modal success-modal"
+    id="successModal">
+
+    <div class="modal-box">
+
+        <div class="loading-icon">
+            ✓
+        </div>
+
+        <h2>
+            Material Uploaded Successfully!
+        </h2>
+
+        <p>
+            The learning material has been added to the
+            knowledge base and is ready for AI processing.
+        </p>
+
+        <button
+            class="close-modal"
+            onclick="closeSuccess()">
+
+            Continue
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+    <strong>
+        Tech Spark
+    </strong>
+
+    — Competency Intelligence Platform
+
+    <br><br>
+
+    Admin Material Management · SIH26101
+
+</footer>
+
+
+<script>
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+const fileInput =
+    document.getElementById("fileInput");
+
+const dropZone =
+    document.getElementById("dropZone");
+
+const filePreview =
+    document.getElementById("filePreview");
+
+let selectedFile = null;
+
+
+/* =====================================================
+   OPEN FILE PICKER
+===================================================== */
+
+function openFilePicker() {
+
+    fileInput.click();
+
+}
+
+
+/* =====================================================
+   FILE SELECT
+===================================================== */
+
+fileInput.addEventListener(
+    "change",
+    function() {
+
+        if(this.files.length > 0) {
+
+            handleFile(this.files[0]);
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   HANDLE FILE
+===================================================== */
+
+function handleFile(file) {
+
+    const allowedTypes = [
+        "pdf",
+        "ppt",
+        "pptx",
+        "doc",
+        "docx"
+    ];
+
+    const extension =
+        file.name
+        .split(".")
+        .pop()
+        .toLowerCase();
+
+
+    if(!allowedTypes.includes(extension)) {
+
+        alert(
+            "Please upload PDF, PPT, PPTX, DOC or DOCX files."
+        );
+
+        return;
+
+    }
+
+
+    if(file.size > 20 * 1024 * 1024) {
+
+        alert(
+            "File size must be less than 20 MB."
+        );
+
+        return;
+
+    }
+
+
+    selectedFile = file;
+
+
+    document.getElementById("fileName")
+        .textContent = file.name;
+
+
+    document.getElementById("fileSize")
+        .textContent =
+        formatFileSize(file.size);
+
+
+    const icon =
+        document.getElementById("fileIcon");
+
+
+    if(extension === "pdf") {
+
+        icon.textContent = "📕";
+
+    }
+
+    else if(
+        extension === "ppt" ||
+        extension === "pptx"
+    ) {
+
+        icon.textContent = "📊";
+
+    }
+
+    else {
+
+        icon.textContent = "📘";
+
+    }
+
+
+    filePreview.style.display = "block";
+
+}
+
+
+/* =====================================================
+   FILE SIZE
+===================================================== */
+
+function formatFileSize(bytes) {
+
+    if(bytes < 1024) {
+
+        return bytes + " B";
+
+    }
+
+    if(bytes < 1024 * 1024) {
+
+        return (
+            (bytes / 1024).toFixed(1)
+            + " KB"
+        );
+
+    }
+
+    return (
+        (bytes / (1024 * 1024)).toFixed(1)
+        + " MB"
+    );
+
+}
+
+
+/* =====================================================
+   REMOVE FILE
+===================================================== */
+
+function removeFile(event) {
+
+    event.stopPropagation();
+
+    selectedFile = null;
+
+    fileInput.value = "";
+
+    filePreview.style.display = "none";
+
+}
+
+
+/* =====================================================
+   DRAG & DROP
+===================================================== */
+
+dropZone.addEventListener(
+    "dragover",
+    function(event) {
+
+        event.preventDefault();
+
+        dropZone.classList.add("dragover");
+
+    }
+);
+
+
+dropZone.addEventListener(
+    "dragleave",
+    function() {
+
+        dropZone.classList.remove("dragover");
+
+    }
+);
+
+
+dropZone.addEventListener(
+    "drop",
+    function(event) {
+
+        event.preventDefault();
+
+        dropZone.classList.remove("dragover");
+
+        if(event.dataTransfer.files.length > 0) {
+
+            handleFile(
+                event.dataTransfer.files[0]
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   FORM SUBMIT
+===================================================== */
+
+document
+    .getElementById("uploadForm")
+    .addEventListener(
+        "submit",
+        function(event) {
+
+            event.preventDefault();
+
+
+            if(!selectedFile) {
+
+                alert(
+                    "Please select a learning material first."
+                );
+
+                return;
+
+            }
+
+
+            const title =
+                document
+                .getElementById("materialTitle")
+                .value
+                .trim();
+
+
+            const competency =
+                document
+                .getElementById("competency")
+                .value;
+
+
+            const topic =
+                document
+                .getElementById("topic")
+                .value
+                .trim();
+
+
+            const role =
+                document
+                .getElementById("role")
+                .value;
+
+
+            if(
+                !title ||
+                !competency ||
+                !topic ||
+                !role
+            ) {
+
+                alert(
+                    "Please fill all required fields."
+                );
+
+                return;
+
+            }
+
+
+            startProcessing();
+
+        }
+    );
+
+
+/* =====================================================
+   AI PROCESSING
+===================================================== */
+
+function startProcessing() {
+
+    const modal =
+        document.getElementById(
+            "processingModal"
+        );
+
+    modal.style.display = "flex";
+
+
+    const text =
+        document.getElementById(
+            "processingText"
+        );
+
+
+    const steps = [
+
+        "Extracting document content...",
+
+        "Identifying learning topics...",
+
+        "Mapping competency relevance...",
+
+        "Preparing AI learning content...",
+
+        "Preparing assessment context..."
+
+    ];
+
+
+    let index = 0;
+
+
+    const interval =
+        setInterval(
+            function() {
+
+                text.textContent =
+                    steps[index];
+
+                index++;
+
+
+                if(index >= steps.length) {
+
+                    clearInterval(interval);
+
+                    setTimeout(
+                        finishUpload,
+                        700
+                    );
+
+                }
+
+            },
+            900
+        );
+
+}
+
+
+/* =====================================================
+   FINISH UPLOAD
+===================================================== */
+
+function finishUpload() {
+
+    document
+        .getElementById("processingModal")
+        .style.display = "none";
+
+
+    document
+        .getElementById("successModal")
+        .style.display = "flex";
+
+
+    saveMaterialLocally();
+
+}
+
+
+/* =====================================================
+   SAVE SAMPLE MATERIAL
+===================================================== */
+
+function saveMaterialLocally() {
+
+    const title =
+        document
+        .getElementById("materialTitle")
+        .value
+        .trim();
+
+
+    const competency =
+        document
+        .getElementById("competency")
+        .value;
+
+
+    const topic =
+        document
+        .getElementById("topic")
+        .value
+        .trim();
+
+
+    const materials =
+        JSON.parse(
+            localStorage.getItem(
+                "techSparkMaterials"
+            ) || "[]"
+        );
+
+
+    materials.push({
+
+        title: title,
+
+        competency: competency,
+
+        topic: topic,
+
+        file:
+            selectedFile
+            ? selectedFile.name
+            : "",
+
+        status: "Processing",
+
+        createdAt:
+            new Date().toISOString()
+
+    });
+
+
+    localStorage.setItem(
+        "techSparkMaterials",
+        JSON.stringify(materials)
+    );
+
+}
+
+
+/* =====================================================
+   CLOSE SUCCESS
+===================================================== */
+
+function closeSuccess() {
+
+    document
+        .getElementById("successModal")
+        .style.display = "none";
+
+
+    document
+        .getElementById("uploadForm")
+        .reset();
+
+
+    removeFile({
+        stopPropagation:function(){}
+    });
+
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function goDashboard() {
+
+    window.location.href =
+        "dashboard.html";
+
+}
+
+</script>
+
+</body>
+</html>

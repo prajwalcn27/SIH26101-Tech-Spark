@@ -1,18 +1,180 @@
 import json
 import os
 
-from pdf_reader import extract_text_from_pdf
 from mcq_generator import generate_mcqs
-from validator import validate_mcqs
+from validator import validate_mcq
 
 
 # ============================================================
 # CONFIGURATION
 # ============================================================
 
-PDF_PATH = "../learning_materials/ML_Module1.pdf"
-
+SAMPLE_MATERIAL_PATH = "document_processing/Data_Cleaning_extracted.txt"
 NUMBER_OF_QUESTIONS = 5
+
+# True  = Always use local mock MCQs
+# False = Try Gemini first, then use fallback if Gemini fails
+USE_MOCK_MODE = False
+
+FALLBACK_FILE = "demo_fallback_questions.json"
+
+OUTPUT_FILE = "ai_pipeline_result.json"
+
+
+# ============================================================
+# LOCAL MOCK MCQs
+# ============================================================
+
+def get_mock_mcqs():
+
+    return {
+        "questions": [
+
+            {
+                "question": "What is the purpose of removing duplicate records?",
+                "options": {
+                    "A": "To improve data quality",
+                    "B": "To increase missing values",
+                    "C": "To create inconsistent data",
+                    "D": "To remove all outliers"
+                },
+                "correct_answer": "A",
+                "explanation": "Removing duplicate records helps improve data quality.",
+                "topic": "Data Cleaning",
+                "difficulty": "Easy"
+            },
+
+            {
+                "question": "How can missing values be handled?",
+                "options": {
+                    "A": "Only by deleting the entire dataset",
+                    "B": "By removing records or replacing values",
+                    "C": "By creating duplicate records",
+                    "D": "By ignoring all data validation"
+                },
+                "correct_answer": "B",
+                "explanation": "Missing values can be handled by removing records, replacing values, or using statistical methods.",
+                "topic": "Missing Values",
+                "difficulty": "Easy"
+            },
+
+            {
+                "question": "What should be done with outliers?",
+                "options": {
+                    "A": "They should always be deleted",
+                    "B": "They should be examined carefully",
+                    "C": "They should always be duplicated",
+                    "D": "They should be ignored"
+                },
+                "correct_answer": "B",
+                "explanation": "Outliers should be examined carefully because they may represent errors or genuine unusual observations.",
+                "topic": "Outliers",
+                "difficulty": "Medium"
+            },
+
+            {
+                "question": "What does data validation check?",
+                "options": {
+                    "A": "Whether data follows predefined rules and constraints",
+                    "B": "Whether data contains only duplicate records",
+                    "C": "Whether all values are missing",
+                    "D": "Whether data has no numerical values"
+                },
+                "correct_answer": "A",
+                "explanation": "Data validation checks whether data follows predefined rules, formats, and constraints.",
+                "topic": "Data Validation",
+                "difficulty": "Easy"
+            },
+
+            {
+                "question": "What may data preprocessing include?",
+                "options": {
+                    "A": "Only data deletion",
+                    "B": "Data cleaning, transformation, and normalization",
+                    "C": "Only duplicate creation",
+                    "D": "Only data collection"
+                },
+                "correct_answer": "B",
+                "explanation": "Data preprocessing may include data cleaning, transformation, and normalization before the data is used for analysis or machine learning.",
+                "topic": "Data Preprocessing",
+                "difficulty": "Medium"
+            }
+
+        ]
+    }
+
+
+# ============================================================
+# FALLBACK MCQs
+# ============================================================
+
+def load_fallback_mcqs():
+
+    print("\n[FALLBACK] Loading offline demo questions...")
+    print("-" * 60)
+
+    # Build path relative to this Python file.
+    current_directory = os.path.dirname(
+        os.path.abspath(__file__)
+    )
+
+    fallback_path = os.path.join(
+        current_directory,
+        FALLBACK_FILE
+    )
+
+    try:
+
+        with open(
+            fallback_path,
+            "r",
+            encoding="utf-8"
+        ) as file:
+
+            fallback_data = json.load(file)
+
+    except FileNotFoundError:
+
+        print(
+            f"ERROR: Fallback file not found: "
+            f"{fallback_path}"
+        )
+
+        return None
+
+    except json.JSONDecodeError as error:
+
+        print(
+            "ERROR: Fallback JSON file is invalid."
+        )
+
+        print(
+            f"Details: {error}"
+        )
+
+        return None
+
+    questions = fallback_data.get(
+        "questions",
+        []
+    )
+
+    if not questions:
+
+        print(
+            "ERROR: No fallback questions found."
+        )
+
+        return None
+
+    print(
+        f"SUCCESS: Loaded "
+        f"{len(questions)} fallback questions."
+    )
+
+    return {
+        "questions": questions
+    }
 
 
 # ============================================================
@@ -22,113 +184,393 @@ NUMBER_OF_QUESTIONS = 5
 def run_ai_pipeline():
 
     print("=" * 60)
-    print("              SIH AI LEARNING PIPELINE")
+    print("          SIH AI LEARNING PIPELINE")
     print("=" * 60)
 
     # --------------------------------------------------------
-    # STEP 1: READ PDF
+    # STEP 1: READ LEARNING MATERIAL
     # --------------------------------------------------------
 
-    print("\n📄 Step 1: Reading learning material...")
+    print("\n[STEP 1] Reading learning material...")
     print("-" * 60)
 
-    learning_material = extract_text_from_pdf(PDF_PATH)
+    try:
 
-    if not learning_material:
-        print("❌ Could not extract text from PDF.")
+        with open(
+            SAMPLE_MATERIAL_PATH,
+            "r",
+            encoding="utf-8"
+        ) as file:
+
+            learning_material = file.read()
+
+    except FileNotFoundError:
+
+        print(
+            f"ERROR: File not found: "
+            f"{SAMPLE_MATERIAL_PATH}"
+        )
+
         return
 
-    print("✅ PDF text extracted successfully!")
+    if not learning_material.strip():
 
-    # --------------------------------------------------------
-    # STEP 2: DISPLAY INFORMATION
-    # --------------------------------------------------------
+        print("ERROR: Learning material is empty.")
 
-    print("\n📊 Extracted material information:")
-    print(f"Characters extracted: {len(learning_material)}")
-    print(f"Words approximately: {len(learning_material.split())}")
+        return
 
-    # --------------------------------------------------------
-    # STEP 3: GENERATE MCQs
-    # --------------------------------------------------------
+    print("SUCCESS: Learning material loaded.")
 
-    print("\n🤖 Step 2: Generating MCQs...")
-    print("-" * 60)
-
-    mcqs = generate_mcqs(
-        learning_material,
-        number_of_questions=NUMBER_OF_QUESTIONS
+    print(
+        f"Characters extracted: "
+        f"{len(learning_material)}"
     )
 
-    if not mcqs:
-        print("❌ MCQ generation failed.")
+    # --------------------------------------------------------
+    # STEP 2: GENERATE MCQs
+    # --------------------------------------------------------
+
+    print("\n[STEP 2] Generating MCQs...")
+    print("-" * 60)
+
+    mcq_result = None
+    generation_source = "unknown"
+
+    # --------------------------------------------------------
+    # MOCK MODE
+    # --------------------------------------------------------
+
+    if USE_MOCK_MODE:
+
+        print(
+            "MOCK MODE: Using local sample MCQs."
+        )
+
+        mcq_result = get_mock_mcqs()
+
+        generation_source = "mock"
+
+    # --------------------------------------------------------
+    # GEMINI MODE + AUTOMATIC FALLBACK
+    # --------------------------------------------------------
+
+    else:
+
+        print(
+            "GEMINI MODE: Trying Gemini API..."
+        )
+
+        try:
+
+            mcq_result = generate_mcqs(
+                learning_material,
+                NUMBER_OF_QUESTIONS
+            )
+
+            if mcq_result and mcq_result.get(
+                "questions",
+                []
+            ):
+
+                print(
+                    "SUCCESS: Gemini generated MCQs."
+                )
+
+                generation_source = "gemini"
+
+            else:
+
+                print(
+                    "WARNING: Gemini returned no questions."
+                )
+
+                print(
+                    "Switching to fallback questions..."
+                )
+
+                mcq_result = load_fallback_mcqs()
+
+                generation_source = "fallback"
+
+        except Exception as error:
+
+            print(
+                "WARNING: Gemini MCQ generation failed."
+            )
+
+            print(
+                f"Reason: {error}"
+            )
+
+            print(
+                "\nSwitching to offline fallback..."
+            )
+
+            mcq_result = load_fallback_mcqs()
+
+            generation_source = "fallback"
+
+    # --------------------------------------------------------
+    # CHECK MCQ RESULT
+    # --------------------------------------------------------
+
+    if not mcq_result:
+
+        print(
+            "\nERROR: No MCQ result available."
+        )
+
         return
 
-    print("✅ MCQs generated successfully!")
+    questions = mcq_result.get(
+        "questions",
+        []
+    )
+
+    if not questions:
+
+        print(
+            "\nERROR: No questions are available."
+        )
+
+        return
+
+    # Limit questions to requested number.
+    questions = questions[
+        :NUMBER_OF_QUESTIONS
+    ]
+
+    print(
+        f"\nSUCCESS: {len(questions)} MCQs ready."
+    )
+
+    print(
+        f"Question source: {generation_source.upper()}"
+    )
 
     # --------------------------------------------------------
-    # STEP 4: DISPLAY GENERATED MCQs
+    # STEP 3: DISPLAY GENERATED MCQs
     # --------------------------------------------------------
 
-    print("\n📝 Generated MCQs")
+    print("\n[STEP 3] Generated MCQs")
+    print("=" * 60)
+
+    for index, question in enumerate(
+        questions,
+        start=1
+    ):
+
+        print(
+            f"\nQuestion {index}:"
+        )
+
+        print(
+            question.get(
+                "question",
+                "N/A"
+            )
+        )
+
+        print("\nOptions:")
+
+        options = question.get(
+            "options",
+            {}
+        )
+
+        for option in [
+            "A",
+            "B",
+            "C",
+            "D"
+        ]:
+
+            print(
+                f"  {option}. "
+                f"{options.get(option, 'N/A')}"
+            )
+
+        print(
+            f"\nCorrect Answer: "
+            f"{question.get('correct_answer', 'N/A')}"
+        )
+
+        print(
+            f"Explanation: "
+            f"{question.get('explanation', 'N/A')}"
+        )
+
+        print(
+            f"Topic: "
+            f"{question.get('topic', 'N/A')}"
+        )
+
+        print(
+            f"Difficulty: "
+            f"{question.get('difficulty', 'N/A')}"
+        )
+
+        print("-" * 60)
+
+    # --------------------------------------------------------
+    # STEP 4: VALIDATE MCQs
+    # --------------------------------------------------------
+
+    print("\n[STEP 4] Validating MCQs...")
+    print("-" * 60)
+
+    validation_results = []
+
+    for index, question in enumerate(
+        questions,
+        start=1
+    ):
+
+        validation = validate_mcq(
+            question,
+            learning_material
+        )
+
+        validation_results.append(
+            {
+                "question_number": index,
+
+                "question": question.get(
+                    "question",
+                    ""
+                ),
+
+                "validation": validation
+            }
+        )
+
+    print(
+        "SUCCESS: MCQ validation completed."
+    )
+
+    # --------------------------------------------------------
+    # STEP 5: DISPLAY VALIDATION RESULTS
+    # --------------------------------------------------------
+
+    print("\n[STEP 5] Validation Results")
+    print("=" * 60)
+
+    valid_count = 0
+    review_count = 0
+    invalid_count = 0
+
+    for result in validation_results:
+
+        validation = result[
+            "validation"
+        ]
+
+        status = validation.get(
+            "status",
+            "UNKNOWN"
+        )
+
+        confidence = validation.get(
+            "confidence",
+            0
+        )
+
+        source_support = validation.get(
+            "source_support_percentage",
+            0
+        )
+
+        print(
+            f"\nQuestion "
+            f"{result['question_number']}"
+        )
+
+        print(
+            f"Status: {status}"
+        )
+
+        print(
+            f"Confidence: {confidence}%"
+        )
+
+        print(
+            f"Source Support: "
+            f"{source_support}%"
+        )
+
+        print(
+            f"Issues: "
+            f"{validation.get('issues', [])}"
+        )
+
+        if status == "VALID":
+
+            valid_count += 1
+
+        elif status == "REVIEW":
+
+            review_count += 1
+
+        elif status == "INVALID":
+
+            invalid_count += 1
+
+    # --------------------------------------------------------
+    # STEP 6: VALIDATION SUMMARY
+    # --------------------------------------------------------
+
+    print("\n[STEP 6] Validation Summary")
     print("=" * 60)
 
     print(
-        json.dumps(
-            mcqs,
-            indent=4,
-            ensure_ascii=False
-        )
+        f"Total Questions: "
+        f"{len(questions)}"
     )
-
-    # --------------------------------------------------------
-    # STEP 5: VALIDATE MCQs
-    # --------------------------------------------------------
-
-    print("\n🔍 Step 3: Validating MCQs...")
-    print("-" * 60)
-
-    validation_results = validate_mcqs(
-        learning_material,
-        mcqs
-    )
-
-    if not validation_results:
-        print("❌ MCQ validation failed.")
-        return
-
-    print("✅ MCQ validation completed!")
-
-    # --------------------------------------------------------
-    # STEP 6: DISPLAY VALIDATION RESULTS
-    # --------------------------------------------------------
-
-    print("\n📋 Validation Results")
-    print("=" * 60)
 
     print(
-        json.dumps(
-            validation_results,
-            indent=4,
-            ensure_ascii=False
-        )
+        f"VALID: {valid_count}"
+    )
+
+    print(
+        f"REVIEW: {review_count}"
+    )
+
+    print(
+        f"INVALID: {invalid_count}"
     )
 
     # --------------------------------------------------------
-    # STEP 7: SAVE COMPLETE RESULT
+    # STEP 7: SAVE RESULT
     # --------------------------------------------------------
 
     final_result = {
-        "source_file": PDF_PATH,
-        "number_of_questions": NUMBER_OF_QUESTIONS,
-        "mcqs": mcqs,
-        "validation": validation_results
+
+        "source_file": SAMPLE_MATERIAL_PATH,
+
+        "generation_source": generation_source,
+
+        "number_of_questions": len(
+            questions
+        ),
+
+        "mcqs": questions,
+
+        "validation": validation_results,
+
+        "summary": {
+
+            "total": len(questions),
+
+            "valid": valid_count,
+
+            "review": review_count,
+
+            "invalid": invalid_count
+        }
     }
 
-    output_file = "ai_pipeline_result.json"
-
     with open(
-        output_file,
+        OUTPUT_FILE,
         "w",
         encoding="utf-8"
     ) as file:
@@ -140,9 +582,17 @@ def run_ai_pipeline():
             ensure_ascii=False
         )
 
+    print(
+        f"\nResult saved to: "
+        f"{OUTPUT_FILE}"
+    )
+
     print("\n" + "=" * 60)
-    print("✅ AI PIPELINE COMPLETED!")
-    print(f"📁 Result saved as: {output_file}")
+
+    print(
+        "       AI PIPELINE COMPLETED"
+    )
+
     print("=" * 60)
 
 
@@ -151,4 +601,5 @@ def run_ai_pipeline():
 # ============================================================
 
 if __name__ == "__main__":
+
     run_ai_pipeline()

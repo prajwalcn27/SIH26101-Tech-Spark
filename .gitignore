@@ -4,6 +4,11 @@ __pycache__/
 *.pyo
 *.pyd
 
+# Environment variables / secrets
+.env
+.env.*
+*.env
+
 # Virtual environments
 venv/
 .venv/
@@ -12,12 +17,6 @@ backend/venv/
 
 # Uploaded learning materials
 backend/uploads/
-
-# Environment variables / secrets
-.env
-.env.*
-
-*.env
 
 # IDE
 .vscode/

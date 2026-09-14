@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Tech Spark</title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Login CSS -->
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+
+<body class="login-page">
+
+    <main class="login-container">
+
+        <!-- =========================================
+             LEFT SIDE - INFORMATION
+        ========================================== -->
+        <section class="login-info">
+
+            <!-- Brand -->
+            <a href="../index.html" class="login-brand">
+
+                <div class="brand-mark">
+                    TS
+                </div>
+
+                <div>
+                    <strong>Tech Spark</strong>
+                    <span>Competency Intelligence</span>
+                </div>
+
+            </a>
+
+
+            <!-- Main Message -->
+            <div class="login-message">
+
+                <div class="login-badge">
+                    AI-POWERED LEARNING
+                </div>
+
+                <h1>
+                    Learn what you
+                    <span>actually need.</span>
+                </h1>
+
+                <p>
+                    Identify competency gaps, discover the exact
+                    topics holding you back, and follow a learning
+                    path designed around your role.
+                </p>
+
+
+                <!-- Highlights -->
+                <div class="login-highlights">
+
+                    <!-- Highlight 01 -->
+                    <div class="highlight">
+
+                        <div class="highlight-icon">
+                            01
+                        </div>
+
+                        <div>
+                            <strong>Detect gaps</strong>
+
+                            <p>
+                                Find competency and topic-level weaknesses.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Highlight 02 -->
+                    <div class="highlight">
+
+                        <div class="highlight-icon">
+                            02
+                        </div>
+
+                        <div>
+                            <strong>Learn smarter</strong>
+
+                            <p>
+                                Get targeted recommendations for your gaps.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Highlight 03 -->
+                    <div class="highlight">
+
+                        <div class="highlight-icon">
+                            03
+                        </div>
+
+                        <div>
+                            <strong>Keep improving</strong>
+
+                            <p>
+                                Your competency profile evolves with every quiz.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Footer -->
+            <div class="login-footer-text">
+                SIH26101 · Smart India Hackathon 2026
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             RIGHT SIDE - LOGIN FORM
+        ========================================== -->
+        <section class="login-form-section">
+
+            <div class="login-card">
+
+
+                <!-- Mobile Brand -->
+                <div class="mobile-brand">
+
+                    <div class="brand-mark">
+                        TS
+                    </div>
+
+                    <strong>
+                        Tech Spark
+                    </strong>
+
+                </div>
+
+
+
+                <!-- Form Heading -->
+                <div class="form-heading">
+
+                    <span>
+                        WELCOME BACK
+                    </span>
+
+                    <h2>
+                        Sign in to your account
+                    </h2>
+
+                    <p>
+                        Continue your personalized learning journey.
+                    </p>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     ROLE SELECTION
+                ====================================== -->
+                <div class="role-section">
+
+                    <label>
+                        Sign in as
+                    </label>
+
+
+                    <div class="role-selector">
+
+                        <!-- Employee -->
+                        <button
+                            type="button"
+                            class="role-option active"
+                            data-role="employee"
+                            onclick="selectRole('employee')">
+
+                            <span class="role-icon">
+                                E
+                            </span>
+
+                            <span>
+                                Employee
+                            </span>
+
+                        </button>
+
+
+                        <!-- Admin -->
+                        <button
+                            type="button"
+                            class="role-option"
+                            data-role="admin"
+                            onclick="selectRole('admin')">
+
+                            <span class="role-icon">
+                                A
+                            </span>
+
+                            <span>
+                                Admin
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     LOGIN FORM
+                ====================================== -->
+                <form
+                    id="loginForm"
+                    onsubmit="handleLogin(event)">
+
+
+                    <!-- Selected Role -->
+                    <input
+                        type="hidden"
+                        id="selectedRole"
+                        value="employee"
+                    >
+
+
+
+                    <!-- Email -->
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- Password -->
+                    <div class="form-group">
+
+                        <div class="password-label">
+
+                            <label for="password">
+                                Password
+                            </label>
+
+                            <a
+                                href="#"
+                                onclick="return false;">
+
+                                Forgot password?
+
+                            </a>
+
+                        </div>
+
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- Remember Me -->
+                    <div class="remember-row">
+
+                        <label class="checkbox-label">
+
+                            <input
+                                type="checkbox"
+                                id="remember"
+                                name="remember"
+                            >
+
+                            <span>
+                                Remember me
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+
+                    <!-- Login Button -->
+                    <button
+                        type="submit"
+                        class="login-button">
+
+                        <span>
+                            Sign in
+                        </span>
+
+                        <span class="button-arrow">
+                            →
+                        </span>
+
+                    </button>
+
+                </form>
+
+
+
+                <!-- =====================================
+                     DEMO LOGIN
+                ====================================== -->
+                <div class="demo-section">
+
+                    <div class="demo-divider">
+                        <span>
+                            OR
+                        </span>
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="demo-button"
+                        onclick="demoLogin()">
+
+                        Try Demo Mode
+
+                    </button>
+
+
+                    <p>
+                        Explore the platform without an account.
+                    </p>
+
+                </div>
+
+
+
+                <!-- Login Message -->
+                <div
+                    id="loginMessage"
+                    class="login-message-box">
+                </div>
+
+
+
+                <!-- Security -->
+                <div class="security-note">
+
+                    <span>
+                        ✓
+                    </span>
+
+                    Secure role-based access
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================================
+         AUTHENTICATION JAVASCRIPT
+    ========================================== -->
+    <script src="../js/auth.js"></script>
+
+</body>
+
+</html>

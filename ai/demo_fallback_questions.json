@@ -1,0 +1,130 @@
+{
+  "questions": [
+    {
+      "id": "fallback_dc_01",
+      "question": "What is the main purpose of data cleaning?",
+      "options": {
+        "A": "To detect and correct inaccurate or inconsistent data",
+        "B": "To create computer networks",
+        "C": "To design websites",
+        "D": "To install operating systems"
+      },
+      "correct_answer": "A",
+      "explanation": "Data cleaning is used to detect and correct inaccurate, incomplete, duplicate, or inconsistent data.",
+      "topic": "Data Cleaning",
+      "difficulty": "Easy"
+    },
+    {
+      "id": "fallback_dc_02",
+      "question": "Which technique is commonly used to handle duplicate records?",
+      "options": {
+        "A": "Remove duplicate records",
+        "B": "Increase screen resolution",
+        "C": "Change the operating system",
+        "D": "Create a network"
+      },
+      "correct_answer": "A",
+      "explanation": "Duplicate records can be identified and removed during the data cleaning process.",
+      "topic": "Data Cleaning",
+      "difficulty": "Easy"
+    },
+    {
+      "id": "fallback_dc_03",
+      "question": "What is data validation used for?",
+      "options": {
+        "A": "Checking whether data follows required rules and constraints",
+        "B": "Creating animations",
+        "C": "Designing web pages",
+        "D": "Installing hardware"
+      },
+      "correct_answer": "A",
+      "explanation": "Data validation checks whether data follows the required rules and constraints.",
+      "topic": "Data Cleaning",
+      "difficulty": "Medium"
+    },
+    {
+      "id": "fallback_dt_01",
+      "question": "What is the main purpose of a decision tree?",
+      "options": {
+        "A": "To make predictions by applying a sequence of decision rules",
+        "B": "To store files permanently",
+        "C": "To create computer networks",
+        "D": "To compress images"
+      },
+      "correct_answer": "A",
+      "explanation": "A decision tree makes predictions by following decision rules through branches of the tree.",
+      "topic": "Decision Tree",
+      "difficulty": "Easy"
+    },
+    {
+      "id": "fallback_dt_02",
+      "question": "What does an internal node in a decision tree generally represent?",
+      "options": {
+        "A": "A decision or feature test",
+        "B": "The final prediction only",
+        "C": "A database table",
+        "D": "A network connection"
+      },
+      "correct_answer": "A",
+      "explanation": "Internal nodes represent tests or decisions based on input features.",
+      "topic": "Decision Tree",
+      "difficulty": "Medium"
+    },
+    {
+      "id": "fallback_dt_03",
+      "question": "What does a leaf node represent in a decision tree?",
+      "options": {
+        "A": "The final prediction or outcome",
+        "B": "A feature test",
+        "C": "A database connection",
+        "D": "A training dataset"
+      },
+      "correct_answer": "A",
+      "explanation": "A leaf node represents the final prediction or outcome reached after following the decision rules.",
+      "topic": "Decision Tree",
+      "difficulty": "Easy"
+    },
+    {
+      "id": "fallback_nb_01",
+      "question": "What is the main idea behind the Naive Bayes classifier?",
+      "options": {
+        "A": "It uses Bayes' theorem with an assumption of conditional independence",
+        "B": "It uses only decision tree branches",
+        "C": "It works without any probability",
+        "D": "It only performs clustering"
+      },
+      "correct_answer": "A",
+      "explanation": "Naive Bayes applies Bayes' theorem and assumes that features are conditionally independent given the class.",
+      "topic": "Naive Bayes",
+      "difficulty": "Medium"
+    },
+    {
+      "id": "fallback_nb_02",
+      "question": "Which concept is directly associated with Naive Bayes?",
+      "options": {
+        "A": "Conditional probability",
+        "B": "Image resizing",
+        "C": "Database normalization only",
+        "D": "Network routing"
+      },
+      "correct_answer": "A",
+      "explanation": "Naive Bayes is based on probability and uses conditional probabilities to classify data.",
+      "topic": "Naive Bayes",
+      "difficulty": "Easy"
+    },
+    {
+      "id": "fallback_nb_03",
+      "question": "What is the purpose of the Naive Bayes classifier?",
+      "options": {
+        "A": "To classify data into different classes",
+        "B": "To remove duplicate files",
+        "C": "To create web pages",
+        "D": "To manage computer hardware"
+      },
+      "correct_answer": "A",
+      "explanation": "Naive Bayes is a classification algorithm used to assign data instances to classes.",
+      "topic": "Naive Bayes",
+      "difficulty": "Easy"
+    }
+  ]
+}

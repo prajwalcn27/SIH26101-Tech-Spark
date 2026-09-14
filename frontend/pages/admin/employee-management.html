@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Employee Management | Tech Spark</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --green:#18a957;
+    --dark:#08783d;
+    --light:#eafff2;
+    --text:#173b2b;
+    --muted:#6d7f75;
+    --border:#dcebe3;
+    --bg:#f6fbf8;
+    --white:#fff;
+    --red:#d95353;
+    --yellow:#c98c25;
+}
+
+body{
+    font-family:"Segoe UI",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* ================= HEADER ================= */
+
+.topbar{
+    height:76px;
+    background:rgba(255,255,255,.96);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 5%;
+    position:sticky;
+    top:0;
+    z-index:100;
+    backdrop-filter:blur(15px);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo{
+    width:44px;
+    height:44px;
+    border-radius:13px;
+    background:linear-gradient(135deg,#18b866,#08783d);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+    box-shadow:0 8px 20px rgba(24,169,87,.2);
+}
+
+.brand strong{
+    display:block;
+    font-size:17px;
+}
+
+.brand span{
+    display:block;
+    color:var(--muted);
+    font-size:11px;
+}
+
+.back-btn{
+    border:1px solid var(--border);
+    background:white;
+    padding:10px 17px;
+    border-radius:11px;
+    cursor:pointer;
+    font-weight:700;
+    transition:.25s;
+}
+
+.back-btn:hover{
+    color:var(--green);
+    border-color:var(--green);
+    transform:translateY(-2px);
+}
+
+/* ================= HERO ================= */
+
+.hero{
+    padding:48px 6% 55px;
+    background:
+        radial-gradient(circle at 85% 20%,
+        rgba(24,169,87,.15),
+        transparent 30%),
+        linear-gradient(135deg,#effff5,#fff);
+}
+
+.hero-inner{
+    max-width:1150px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:40px;
+}
+
+.badge{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:30px;
+    background:#dcfae8;
+    color:var(--dark);
+    font-size:12px;
+    font-weight:900;
+    margin-bottom:15px;
+}
+
+.hero h1{
+    font-size:clamp(34px,5vw,53px);
+    line-height:1.08;
+    letter-spacing:-1.5px;
+    margin-bottom:15px;
+}
+
+.hero h1 span{
+    color:var(--green);
+}
+
+.hero p{
+    max-width:690px;
+    color:var(--muted);
+    line-height:1.75;
+    font-size:15px;
+}
+
+/* ================= ROBOT ================= */
+
+.robot{
+    width:145px;
+    height:180px;
+    position:relative;
+    animation:float 3s ease-in-out infinite;
+}
+
+.robot-head{
+    width:125px;
+    height:82px;
+    position:absolute;
+    top:10px;
+    left:10px;
+    background:white;
+    border:4px solid var(--dark);
+    border-radius:29px;
+    box-shadow:0 12px 30px rgba(8,120,61,.15);
+}
+
+.antenna{
+    width:7px;
+    height:25px;
+    background:var(--dark);
+    position:absolute;
+    top:-28px;
+    left:57px;
+    border-radius:10px;
+}
+
+.antenna:after{
+    content:"";
+    position:absolute;
+    width:15px;
+    height:15px;
+    border-radius:50%;
+    background:#18b866;
+    left:-4px;
+    top:-10px;
+    box-shadow:0 0 18px #18b866;
+}
+
+.eye{
+    width:17px;
+    height:21px;
+    background:var(--dark);
+    border-radius:7px;
+    position:absolute;
+    top:26px;
+    animation:blink 4s infinite;
+}
+
+.eye.left{
+    left:28px;
+}
+
+.eye.right{
+    right:28px;
+}
+
+.smile{
+    width:38px;
+    height:14px;
+    position:absolute;
+    left:40px;
+    top:51px;
+    border-bottom:4px solid var(--green);
+    border-radius:0 0 30px 30px;
+}
+
+.robot-body{
+    width:82px;
+    height:70px;
+    position:absolute;
+    left:31px;
+    top:96px;
+    border-radius:22px;
+    background:linear-gradient(145deg,#18b866,#08783d);
+}
+
+.robot-body:after{
+    content:"👤";
+    position:absolute;
+    width:38px;
+    height:25px;
+    background:white;
+    color:var(--green);
+    border-radius:8px;
+    left:22px;
+    top:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+}
+
+/* ================= MAIN ================= */
+
+.container{
+    width:min(1150px,92%);
+    margin:35px auto 70px;
+}
+
+/* ================= STATS ================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:25px;
+}
+
+.stat-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:21px;
+    box-shadow:0 8px 25px rgba(20,91,55,.05);
+}
+
+.stat-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.stat-icon{
+    width:40px;
+    height:40px;
+    border-radius:11px;
+    background:#e9f9ef;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.stat-number{
+    font-size:28px;
+    font-weight:900;
+    color:var(--green);
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:12px;
+}
+
+/* ================= MAIN CARD ================= */
+
+.card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:22px;
+    box-shadow:0 12px 35px rgba(20,91,55,.07);
+}
+
+.employee-card{
+    overflow:hidden;
+}
+
+/* ================= TOOLBAR ================= */
+
+.toolbar{
+    padding:25px 28px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.toolbar h2{
+    font-size:20px;
+}
+
+.toolbar p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:5px;
+}
+
+.toolbar-right{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+.search{
+    width:240px;
+    padding:11px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    outline:none;
+    background:#fbfefc;
+}
+
+.search:focus{
+    border-color:var(--green);
+}
+
+.add-btn{
+    border:none;
+    padding:12px 18px;
+    border-radius:11px;
+    background:linear-gradient(135deg,#18b866,#08783d);
+    color:white;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 8px 20px rgba(24,169,87,.2);
+    transition:.25s;
+}
+
+.add-btn:hover{
+    transform:translateY(-2px);
+}
+
+/* ================= TABLE ================= */
+
+.table-wrapper{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:850px;
+}
+
+thead{
+    background:#f6faf8;
+}
+
+th{
+    text-align:left;
+    padding:15px 20px;
+    font-size:11px;
+    color:#63786c;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+td{
+    padding:17px 20px;
+    border-top:1px solid #edf3ef;
+    font-size:13px;
+}
+
+.employee{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.avatar{
+    width:39px;
+    height:39px;
+    border-radius:12px;
+    background:linear-gradient(135deg,#dff9e9,#b9edcf);
+    color:var(--dark);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+}
+
+.employee-name{
+    font-weight:800;
+}
+
+.employee-email{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:3px;
+}
+
+.role{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:20px;
+    background:#eef8f2;
+    color:#37644d;
+    font-size:11px;
+    font-weight:800;
+}
+
+.competency{
+    min-width:130px;
+}
+
+.competency-top{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:5px;
+}
+
+.competency-top span{
+    font-size:11px;
+    color:var(--muted);
+}
+
+.competency-top strong{
+    font-size:11px;
+    color:var(--green);
+}
+
+.mini-bar{
+    height:7px;
+    background:#e8f1eb;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.mini-fill{
+    height:100%;
+    background:linear-gradient(90deg,#18b866,#08783d);
+    border-radius:20px;
+}
+
+.status{
+    padding:6px 10px;
+    border-radius:20px;
+    font-size:10px;
+    font-weight:900;
+}
+
+.active{
+    background:#e5faed;
+    color:#08783d;
+}
+
+.inactive{
+    background:#fff0f0;
+    color:#a74747;
+}
+
+.actions{
+    display:flex;
+    gap:7px;
+}
+
+.action-btn{
+    width:34px;
+    height:34px;
+    border:1px solid var(--border);
+    background:white;
+    border-radius:9px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.action-btn:hover{
+    border-color:var(--green);
+    color:var(--green);
+    background:#f2fff6;
+}
+
+/* ================= EMPTY SEARCH ================= */
+
+.no-results{
+    display:none;
+    text-align:center;
+    padding:40px;
+    color:var(--muted);
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(8,35,22,.55);
+    z-index:500;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-box{
+    width:min(570px,100%);
+    background:white;
+    border-radius:22px;
+    padding:30px;
+    box-shadow:0 25px 70px rgba(0,0,0,.25);
+    animation:modalIn .3s ease;
+    max-height:90vh;
+    overflow-y:auto;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+}
+
+.modal-header h2{
+    font-size:21px;
+}
+
+.close{
+    width:34px;
+    height:34px;
+    border:none;
+    background:#f1f6f3;
+    border-radius:9px;
+    cursor:pointer;
+    font-size:17px;
+}
+
+.form-group{
+    margin-bottom:17px;
+}
+
+label{
+    display:block;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+.required{
+    color:var(--red);
+}
+
+input,
+select{
+    width:100%;
+    padding:12px 13px;
+    border:1px solid var(--border);
+    background:#fbfefc;
+    border-radius:10px;
+    outline:none;
+    font-family:inherit;
+}
+
+input:focus,
+select:focus{
+    border-color:var(--green);
+    box-shadow:0 0 0 3px rgba(24,169,87,.08);
+}
+
+.form-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.save-btn{
+    width:100%;
+    border:none;
+    padding:14px;
+    border-radius:11px;
+    background:linear-gradient(135deg,#18b866,#08783d);
+    color:white;
+    font-weight:900;
+    cursor:pointer;
+    margin-top:8px;
+}
+
+/* ================= PROFILE MODAL ================= */
+
+.profile-header{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:23px;
+}
+
+.big-avatar{
+    width:62px;
+    height:62px;
+    border-radius:17px;
+    background:linear-gradient(135deg,#dff9e9,#b9edcf);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--dark);
+    font-size:22px;
+    font-weight:900;
+}
+
+.profile-name{
+    font-size:20px;
+    font-weight:900;
+}
+
+.profile-email{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:3px;
+}
+
+.profile-section{
+    padding:18px;
+    border:1px solid var(--border);
+    border-radius:15px;
+    margin-bottom:13px;
+}
+
+.profile-section-title{
+    font-size:12px;
+    color:var(--green);
+    font-weight:900;
+    text-transform:uppercase;
+    margin-bottom:12px;
+}
+
+.profile-line{
+    display:flex;
+    justify-content:space-between;
+    padding:7px 0;
+    font-size:12px;
+}
+
+.profile-line span{
+    color:var(--muted);
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+    display:none;
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    z-index:700;
+    padding:15px 20px;
+    background:#08783d;
+    color:white;
+    border-radius:12px;
+    box-shadow:0 12px 30px rgba(0,0,0,.2);
+    animation:toastIn .3s ease;
+    font-size:13px;
+    font-weight:700;
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+    border-top:1px solid var(--border);
+    padding:30px;
+    text-align:center;
+    color:var(--muted);
+    font-size:12px;
+}
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes float{
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-12px);
+    }
+}
+
+@keyframes blink{
+    0%,45%,50%,100%{
+        transform:scaleY(1);
+    }
+
+    47%{
+        transform:scaleY(.1);
+    }
+}
+
+@keyframes modalIn{
+    from{
+        opacity:0;
+        transform:scale(.92) translateY(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:scale(1) translateY(0);
+    }
+}
+
+@keyframes toastIn{
+    from{
+        opacity:0;
+        transform:translateX(30px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateX(0);
+    }
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:850px){
+
+    .hero-inner{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:600px){
+
+    .brand span{
+        display:none;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .toolbar{
+        align-items:stretch;
+    }
+
+    .toolbar-right{
+        width:100%;
+    }
+
+    .search{
+        width:100%;
+    }
+
+    .form-row{
+        grid-template-columns:1fr;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="logo">
+            TS
+        </div>
+
+        <div>
+            <strong>
+                Tech Spark
+            </strong>
+
+            <span>
+                Competency Intelligence
+            </span>
+        </div>
+
+    </div>
+
+
+    <button
+        class="back-btn"
+        onclick="goDashboard()">
+
+        ← Admin Dashboard
+
+    </button>
+
+</header>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero">
+
+    <div class="hero-inner">
+
+        <div>
+
+            <div class="badge">
+                👥 EMPLOYEE MANAGEMENT
+            </div>
+
+            <h1>
+                Manage your
+                <span>workforce.</span>
+            </h1>
+
+            <p>
+                Manage employee profiles, assign roles and
+                competencies, and monitor competency progress
+                through the Tech Spark intelligence platform.
+            </p>
+
+        </div>
+
+
+        <!-- ROBOT -->
+
+        <div class="robot">
+
+            <div class="robot-head">
+
+                <div class="antenna"></div>
+
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+
+                <div class="smile"></div>
+
+            </div>
+
+            <div class="robot-body"></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="container">
+
+
+    <!-- =================================================
+         STATISTICS
+    ================================================== -->
+
+    <section class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    👥
+                </div>
+
+                <div class="stat-number">
+                    248
+                </div>
+
+            </div>
+
+            <div class="stat-label">
+                Total Employees
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    ✓
+                </div>
+
+                <div class="stat-number">
+                    231
+                </div>
+
+            </div>
+
+            <div class="stat-label">
+                Active Employees
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    🎯
+                </div>
+
+                <div class="stat-number">
+                    68%
+                </div>
+
+            </div>
+
+            <div class="stat-label">
+                Average Competency
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    ⚠️
+                </div>
+
+                <div class="stat-number">
+                    37
+                </div>
+
+            </div>
+
+            <div class="stat-label">
+                Employees With Gaps
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         EMPLOYEE TABLE
+    ================================================== -->
+
+    <section class="card employee-card">
+
+        <div class="toolbar">
+
+            <div>
+
+                <h2>
+                    Employee Directory
+                </h2>
+
+                <p>
+                    View employees and their current competency status.
+                </p>
+
+            </div>
+
+
+            <div class="toolbar-right">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search"
+                    placeholder="🔍 Search employee...">
+
+
+                <button
+                    class="add-btn"
+                    onclick="openAddEmployee()">
+
+                    + Add Employee
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Employee
+                        </th>
+
+                        <th>
+                            Role
+                        </th>
+
+                        <th>
+                            Primary Competency
+                        </th>
+
+                        <th>
+                            Competency
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="employeeTable">
+
+
+                    <!-- EMPLOYEE 1 -->
+
+                    <tr
+                        data-name="Ananya Rao"
+                        data-email="ananya.rao@example.com">
+
+                        <td>
+
+                            <div class="employee">
+
+                                <div class="avatar">
+                                    AR
+                                </div>
+
+                                <div>
+
+                                    <div class="employee-name">
+                                        Ananya Rao
+                                    </div>
+
+                                    <div class="employee-email">
+                                        ananya.rao@example.com
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="role">
+                                Statistical Officer
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            Statistical Analysis
+                        </td>
+
+
+                        <td>
+
+                            <div class="competency">
+
+                                <div class="competency-top">
+
+                                    <span>
+                                        Overall
+                                    </span>
+
+                                    <strong>
+                                        82%
+                                    </strong>
+
+                                </div>
+
+                                <div class="mini-bar">
+
+                                    <div
+                                        class="mini-fill"
+                                        style="width:82%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="status active">
+                                Active
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="actions">
+
+                                <button
+                                    class="action-btn"
+                                    onclick="viewEmployee('Ananya Rao','ananya.rao@example.com','Statistical Officer','Statistical Analysis','82%')">
+                                    👁
+                                </button>
+
+                                <button
+                                    class="action-btn"
+                                    onclick="editEmployee('Ananya Rao')">
+                                    ✏
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- EMPLOYEE 2 -->
+
+                    <tr
+                        data-name="Rahul Kumar"
+                        data-email="rahul.kumar@example.com">
+
+                        <td>
+
+                            <div class="employee">
+
+                                <div class="avatar">
+                                    RK
+                                </div>
+
+                                <div>
+
+                                    <div class="employee-name">
+                                        Rahul Kumar
+                                    </div>
+
+                                    <div class="employee-email">
+                                        rahul.kumar@example.com
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="role">
+                                Data Analyst
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            Data Management
+                        </td>
+
+
+                        <td>
+
+                            <div class="competency">
+
+                                <div class="competency-top">
+
+                                    <span>
+                                        Overall
+                                    </span>
+
+                                    <strong>
+                                        64%
+                                    </strong>
+
+                                </div>
+
+                                <div class="mini-bar">
+
+                                    <div
+                                        class="mini-fill"
+                                        style="width:64%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="status active">
+                                Active
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="actions">
+
+                                <button
+                                    class="action-btn"
+                                    onclick="viewEmployee('Rahul Kumar','rahul.kumar@example.com','Data Analyst','Data Management','64%')">
+                                    👁
+                                </button>
+
+                                <button
+                                    class="action-btn"
+                                    onclick="editEmployee('Rahul Kumar')">
+                                    ✏
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- EMPLOYEE 3 -->
+
+                    <tr
+                        data-name="Priya Sharma"
+                        data-email="priya.sharma@example.com">
+
+                        <td>
+
+                            <div class="employee">
+
+                                <div class="avatar">
+                                    PS
+                                </div>
+
+                                <div>
+
+                                    <div class="employee-name">
+                                        Priya Sharma
+                                    </div>
+
+                                    <div class="employee-email">
+                                        priya.sharma@example.com
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="role">
+                                Survey Officer
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            Survey Methodology
+                        </td>
+
+
+                        <td>
+
+                            <div class="competency">
+
+                                <div class="competency-top">
+
+                                    <span>
+                                        Overall
+                                    </span>
+
+                                    <strong>
+                                        71%
+                                    </strong>
+
+                                </div>
+
+                                <div class="mini-bar">
+
+                                    <div
+                                        class="mini-fill"
+                                        style="width:71%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="status active">
+                                Active
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="actions">
+
+                                <button
+                                    class="action-btn"
+                                    onclick="viewEmployee('Priya Sharma','priya.sharma@example.com','Survey Officer','Survey Methodology','71%')">
+                                    👁
+                                </button>
+
+                                <button
+                                    class="action-btn"
+                                    onclick="editEmployee('Priya Sharma')">
+                                    ✏
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- EMPLOYEE 4 -->
+
+                    <tr
+                        data-name="Vikram Singh"
+                        data-email="vikram.singh@example.com">
+
+                        <td>
+
+                            <div class="employee">
+
+                                <div class="avatar">
+                                    VS
+                                </div>
+
+                                <div>
+
+                                    <div class="employee-name">
+                                        Vikram Singh
+                                    </div>
+
+                                    <div class="employee-email">
+                                        vikram.singh@example.com
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="role">
+                                Data Entry Operator
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            Data Management
+                        </td>
+
+
+                        <td>
+
+                            <div class="competency">
+
+                                <div class="competency-top">
+
+                                    <span>
+                                        Overall
+                                    </span>
+
+                                    <strong>
+                                        49%
+                                    </strong>
+
+                                </div>
+
+                                <div class="mini-bar">
+
+                                    <div
+                                        class="mini-fill"
+                                        style="width:49%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="status inactive">
+                                Needs Support
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="actions">
+
+                                <button
+                                    class="action-btn"
+                                    onclick="viewEmployee('Vikram Singh','vikram.singh@example.com','Data Entry Operator','Data Management','49%')">
+                                    👁
+                                </button>
+
+                                <button
+                                    class="action-btn"
+                                    onclick="editEmployee('Vikram Singh')">
+                                    ✏
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- EMPLOYEE 5 -->
+
+                    <tr
+                        data-name="Meena Joseph"
+                        data-email="meena.joseph@example.com">
+
+                        <td>
+
+                            <div class="employee">
+
+                                <div class="avatar">
+                                    MJ
+                                </div>
+
+                                <div>
+
+                                    <div class="employee-name">
+                                        Meena Joseph
+                                    </div>
+
+                                    <div class="employee-email">
+                                        meena.joseph@example.com
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="role">
+                                Senior Statistical Officer
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            Data Interpretation
+                        </td>
+
+
+                        <td>
+
+                            <div class="competency">
+
+                                <div class="competency-top">
+
+                                    <span>
+                                        Overall
+                                    </span>
+
+                                    <strong>
+                                        91%
+                                    </strong>
+
+                                </div>
+
+                                <div class="mini-bar">
+
+                                    <div
+                                        class="mini-fill"
+                                        style="width:91%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="status active">
+                                Active
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="actions">
+
+                                <button
+                                    class="action-btn"
+                                    onclick="viewEmployee('Meena Joseph','meena.joseph@example.com','Senior Statistical Officer','Data Interpretation','91%')">
+                                    👁
+                                </button>
+
+                                <button
+                                    class="action-btn"
+                                    onclick="editEmployee('Meena Joseph')">
+                                    ✏
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+
+            </table>
+
+
+            <div
+                class="no-results"
+                id="noResults">
+
+                🔍 No employees found.
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     ADD EMPLOYEE MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="employeeModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                Add New Employee
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeEmployeeModal()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <form id="employeeForm">
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        First Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="firstName"
+                        placeholder="First name"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Last Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="lastName"
+                        placeholder="Last name"
+                        required>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Email
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="employee@example.com"
+                    required>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Employee ID
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="employeeId"
+                        placeholder="EMP001"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Role
+                        <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="employeeRole"
+                        required>
+
+                        <option value="">
+                            Select role
+                        </option>
+
+                        <option>
+                            Statistical Officer
+                        </option>
+
+                        <option>
+                            Data Analyst
+                        </option>
+
+                        <option>
+                            Data Entry Operator
+                        </option>
+
+                        <option>
+                            Survey Officer
+                        </option>
+
+                        <option>
+                            Senior Statistical Officer
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Primary Competency
+                    <span class="required">*</span>
+                </label>
+
+                <select
+                    id="employeeCompetency"
+                    required>
+
+                    <option value="">
+                        Select competency
+                    </option>
+
+                    <option>
+                        Data Management
+                    </option>
+
+                    <option>
+                        Statistical Analysis
+                    </option>
+
+                    <option>
+                        Data Interpretation
+                    </option>
+
+                    <option>
+                        Survey Methodology
+                    </option>
+
+                    <option>
+                        Data Visualization
+                    </option>
+
+                    <option>
+                        Statistical Computing
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="save-btn">
+
+                Create Employee →
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PROFILE MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="profileModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                Employee Profile
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeProfile()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <div class="profile-header">
+
+            <div
+                class="big-avatar"
+                id="profileAvatar">
+
+                AR
+
+            </div>
+
+            <div>
+
+                <div
+                    class="profile-name"
+                    id="profileName">
+
+                    Ananya Rao
+
+                </div>
+
+                <div
+                    class="profile-email"
+                    id="profileEmail">
+
+                    ananya.rao@example.com
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="profile-section">
+
+            <div class="profile-section-title">
+                Employee Information
+            </div>
+
+            <div class="profile-line">
+
+                <span>
+                    Role
+                </span>
+
+                <strong id="profileRole">
+                    Statistical Officer
+                </strong>
+
+            </div>
+
+            <div class="profile-line">
+
+                <span>
+                    Primary Competency
+                </span>
+
+                <strong id="profileCompetency">
+                    Statistical Analysis
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="profile-section">
+
+            <div class="profile-section-title">
+                Competency Intelligence
+            </div>
+
+            <div class="profile-line">
+
+                <span>
+                    Overall Competency
+                </span>
+
+                <strong
+                    id="profileScore"
+                    style="color:#18a957">
+
+                    82%
+
+                </strong>
+
+            </div>
+
+            <div class="profile-line">
+
+                <span>
+                    Current Status
+                </span>
+
+                <strong>
+                    Active
+                </strong>
+
+            </div>
+
+            <div class="profile-line">
+
+                <span>
+                    AI Gap Analysis
+                </span>
+
+                <strong>
+                    Available
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="save-btn"
+            onclick="closeProfile()">
+
+            Close
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div
+    class="toast"
+    id="toast">
+
+    ✓ Employee created successfully!
+
+</div>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+    <strong>
+        Tech Spark
+    </strong>
+
+    — Competency Intelligence Platform
+
+    <br><br>
+
+    Admin Employee Management · SIH26101
+
+</footer>
+
+
+<script>
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function goDashboard(){
+
+    window.location.href =
+        "dashboard.html";
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+const searchInput =
+    document.getElementById(
+        "searchInput"
+    );
+
+
+searchInput.addEventListener(
+    "input",
+    function(){
+
+        const search =
+            this.value
+            .toLowerCase()
+            .trim();
+
+        const rows =
+            document.querySelectorAll(
+                "#employeeTable tr"
+            );
+
+        let visible = 0;
+
+
+        rows.forEach(function(row){
+
+            const name =
+                row.dataset.name
+                .toLowerCase();
+
+            const email =
+                row.dataset.email
+                .toLowerCase();
+
+            if(
+                name.includes(search) ||
+                email.includes(search)
+            ){
+
+                row.style.display = "";
+
+                visible++;
+
+            }else{
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        document.getElementById(
+            "noResults"
+        ).style.display =
+            visible === 0
+            ? "block"
+            : "none";
+
+    }
+);
+
+
+/* =====================================================
+   ADD EMPLOYEE
+===================================================== */
+
+function openAddEmployee(){
+
+    document.getElementById(
+        "employeeModal"
+    ).style.display = "flex";
+
+}
+
+
+function closeEmployeeModal(){
+
+    document.getElementById(
+        "employeeModal"
+    ).style.display = "none";
+
+}
+
+
+/* =====================================================
+   CREATE EMPLOYEE
+===================================================== */
+
+document
+    .getElementById("employeeForm")
+    .addEventListener(
+        "submit",
+        function(event){
+
+            event.preventDefault();
+
+
+            const firstName =
+                document.getElementById(
+                    "firstName"
+                ).value.trim();
+
+
+            const lastName =
+                document.getElementById(
+                    "lastName"
+                ).value.trim();
+
+
+            const email =
+                document.getElementById(
+                    "email"
+                ).value.trim();
+
+
+            const role =
+                document.getElementById(
+                    "employeeRole"
+                ).value;
+
+
+            const competency =
+                document.getElementById(
+                    "employeeCompetency"
+                ).value;
+
+
+            const employeeId =
+                document.getElementById(
+                    "employeeId"
+                ).value.trim();
+
+
+            const fullName =
+                firstName + " " + lastName;
+
+
+            const initials =
+                (
+                    firstName.charAt(0) +
+                    lastName.charAt(0)
+                ).toUpperCase();
+
+
+            /* Create table row */
+
+            const tbody =
+                document.getElementById(
+                    "employeeTable"
+                );
+
+
+            const row =
+                document.createElement("tr");
+
+
+            row.dataset.name =
+                fullName;
+
+            row.dataset.email =
+                email;
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    <div class="employee">
+
+                        <div class="avatar">
+                            ${initials}
+                        </div>
+
+                        <div>
+
+                            <div class="employee-name">
+                                ${fullName}
+                            </div>
+
+                            <div class="employee-email">
+                                ${email}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+
+                <td>
+
+                    <span class="role">
+                        ${role}
+                    </span>
+
+                </td>
+
+
+                <td>
+                    ${competency}
+                </td>
+
+
+                <td>
+
+                    <div class="competency">
+
+                        <div class="competency-top">
+
+                            <span>
+                                Overall
+                            </span>
+
+                            <strong>
+                                New
+                            </strong>
+
+                        </div>
+
+                        <div class="mini-bar">
+
+                            <div
+                                class="mini-fill"
+                                style="width:0%">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+
+                <td>
+
+                    <span class="status active">
+                        Active
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <div class="actions">
+
+                        <button
+                            class="action-btn"
+                            onclick="viewEmployee(
+                                '${fullName}',
+                                '${email}',
+                                '${role}',
+                                '${competency}',
+                                'Not assessed'
+                            )">
+
+                            👁
+
+                        </button>
+
+                        <button
+                            class="action-btn"
+                            onclick="editEmployee('${fullName}')">
+
+                            ✏
+
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            tbody.prepend(row);
+
+
+            /* Save locally */
+
+            saveEmployee({
+
+                id:employeeId,
+
+                name:fullName,
+
+                email:email,
+
+                role:role,
+
+                competency:competency
+
+            });
+
+
+            closeEmployeeModal();
+
+
+            document
+                .getElementById("employeeForm")
+                .reset();
+
+
+            showToast(
+                "✓ Employee created successfully!"
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   SAVE EMPLOYEE LOCAL STORAGE
+===================================================== */
+
+function saveEmployee(employee){
+
+    const employees =
+        JSON.parse(
+            localStorage.getItem(
+                "techSparkEmployees"
+            ) || "[]"
+        );
+
+
+    employees.push(employee);
+
+
+    localStorage.setItem(
+        "techSparkEmployees",
+        JSON.stringify(employees)
+    );
+
+}
+
+
+/* =====================================================
+   VIEW EMPLOYEE
+===================================================== */
+
+function viewEmployee(
+    name,
+    email,
+    role,
+    competency,
+    score
+){
+
+    document.getElementById(
+        "profileName"
+    ).textContent = name;
+
+
+    document.getElementById(
+        "profileEmail"
+    ).textContent = email;
+
+
+    document.getElementById(
+        "profileRole"
+    ).textContent = role;
+
+
+    document.getElementById(
+        "profileCompetency"
+    ).textContent = competency;
+
+
+    document.getElementById(
+        "profileScore"
+    ).textContent = score;
+
+
+    const parts =
+        name.split(" ");
+
+
+    const initials =
+        parts
+        .map(function(part){
+            return part.charAt(0);
+        })
+        .join("")
+        .substring(0,2)
+        .toUpperCase();
+
+
+    document.getElementById(
+        "profileAvatar"
+    ).textContent = initials;
+
+
+    document.getElementById(
+        "profileModal"
+    ).style.display = "flex";
+
+}
+
+
+function closeProfile(){
+
+    document.getElementById(
+        "profileModal"
+    ).style.display = "none";
+
+}
+
+
+/* =====================================================
+   EDIT EMPLOYEE
+===================================================== */
+
+function editEmployee(name){
+
+    alert(
+        "Edit employee: " +
+        name +
+        "\n\nThis will be connected to the backend API later."
+    );
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+function showToast(message){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    toast.textContent =
+        message;
+
+
+    toast.style.display =
+        "block";
+
+
+    setTimeout(function(){
+
+        toast.style.display =
+            "none";
+
+    },3000);
+
+}
+
+
+/* =====================================================
+   CLOSE MODALS WHEN CLICKING OUTSIDE
+===================================================== */
+
+window.addEventListener(
+    "click",
+    function(event){
+
+        const employeeModal =
+            document.getElementById(
+                "employeeModal"
+            );
+
+        const profileModal =
+            document.getElementById(
+                "profileModal"
+            );
+
+
+        if(event.target === employeeModal){
+
+            closeEmployeeModal();
+
+        }
+
+
+        if(event.target === profileModal){
+
+            closeProfile();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
