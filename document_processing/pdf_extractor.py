@@ -1,9 +1,9 @@
-import pymupdf
+import fitz
 
 
 def extract_text_from_pdf(pdf_path):
 
-    document = pymupdf.open(pdf_path)
+    document = fitz.open(pdf_path)
 
     full_text = ""
 

@@ -751,7 +751,7 @@
         class="back-btn"
         onclick="goDashboard()">
 
-        ← Dashboard
+        â† Dashboard
 
     </button>
 
@@ -823,7 +823,7 @@
 
 
         <div class="success-icon">
-            ✓
+            âœ“
         </div>
 
 
@@ -835,7 +835,7 @@
         <p class="subtitle">
 
             Your
-            <strong>
+            <strong id="materialTitle">
                 Data Cleaning Fundamentals
             </strong>
             assessment has been completed successfully.
@@ -913,7 +913,7 @@
         <div class="message">
 
             <strong>
-                🤖 AI Recommendation:
+                ðŸ¤– AI Recommendation:
             </strong>
 
             Your assessment result has been recorded.
@@ -933,7 +933,7 @@
                 class="action-btn primary"
                 onclick="goRecommendation()">
 
-                View Recommendations →
+                View Recommendations â†’
 
             </button>
 
@@ -951,7 +951,7 @@
                 class="action-btn certificate-btn"
                 onclick="viewCertificate()">
 
-                🏆 View Certificate
+                ðŸ† View Certificate
 
             </button>
 
@@ -974,640 +974,278 @@
 </main>
 
 
-
 <script>
+/* =========================================
+   RESULT PAGE - LOAD QUIZ DATA
+========================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* -----------------------------------------
+       READ QUIZ RESULT FROM LOCAL STORAGE
+    ----------------------------------------- */
+
+    const scoreValue =
+        localStorage.getItem("quizScore");
+
+    const correctValue =
+        localStorage.getItem("quizCorrectAnswers");
+
+    const totalValue =
+        localStorage.getItem("quizTotalQuestions");
+
+    const competencyValue =
+        localStorage.getItem("updatedCompetency");
+
+    const weakTopic =
+        localStorage.getItem("weakTopic") ||
+        "Data Cleaning";
+
+    const selectedMaterial =
+        localStorage.getItem("selectedLearningMaterial") ||
+        "Data Cleaning Fundamentals";
+
+
+    /* -----------------------------------------
+       CONVERT VALUES SAFELY
+    ----------------------------------------- */
+
+    let score = Number(scoreValue);
+
+    if (isNaN(score)) {
+        score = 0;
+    }
+
+    let correct = Number(correctValue);
+
+    if (isNaN(correct)) {
+        correct = 0;
+    }
+
+    let total = Number(totalValue);
+
+    if (isNaN(total) || total <= 0) {
+        total = 5;
+    }
+
+    let updatedCompetency =
+        Number(competencyValue);
+
+    if (isNaN(updatedCompetency)) {
+        updatedCompetency = score;
+    }
+
+
+    /* -----------------------------------------
+       KEEP VALUES BETWEEN 0 AND 100
+    ----------------------------------------- */
+
+    score = Math.max(0, Math.min(100, score));
+
+    updatedCompetency =
+        Math.max(
+            0,
+            Math.min(100, updatedCompetency)
+        );
+
+
+    /* -----------------------------------------
+       UPDATE MATERIAL TITLE
+    ----------------------------------------- */
+
+    const materialTitle =
+        document.getElementById("materialTitle");
+
+    if (materialTitle) {
+        materialTitle.textContent =
+            selectedMaterial;
+    }
+
+
+    /* -----------------------------------------
+       DISPLAY SCORE
+    ----------------------------------------- */
+
+    const scoreElement =
+        document.getElementById("score");
+
+    if (scoreElement) {
+        scoreElement.textContent =
+            Math.round(score) + "%";
+    }
+
+
+    /* -----------------------------------------
+       DISPLAY CORRECT ANSWERS
+    ----------------------------------------- */
+
+    const correctElement =
+        document.getElementById("correct");
+
+    if (correctElement) {
+        correctElement.textContent =
+            correct;
+    }
+
+
+    /* -----------------------------------------
+       DISPLAY TOTAL QUESTIONS
+    ----------------------------------------- */
+
+    const totalElement =
+        document.getElementById("total");
+
+    if (totalElement) {
+        totalElement.textContent =
+            total;
+    }
+
+
+    /* -----------------------------------------
+       DISPLAY UPDATED COMPETENCY
+    ----------------------------------------- */
+
+    const competencyElement =
+        document.getElementById("competency");
+
+    if (competencyElement) {
+        competencyElement.textContent =
+            Math.round(updatedCompetency) + "%";
+    }
+
+
+    /* -----------------------------------------
+       UPDATE AI RECOMMENDATION MESSAGE
+    ----------------------------------------- */
+
+    const message =
+        document.querySelector(".message");
+
+    if (message) {
+
+        let recommendationText = "";
+
+        if (score < 50) {
+
+            recommendationText =
+                "Your performance shows that this topic needs focused practice.";
+
+        } else if (score < 75) {
+
+            recommendationText =
+                "You are making progress. Continue practising this topic to strengthen your competency.";
+
+        } else {
+
+            recommendationText =
+                "Good performance. You have demonstrated a strong understanding of this topic.";
+        }
+
+
+        message.innerHTML = `
+            <strong>ðŸ¤– AI Recommendation:</strong>
+            Your quiz score is
+            <strong>${Math.round(score)}%</strong>.
+            The priority learning topic is
+            <strong>${weakTopic}</strong>.
+            ${recommendationText}
+            Your updated competency is
+            <strong>${Math.round(updatedCompetency)}%</strong>.
+        `;
+    }
+
+
+    /* -----------------------------------------
+       SAVE FINAL RESULT
+    ----------------------------------------- */
+
+    localStorage.setItem(
+        "updatedCompetency",
+        String(updatedCompetency)
+    );
+
+    localStorage.setItem(
+        "finalQuizResult",
+        JSON.stringify({
+            score: score,
+            correct: correct,
+            total: total,
+            weakTopic: weakTopic,
+            updatedCompetency: updatedCompetency,
+            materialTitle: selectedMaterial
+        })
+    );
+
+
+    /* -----------------------------------------
+       CONSOLE DEBUG INFORMATION
+    ----------------------------------------- */
+
+    console.log(
+        "Tech Spark - Final Quiz Result:",
+        {
+            score: score,
+            correct: correct,
+            total: total,
+            weakTopic: weakTopic,
+            updatedCompetency: updatedCompetency,
+            materialTitle: selectedMaterial
+        }
+    );
+
+});
 
 
 /* =========================================
-   LOAD QUIZ DATA
+   NAVIGATION
 ========================================= */
-
-
-const score =
-    Number(
-        localStorage.getItem("quizScore")
-    ) || 0;
-
-
-const correct =
-    Number(
-        localStorage.getItem(
-            "quizCorrectAnswers"
-        )
-    ) || 0;
-
-
-const total =
-    Number(
-        localStorage.getItem(
-            "quizTotalQuestions"
-        )
-    ) || 5;
-
-
-
-/* =========================================
-   DISPLAY RESULT
-========================================= */
-
-
-document.getElementById(
-    "score"
-).textContent =
-    score + "%";
-
-
-document.getElementById(
-    "correct"
-).textContent =
-    correct;
-
-
-document.getElementById(
-    "total"
-).textContent =
-    total;
-
-
-document.getElementById(
-    "competency"
-).textContent =
-    score + "%";
-
-
-
-/* =========================================
-   DASHBOARD
-========================================= */
-
 
 function goDashboard() {
 
     window.location.href =
         "dashboard.html";
-
 }
-
-
-
-/* =========================================
-   RECOMMENDATION
-========================================= */
 
 
 function goRecommendation() {
 
     window.location.href =
         "recommendation.html";
-
 }
-
-
-
-/* =========================================
-   RETAKE QUIZ
-========================================= */
 
 
 function retakeQuiz() {
 
+    /*
+     * Keep the learning material and weak topic.
+     * Clear only the previous quiz result.
+     */
 
-    localStorage.removeItem(
-        "quizScore"
-    );
-
-
-    localStorage.removeItem(
-        "quizCorrectAnswers"
-    );
-
-
-    localStorage.removeItem(
-        "quizTotalQuestions"
-    );
-
-
-    localStorage.removeItem(
-        "quizCompleted"
-    );
-
-
-    localStorage.removeItem(
-        "quizAnswers"
-    );
-
+    localStorage.removeItem("quizScore");
+    localStorage.removeItem("quizCorrectAnswers");
+    localStorage.removeItem("quizTotalQuestions");
+    localStorage.removeItem("quizCompleted");
+    localStorage.removeItem("quizAnswers");
+    localStorage.removeItem("quizMistakes");
+    localStorage.removeItem("quizBackendResult");
 
     window.location.href =
         "quiz.html";
-
 }
-
-
-
-/* =========================================
-   GET EMPLOYEE NAME
-========================================= */
-
-
-function getEmployeeName() {
-
-
-    let employeeName =
-        "Tech Spark Learner";
-
-
-    try {
-
-
-        const user =
-            JSON.parse(
-                localStorage.getItem(
-                    "currentUser"
-                )
-            );
-
-
-        if (user) {
-
-
-            employeeName =
-                user.name ||
-                user.fullName ||
-                user.username ||
-                user.email ||
-                employeeName;
-
-        }
-
-
-    } catch (error) {
-
-        console.log(
-            "Could not read employee information."
-        );
-
-    }
-
-
-    return employeeName;
-
-}
-
-
-
-/* =========================================
-   VIEW CERTIFICATE
-========================================= */
 
 
 function viewCertificate() {
 
+    /*
+     * Certificate page is not part of the core
+     * learning cycle yet.
+     */
 
-    const employeeName =
-        getEmployeeName();
-
-
-
-    const certificateWindow =
-        window.open(
-            "",
-            "_blank"
-        );
-
-
-
-    /* POP-UP BLOCKED */
-
-    if (!certificateWindow) {
-
-        alert(
-            "Certificate window was blocked. Please allow pop-ups for this page."
-        );
-
-        return;
-
-    }
-
-
-
-    /* =====================================
-       CERTIFICATE HTML
-    ===================================== */
-
-
-    certificateWindow.document.write(`
-
-
-<!DOCTYPE html>
-
-<html lang="en">
-
-
-<head>
-
-<meta charset="UTF-8">
-
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-
-<title>
-    Tech Spark Certificate
-</title>
-
-
-<style>
-
-
-* {
-    box-sizing: border-box;
+    alert(
+        "Certificate generation will be available after completing the learning cycle."
+    );
 }
-
-
-body {
-
-    margin: 0;
-
-    min-height: 100vh;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    background: #eef7f1;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-}
-
-
-.certificate {
-
-    width: 900px;
-
-    min-height: 620px;
-
-    background: white;
-
-    border:
-        12px solid
-        #11824f;
-
-    padding: 55px;
-
-    text-align: center;
-
-    position: relative;
-
-    box-shadow:
-        0 20px 50px
-        rgba(0,0,0,.15);
-
-}
-
-
-.certificate::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 15px;
-
-    left: 15px;
-
-    right: 15px;
-
-    bottom: 15px;
-
-    border:
-        2px solid
-        #b8dec9;
-
-    pointer-events: none;
-
-}
-
-
-.logo {
-
-    color: #11824f;
-
-    font-size: 28px;
-
-    font-weight: 900;
-
-    letter-spacing: 4px;
-
-    margin-bottom: 15px;
-
-}
-
-
-.platform {
-
-    color: #71847a;
-
-    font-size: 13px;
-
-    letter-spacing: 2px;
-
-    text-transform: uppercase;
-
-}
-
-
-h1 {
-
-    color: #17352a;
-
-    font-size: 43px;
-
-    margin:
-        18px 0 28px;
-
-}
-
-
-.presented {
-
-    color: #63766c;
-
-    font-size: 17px;
-
-}
-
-
-.name {
-
-    display: inline-block;
-
-    color: #11824f;
-
-    font-size: 33px;
-
-    font-weight: 800;
-
-    margin:
-        22px 0;
-
-    padding:
-        0 45px 10px;
-
-    border-bottom:
-        2px solid
-        #b8dec9;
-
-}
-
-
-.course {
-
-    color: #394f44;
-
-    font-size: 18px;
-
-    line-height: 1.7;
-
-    max-width: 680px;
-
-    margin: auto;
-
-}
-
-
-.score {
-
-    color: #11824f;
-
-    font-size: 25px;
-
-    font-weight: 800;
-
-    margin-top: 25px;
-
-}
-
-
-.correct {
-
-    color: #71847a;
-
-    margin-top: 8px;
-
-    font-size: 14px;
-
-}
-
-
-.footer {
-
-    margin-top: 48px;
-
-    display: flex;
-
-    justify-content:
-        space-between;
-
-    color: #71847a;
-
-    font-size: 13px;
-
-}
-
-
-.print-btn {
-
-    margin-top: 25px;
-
-    padding:
-        12px 26px;
-
-    border: none;
-
-    border-radius: 9px;
-
-    background: #11824f;
-
-    color: white;
-
-    font-weight: 800;
-
-    cursor: pointer;
-
-    font-size: 14px;
-
-}
-
-
-.print-btn:hover {
-
-    background: #0b6940;
-
-}
-
-
-@media print {
-
-
-    body {
-
-        background: white;
-
-    }
-
-
-    .certificate {
-
-        box-shadow: none;
-
-    }
-
-
-    .print-btn {
-
-        display: none;
-
-    }
-
-
-}
-
-
-</style>
-
-</head>
-
-
-
-<body>
-
-
-<div class="certificate">
-
-
-    <div class="logo">
-
-        TECH SPARK
-
-    </div>
-
-
-    <div class="platform">
-
-        AI-Enabled Learning Platform
-
-    </div>
-
-
-    <h1>
-
-        Certificate of Completion
-
-    </h1>
-
-
-    <div class="presented">
-
-        This certificate is proudly
-        presented to
-
-    </div>
-
-
-    <div class="name">
-
-        ${employeeName}
-
-    </div>
-
-
-    <div class="course">
-
-        for successfully completing the
-
-        <strong>
-            Data Cleaning Fundamentals
-        </strong>
-
-        competency assessment through
-        the Tech Spark personalized
-        learning platform.
-
-    </div>
-
-
-    <div class="score">
-
-        Assessment Score:
-        ${score}%
-
-    </div>
-
-
-    <div class="correct">
-
-        Questions Correct:
-        ${correct} / ${total}
-
-    </div>
-
-
-    <div class="footer">
-
-        <span>
-            Tech Spark
-        </span>
-
-
-        <span>
-            SIH26101
-        </span>
-
-
-        <span>
-            Learning Achievement
-        </span>
-
-    </div>
-
-
-    <button
-        class="print-btn"
-        onclick="window.print()">
-
-        Print / Save Certificate
-
-    </button>
-
-
-</div>
-
-
-</body>
-
-</html>
-
-
-`);
-
-
-    certificateWindow.document.close();
-
-}
-
-
 </script>
 
-
 </body>
-
 </html>

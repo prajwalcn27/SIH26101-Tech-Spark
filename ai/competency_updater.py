@@ -7,9 +7,9 @@ Updates employee competency scores after completing a quiz.
 Formula:
 
 Updated Score =
-Previous Score × (1 - learning_weight)
+Previous Score Ã— (1 - learning_weight)
 +
-Quiz Score × learning_weight
+Quiz Score Ã— learning_weight
 """
 
 
@@ -17,7 +17,7 @@ class CompetencyUpdater:
 
     def __init__(
         self,
-        learning_weight=0.4
+        learning_weight=0.6
     ):
 
         self.learning_weight = (
@@ -215,7 +215,7 @@ def display_updated_competencies(
         print(
             f"{topic:<25} "
             f"{data['previous_score']:.2f}% "
-            f"→ "
+            f"â†’ "
             f"{data['updated_score']:.2f}% "
             f"({data['status']})"
         )

@@ -357,7 +357,7 @@
         }
 
         .robot-body::before {
-            content: "✦";
+            content: "âœ¦";
             position: absolute;
             left: 19px;
             top: 7px;
@@ -1022,7 +1022,7 @@
     <header class="assessment-header">
 
         <a href="dashboard.html" class="back-link">
-            ← Back to Dashboard
+            â† Back to Dashboard
         </a>
 
 
@@ -1121,7 +1121,7 @@
             id="instructionCard">
 
             <div class="instruction-icon">
-                🧠
+                ðŸ§ 
             </div>
 
             <div>
@@ -1132,7 +1132,7 @@
 
                 <p>
                     Choose the answer that best represents your knowledge.
-                    Don't worry about mistakes — the goal is to understand
+                    Don't worry about mistakes â€” the goal is to understand
                     where you need support.
                 </p>
 
@@ -1462,7 +1462,7 @@
             class="warning"
             id="warning">
 
-            ⚠ Please select an answer before continuing.
+            âš  Please select an answer before continuing.
 
         </div>
 
@@ -1478,7 +1478,7 @@
                 class="btn-secondary"
                 id="previousBtn">
 
-                ← Previous
+                â† Previous
 
             </button>
 
@@ -1488,7 +1488,7 @@
                 class="btn-primary"
                 id="nextBtn">
 
-                Next →
+                Next â†’
 
             </button>
 
@@ -1508,7 +1508,7 @@
                 <div class="loader-ring"></div>
 
                 <div class="loader-core">
-                    ✦
+                    âœ¦
                 </div>
 
             </div>
@@ -1542,7 +1542,7 @@
             id="resultCard">
 
             <div class="success-icon">
-                ✓
+                âœ“
             </div>
 
             <h2>
@@ -1573,7 +1573,7 @@
 
 
             <div class="result-message">
-                ✦ Competency profile generated
+                âœ¦ Competency profile generated
             </div>
 
             <p>
@@ -1585,7 +1585,7 @@
             <div class="result-actions">
 
                 <a href="dashboard.html">
-                    View My Dashboard →
+                    View My Dashboard â†’
                 </a>
 
             </div>
@@ -1601,427 +1601,695 @@
 
     <script>
 
+        const API_BASE_URL = "http://127.0.0.1:5000";
+        
         const questions =
             document.querySelectorAll(".question-card");
-
+        
         const nextBtn =
             document.getElementById("nextBtn");
-
+        
         const previousBtn =
             document.getElementById("previousBtn");
-
+        
         const warning =
             document.getElementById("warning");
-
+        
         const progressFill =
             document.getElementById("progressFill");
-
+        
         const progressText =
             document.getElementById("progressText");
-
+        
         const progressPercent =
             document.getElementById("progressPercent");
-
+        
         const questionActions =
             document.getElementById("questionActions");
-
+        
         const instructionCard =
             document.getElementById("instructionCard");
-
+        
         const analyzingCard =
             document.getElementById("analyzingCard");
-
+        
         const resultCard =
             document.getElementById("resultCard");
-
+        
         const analyzingText =
             document.getElementById("analyzingText");
-
+        
         const scoreNumber =
             document.getElementById("scoreNumber");
-
+        
         const scoreCircle =
             document.getElementById("scoreCircle");
-
-
+        
+        
         let currentQuestion = 0;
-
+        
         let score = 0;
-
-
-        /* =========================
-           SHOW QUESTION
-        ========================= */
-
+        
+        
+        // ============================================================
+        // SHOW QUESTION
+        // ============================================================
+        
         function showQuestion(index) {
-
+        
             questions.forEach(function(question, i) {
-
+        
                 question.classList.toggle(
                     "active",
                     i === index
                 );
-
+        
             });
-
-
+        
+        
             const percentage =
                 Math.round(
                     ((index + 1) / questions.length) * 100
                 );
-
-
+        
+        
             progressFill.style.width =
                 percentage + "%";
-
-
+        
+        
             progressText.textContent =
                 "Question " +
                 (index + 1) +
                 " of " +
                 questions.length;
-
-
+        
+        
             progressPercent.textContent =
                 percentage + "%";
-
-
+        
+        
             previousBtn.style.visibility =
                 index === 0
                     ? "hidden"
                     : "visible";
-
-
+        
+        
             nextBtn.textContent =
                 index === questions.length - 1
                     ? "Finish Assessment"
-                    : "Next →";
-
-
-            warning.style.display = "none";
-
+                    : "Next â†’";
+        
+        
+            warning.style.display =
+                "none";
         }
-
-
-        /* =========================
-           GET ANSWER
-        ========================= */
-
+        
+        
+        // ============================================================
+        // GET SELECTED ANSWER
+        // ============================================================
+        
         function getSelectedAnswer() {
-
+        
             const current =
                 questions[currentQuestion];
-
+        
             return current.querySelector(
                 'input[type="radio"]:checked'
             );
-
         }
-
-
-        /* =========================
-           NEXT
-        ========================= */
-
+        
+        
+        // ============================================================
+        // SAVE WEAK TOPIC
+        // ============================================================
+        
+        function saveWeakTopic() {
+        
+            /*
+               The current assessment is focused on
+               Data Cleaning / Missing Values.
+            */
+        
+            localStorage.setItem(
+                "weakTopic",
+                "Missing Values"
+            );
+        }
+        
+        
+        // ============================================================
+        // NEXT BUTTON
+        // ============================================================
+        
         nextBtn.addEventListener(
             "click",
             function() {
-
+        
                 const selected =
                     getSelectedAnswer();
-
-
+        
+        
                 if (!selected) {
-
+        
                     warning.style.display =
                         "block";
-
+        
                     warning.style.animation =
                         "none";
-
+        
                     void warning.offsetWidth;
-
+        
                     warning.style.animation =
                         "shake .35s ease";
-
+        
                     return;
                 }
-
-
-                if (selected.value === "correct") {
-
+        
+        
+                if (
+                    selected.value === "correct"
+                ) {
+        
                     score++;
-
+        
                 }
-
-
+        
+        
                 if (
                     currentQuestion <
                     questions.length - 1
                 ) {
-
+        
                     currentQuestion++;
-
+        
                     showQuestion(
                         currentQuestion
                     );
-
-                } else {
-
-                    finishAssessment();
-
+        
                 }
-
+        
+                else {
+        
+                    finishAssessment();
+        
+                }
+        
             }
         );
-
-
-        /* =========================
-           PREVIOUS
-        ========================= */
-
+        
+        
+        // ============================================================
+        // PREVIOUS BUTTON
+        // ============================================================
+        
         previousBtn.addEventListener(
             "click",
             function() {
-
+        
                 if (currentQuestion > 0) {
-
+        
                     currentQuestion--;
-
+        
                     showQuestion(
                         currentQuestion
                     );
-
+        
                 }
-
+        
             }
         );
-
-
-        /* =========================
-           OPTION SELECTION
-        ========================= */
-
+        
+        
+        // ============================================================
+        // OPTION SELECTION
+        // ============================================================
+        
         document
             .querySelectorAll(".option")
             .forEach(function(option) {
-
+        
                 option.addEventListener(
                     "click",
                     function() {
-
+        
                         const card =
                             this.closest(
                                 ".question-card"
                             );
-
-
+        
+        
                         card
                             .querySelectorAll(".option")
                             .forEach(
                                 function(item) {
-
+        
                                     item.classList.remove(
                                         "selected"
                                     );
-
+        
                                 }
                             );
-
-
+        
+        
                         this.classList.add(
                             "selected"
                         );
-
-
+        
+        
                         const radio =
                             this.querySelector(
                                 "input"
                             );
-
-
+        
+        
                         radio.checked = true;
-
-
+        
+        
                         warning.style.display =
                             "none";
-
+        
                     }
                 );
-
+        
             });
-
-
-        /* =========================
-           FINISH
-        ========================= */
-
-        function finishAssessment() {
-
+        
+        
+        // ============================================================
+        // FINISH ASSESSMENT
+        // ============================================================
+        
+        async function finishAssessment() {
+        
             questions.forEach(
                 function(question) {
-
+        
                     question.style.display =
                         "none";
-
+        
                 }
             );
-
-
+        
+        
             instructionCard.style.display =
                 "none";
-
+        
+        
             questionActions.style.display =
                 "none";
-
-
+        
+        
             warning.style.display =
                 "none";
-
-
+        
+        
             analyzingCard.classList.add(
                 "active"
             );
-
-
+        
+        
             progressFill.style.width =
                 "100%";
-
+        
+        
             progressText.textContent =
                 "Analyzing Results";
-
+        
+        
             progressPercent.textContent =
                 "100%";
-
-
+        
+        
             const messages = [
-
+        
                 "Checking competency areas...",
-
+        
                 "Identifying knowledge gaps...",
-
+        
                 "Analyzing topic performance...",
-
+        
                 "Preparing personalized recommendations..."
-
+        
             ];
-
-
+        
+        
             let messageIndex = 0;
-
-
+        
+        
             const analysisInterval =
-                setInterval(function() {
-
-                    analyzingText.textContent =
-                        messages[messageIndex];
-
-                    messageIndex++;
-
-                    if (
-                        messageIndex >=
-                        messages.length
-                    ) {
-
-                        clearInterval(
-                            analysisInterval
-                        );
-
-                    }
-
-                }, 650);
-
-
+                setInterval(
+                    function() {
+        
+                        analyzingText.textContent =
+                            messages[messageIndex];
+        
+        
+                        messageIndex++;
+        
+        
+                        if (
+                            messageIndex >=
+                            messages.length
+                        ) {
+        
+                            clearInterval(
+                                analysisInterval
+                            );
+        
+                        }
+        
+                    },
+                    650
+                );
+        
+        
+            /*
+               Save the weak topic before calling backend.
+            */
+        
+            saveWeakTopic();
+        
+        
+            /*
+               Call Flask AI learning cycle.
+            */
+        
+            await sendAssessmentToBackend();
+        
+        
+            /*
+               Give the AI animation time to finish.
+            */
+        
             setTimeout(
                 function() {
-
+        
                     analyzingCard.classList.remove(
                         "active"
                     );
-
+        
+        
                     showResult();
-
+        
                 },
                 2900
             );
-
+        
         }
-
-
-        /* =========================
-           RESULT
-        ========================= */
-
+        
+        
+        // ============================================================
+        // SEND ASSESSMENT TO BACKEND
+        // ============================================================
+        
+        async function sendAssessmentToBackend() {
+        
+            const percentage =
+                Math.round(
+                    (score / questions.length) * 100
+                );
+        
+        
+            console.log(
+                "======================================"
+            );
+        
+            console.log(
+                "TECH SPARK ASSESSMENT"
+            );
+        
+            console.log(
+                "Score:",
+                percentage + "%"
+            );
+        
+        
+            /*
+               The current assessment is about
+               Data Cleaning / Missing Values.
+            */
+        
+            const weakTopics = [
+                "Missing Values"
+            ];
+        
+        
+            try {
+        
+                console.log(
+                    "Calling AI learning cycle..."
+                );
+        
+        
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/ai/learning-cycle`,
+                        {
+                            method: "POST",
+        
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+        
+                            body: JSON.stringify({
+        
+                                weak_topics:
+                                    weakTopics,
+        
+                                num_questions: 5
+        
+                            })
+                        }
+                    );
+        
+        
+                if (!response.ok) {
+        
+                    throw new Error(
+                        "Backend returned HTTP "
+                        + response.status
+                    );
+        
+                }
+        
+        
+                const data =
+                    await response.json();
+        
+        
+                console.log(
+                    "AI Learning Cycle Response:",
+                    data
+                );
+        
+        
+                if (
+                    data.status === "success"
+                ) {
+        
+                    console.log(
+                        "âœ… AI learning cycle completed."
+                    );
+        
+        
+                    /*
+                       Save assessment score.
+                    */
+        
+                    localStorage.setItem(
+                        "techspark_assessment_score",
+                        percentage
+                    );
+        
+        
+                    /*
+                       Save score for recommendation page.
+                    */
+        
+                    localStorage.setItem(
+                        "quizScore",
+                        percentage
+                    );
+        
+        
+                    /*
+                       Save weak topic.
+                    */
+        
+                    localStorage.setItem(
+                        "weakTopic",
+                        "Missing Values"
+                    );
+        
+        
+                    /*
+                       Save complete AI response.
+                    */
+        
+                    localStorage.setItem(
+                        "aiLearningCycle",
+                        JSON.stringify(data)
+                    );
+        
+        
+                    /*
+                       Save updated competency if available.
+                    */
+        
+                    const learningCycle =
+                        data.learning_cycle
+                        || data;
+        
+        
+                    const updatedCompetency =
+                        learningCycle.updated_competency;
+        
+        
+                    if (
+                        updatedCompetency
+                    ) {
+        
+                        localStorage.setItem(
+                            "updatedCompetency",
+                            JSON.stringify(
+                                updatedCompetency
+                            )
+                        );
+        
+                    }
+        
+                }
+        
+            }
+        
+            catch (error) {
+        
+                /*
+                   IMPORTANT:
+                   The assessment should still show
+                   the result even if backend temporarily
+                   fails.
+                */
+        
+                console.error(
+                    "âŒ AI Learning Cycle Error:",
+                    error
+                );
+        
+        
+                localStorage.setItem(
+                    "techspark_assessment_score",
+                    percentage
+                );
+        
+        
+                localStorage.setItem(
+                    "quizScore",
+                    percentage
+                );
+        
+        
+                localStorage.setItem(
+                    "weakTopic",
+                    "Missing Values"
+                );
+        
+            }
+        
+        }
+        
+        
+        // ============================================================
+        // SHOW RESULT
+        // ============================================================
+        
         function showResult() {
-
+        
             resultCard.classList.add(
                 "active"
             );
-
-
+        
+        
             const percentage =
                 Math.round(
-                    (score / questions.length) *
-                    100
+                    (score / questions.length) * 100
                 );
-
-
+        
+        
             scoreNumber.textContent =
                 "0%";
-
-
+        
+        
             const degrees =
                 percentage * 3.6;
-
-
+        
+        
             scoreCircle.style.setProperty(
                 "--score-degree",
                 degrees + "deg"
             );
-
-
+        
+        
             let current = 0;
-
-
+        
+        
             const counter =
                 setInterval(
                     function() {
-
+        
                         current += 1;
-
+        
+        
                         scoreNumber.textContent =
                             current + "%";
-
-
+        
+        
                         if (
                             current >= percentage
                         ) {
-
+        
                             clearInterval(counter);
-
+        
                         }
-
+        
                     },
                     25
                 );
-
-
+        
+        
+            /*
+               Store final assessment score.
+            */
+        
             localStorage.setItem(
                 "techspark_assessment_score",
                 percentage
             );
-
+        
+        
+            localStorage.setItem(
+                "quizScore",
+                percentage
+            );
+        
+        
+            /*
+               Store weak topic.
+            */
+        
+            localStorage.setItem(
+                "weakTopic",
+                "Missing Values"
+            );
+        
         }
-
-
-        /* =========================
-           START
-        ========================= */
-
+        
+        
+        // ============================================================
+        // START
+        // ============================================================
+        
         showQuestion(0);
-
-    </script>
-
-</body>
-
-</html>
+        
+        </script>

@@ -754,7 +754,7 @@
                 class="back-btn"
                 onclick="goDashboard()"
             >
-                ← Dashboard
+                â† Dashboard
             </button>
 
         </div>
@@ -1007,7 +1007,7 @@
             <div class="priority">
 
                 <h3>
-                    ⚠ Priority Learning Gap: Missing Values
+                    âš  Priority Learning Gap: Missing Values
                 </h3>
 
                 <p>
@@ -1101,7 +1101,7 @@
                         class="btn btn-primary"
                         id="takeQuizBtn"
                     >
-                        Take AI Quiz →
+                        Take AI Quiz â†’
                     </a>
 
                 </div>
@@ -1278,7 +1278,7 @@
 
     <footer>
 
-        Tech Spark • SIH26101 • AI-Enabled Learning Platform
+        Tech Spark â€¢ SIH26101 â€¢ AI-Enabled Learning Platform
 
     </footer>
 
@@ -1289,146 +1289,322 @@
 
     <script>
 
-        /*
-         * ==========================================
-         * DASHBOARD NAVIGATION
-         * ==========================================
-         */
-
+        const API_BASE_URL = "http://127.0.0.1:5000";
+        
+        
+        // ===============================
+        // DASHBOARD
+        // ===============================
+        
         function goDashboard() {
-
             window.location.href = "./dashboard.html";
-
         }
-
-
-        /*
-         * ==========================================
-         * QUIZ NAVIGATION
-         * ==========================================
-         *
-         * This function is kept as an additional
-         * fallback.
-         *
-         * Main button already uses:
-         *
-         * ./quiz.html
-         *
-         * ==========================================
-         */
-
+        
+        
+        // ===============================
+        // QUIZ
+        // ===============================
+        
         function startQuiz() {
-
             window.location.assign("./quiz.html");
-
         }
-
-
-        /*
-         * ==========================================
-         * SAVE COMPETENCY GAP INFORMATION
-         * ==========================================
-         */
-
-        localStorage.setItem(
-            "techSparkCompetencyGap",
-
-            JSON.stringify({
-
-                overallScore: 58,
-
-                priorityTopic: "Missing Values",
-
-                priorityScore: 32,
-
-                recommendedMaterial: "Data Cleaning Fundamentals"
-
-            })
-        );
-
-
-        /*
-         * ==========================================
-         * PAGE LOAD
-         * ==========================================
-         */
-
+        
+        
+        // ===============================
+        // LOAD COMPETENCY DATA
+        // ===============================
+        
+        function loadCompetencyData() {
+        
+            let assessmentScore =
+                Number(localStorage.getItem("techspark_assessment_score")) || 0;
+        
+            let weakTopic =
+                localStorage.getItem("weakTopic") || "Missing Values";
+        
+            let aiData = null;
+        
+            try {
+                aiData =
+                    JSON.parse(localStorage.getItem("aiLearningCycle")) || null;
+            } catch (error) {
+                console.log("AI data parsing error:", error);
+            }
+        
+        
+            // -------------------------------
+            // Find competency score
+            // -------------------------------
+        
+            let overallScore = assessmentScore;
+        
+            if (
+                aiData &&
+                aiData.learning_cycle &&
+                aiData.learning_cycle.updated_competency
+            ) {
+        
+                const competency =
+                    aiData.learning_cycle.updated_competency;
+        
+                if (typeof competency === "number") {
+                    overallScore = competency;
+                }
+            }
+        
+        
+            // -------------------------------
+            // Display overall score
+            // -------------------------------
+        
+            const scoreElement =
+                document.querySelector(".score-number strong");
+        
+            if (scoreElement) {
+                scoreElement.textContent =
+                    Math.round(overallScore) + "%";
+            }
+        
+        
+            // -------------------------------
+            // Update score circle
+            // -------------------------------
+        
+            const circle =
+                document.querySelector(".score-circle");
+        
+            if (circle) {
+        
+                circle.style.background =
+                    `conic-gradient(
+                        var(--green) ${overallScore}%,
+                        #e7efeb 0
+                    )`;
+            }
+        
+        
+            // -------------------------------
+            // Determine gap level
+            // -------------------------------
+        
+            let gapLevel = "LOW";
+        
+            if (overallScore < 40) {
+                gapLevel = "HIGH";
+            }
+            else if (overallScore < 70) {
+                gapLevel = "MEDIUM";
+            }
+        
+        
+            // -------------------------------
+            // Update analysis text
+            // -------------------------------
+        
+            const analysisText =
+                document.querySelector(".analysis-box p");
+        
+            if (analysisText) {
+        
+                analysisText.textContent =
+                    `AI analysis identified ${weakTopic} as the current priority learning area. ` +
+                    `Your overall competency score is ${Math.round(overallScore)}%, ` +
+                    `which indicates a ${gapLevel.toLowerCase()} competency gap. ` +
+                    `The system recommends focused learning before taking the next AI quiz.`;
+            }
+        
+        
+            // -------------------------------
+            // Update priority topic
+            // -------------------------------
+        
+            const priorityTitle =
+                document.querySelector(".priority h3");
+        
+            if (priorityTitle) {
+        
+                priorityTitle.textContent =
+                    `âš  Priority Learning Gap: ${weakTopic}`;
+            }
+        
+        
+            const priorityDescription =
+                document.querySelector(".priority p");
+        
+            if (priorityDescription) {
+        
+                priorityDescription.textContent =
+                    `Your assessment responses indicate that you need additional ` +
+                    `practice with ${weakTopic}. This topic has therefore been selected ` +
+                    `as the first priority in your personalized learning path.`;
+            }
+        
+        
+            // -------------------------------
+            // Update first topic card
+            // -------------------------------
+        
+            const topicCards =
+                document.querySelectorAll(".topic-card");
+        
+            if (topicCards.length > 0) {
+        
+                const firstCard =
+                    topicCards[0];
+        
+                const topicName =
+                    firstCard.querySelector(".topic-name");
+        
+                const topicScore =
+                    firstCard.querySelector(".topic-score");
+        
+                const bar =
+                    firstCard.querySelector(".bar span");
+        
+                const status =
+                    firstCard.querySelector(".topic-status");
+        
+        
+                if (topicName) {
+                    topicName.textContent = weakTopic;
+                }
+        
+        
+                if (topicScore) {
+                    topicScore.textContent =
+                        Math.round(overallScore) + "%";
+                }
+        
+        
+                if (bar) {
+        
+                    bar.style.width =
+                        Math.max(0, Math.min(100, overallScore)) + "%";
+                }
+        
+        
+                if (status) {
+        
+                    if (overallScore < 40) {
+        
+                        status.textContent = "Priority Gap";
+        
+                        status.className =
+                            "topic-status weak";
+        
+                    }
+                    else if (overallScore < 70) {
+        
+                        status.textContent = "Needs Improvement";
+        
+                        status.className =
+                            "topic-status medium";
+        
+                    }
+                    else {
+        
+                        status.textContent = "Good";
+        
+                        status.className =
+                            "topic-status good";
+                    }
+                }
+            }
+        
+        
+            // -------------------------------
+            // Save competency information
+            // -------------------------------
+        
+            localStorage.setItem(
+                "techSparkCompetencyGap",
+        
+                JSON.stringify({
+        
+                    overallScore: overallScore,
+        
+                    priorityTopic: weakTopic,
+        
+                    priorityScore: overallScore,
+        
+                    gapLevel: gapLevel,
+        
+                    recommendedMaterial:
+                        localStorage.getItem("recommendedMaterialTitle")
+                        || "Data Cleaning Fundamentals"
+        
+                })
+            );
+        
+        
+            console.log("Competency Gap Loaded:", {
+                overallScore,
+                weakTopic,
+                gapLevel
+            });
+        }
+        
+        
+        // ===============================
+        // ANIMATE BARS
+        // ===============================
+        
+        function animateBars() {
+        
+            const bars =
+                document.querySelectorAll(".bar span");
+        
+            bars.forEach(function (bar) {
+        
+                const width =
+                    bar.style.width;
+        
+                bar.style.width = "0";
+        
+                setTimeout(function () {
+        
+                    bar.style.width = width;
+        
+                }, 250);
+        
+            });
+        }
+        
+        
+        // ===============================
+        // PAGE LOAD
+        // ===============================
+        
         document.addEventListener(
             "DOMContentLoaded",
-
+        
             function () {
-
-                /*
-                 * Animate competency bars
-                 */
-
-                const bars =
-                    document.querySelectorAll(".bar span");
-
-
-                bars.forEach(
-
-                    function (bar) {
-
-                        const width =
-                            bar.style.width;
-
-
-                        bar.style.width = "0";
-
-
-                        setTimeout(
-
-                            function () {
-
-                                bar.style.width = width;
-
-                            },
-
-                            250
-
-                        );
-
-                    }
-
-                );
-
-
-                /*
-                 * Extra quiz click protection
-                 *
-                 * If the browser handles the
-                 * anchor normally, it opens quiz.html.
-                 *
-                 * This listener also forces navigation.
-                 */
-
+        
+                loadCompetencyData();
+        
+                animateBars();
+        
+        
                 const quizButton =
                     document.getElementById("takeQuizBtn");
-
-
+        
+        
                 if (quizButton) {
-
+        
                     quizButton.addEventListener(
-
                         "click",
-
+        
                         function () {
-
-                            window.location.assign("./quiz.html");
-
+        
+                            window.location.assign(
+                                "./quiz.html"
+                            );
+        
                         }
-
                     );
-
                 }
-
+        
             }
-
         );
-
-    </script>
-
-</body>
-
-</html>
+        
+        </script>

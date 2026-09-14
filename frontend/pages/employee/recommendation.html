@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Recommendations | Tech Spark</title>
+
+    <title>Competency Gap - Tech Spark</title>
 
     <style>
         * {
@@ -12,492 +14,713 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --green: #168f5b;
+            --green-dark: #087443;
+            --green-light: #e9f8f0;
+            --green-soft: #f1faf5;
+            --text: #18352a;
+            --muted: #708078;
+            --border: #dfe9e4;
+            --white: #ffffff;
+            --bg: #f5f9f7;
+            --orange: #f59e0b;
+            --red: #dc3545;
+        }
+
         body {
-            font-family: Inter, Arial, sans-serif;
-            background: #f4f8f5;
-            color: #17352a;
-        }
-
-        button {
-            font-family: inherit;
-        }
-
-        .page {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
         }
 
-        /* HEADER */
-        .topbar {
-            height: 72px;
-            background: #ffffff;
-            border-bottom: 1px solid #dce9e1;
+        /* =========================
+           HERO
+        ========================== */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(
+                135deg,
+                #063e29,
+                #087443,
+                #18a76b
+            );
+            color: white;
+            padding: 25px 6% 45px;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 50%;
+            right: -160px;
+            top: -250px;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 50%;
+            left: -130px;
+            bottom: -190px;
+        }
+
+        .hero-top {
+            position: relative;
+            z-index: 3;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 0 42px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
+            align-items: center;
         }
 
         .brand {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-weight: 800;
-            font-size: 22px;
-            color: #116b45;
         }
 
-        .brand-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #20a96b, #0b7046);
-            color: white;
+        .brand-logo {
+            width: 45px;
+            height: 45px;
+            background: white;
+            color: var(--green-dark);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 900;
+            font-weight: 800;
+        }
+
+        .brand h2 {
+            font-size: 21px;
+        }
+
+        .brand span {
+            display: block;
+            font-size: 12px;
+            opacity: .75;
         }
 
         .back-btn {
-            border: 1px solid #cfe1d7;
-            background: white;
-            color: #23634a;
-            padding: 10px 18px;
+            border: 1px solid rgba(255, 255, 255, .35);
+            background: rgba(255, 255, 255, .1);
+            color: white;
+            padding: 10px 17px;
             border-radius: 10px;
             cursor: pointer;
-            font-weight: 700;
+            transition: .2s;
         }
 
         .back-btn:hover {
-            background: #edf8f1;
-        }
-
-        /* MAIN */
-        .container {
-            max-width: 1180px;
-            margin: auto;
-            padding: 42px 24px 60px;
-        }
-
-        .hero {
-            background: linear-gradient(135deg, #0d7048, #15945d);
-            border-radius: 24px;
-            padding: 38px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(17, 107, 69, .15);
-        }
-
-        .hero::before,
-        .hero::after {
-            content: "";
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255,255,255,.08);
-        }
-
-        .hero::before {
-            width: 240px;
-            height: 240px;
-            right: -70px;
-            top: -100px;
-        }
-
-        .hero::after {
-            width: 180px;
-            height: 180px;
-            right: 120px;
-            bottom: -120px;
+            background: white;
+            color: var(--green-dark);
         }
 
         .hero-content {
             position: relative;
-            z-index: 2;
-            max-width: 700px;
+            z-index: 3;
+            margin-top: 38px;
+            max-width: 720px;
         }
 
-        .eyebrow {
+        .tag {
             display: inline-block;
-            background: rgba(255,255,255,.15);
-            padding: 7px 13px;
+            padding: 7px 12px;
+            background: rgba(255, 255, 255, .14);
             border-radius: 30px;
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 16px;
+            font-size: 11px;
+            letter-spacing: .5px;
+            margin-bottom: 13px;
         }
 
-        .hero h1 {
+        .hero-content h1 {
             font-size: 38px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
-        .hero p {
-            font-size: 16px;
+        .hero-content p {
+            color: rgba(255, 255, 255, .82);
             line-height: 1.7;
-            color: #e7fff1;
         }
 
-        /* ROBOT */
+        /* =========================
+           ROBOT
+        ========================== */
+
         .robot {
             position: absolute;
-            right: 70px;
-            bottom: 20px;
-            width: 150px;
-            height: 170px;
+            right: 9%;
+            bottom: 25px;
+            width: 110px;
+            height: 135px;
             z-index: 3;
             animation: floatRobot 3s ease-in-out infinite;
         }
 
         .robot-head {
-            width: 105px;
-            height: 82px;
-            background: #ffffff;
-            border-radius: 28px;
             position: absolute;
+            left: 20px;
             top: 15px;
-            left: 22px;
-            box-shadow: 0 10px 20px rgba(0,0,0,.15);
-        }
-
-        .robot-eye {
-            width: 13px;
-            height: 13px;
-            background: #16a765;
-            border-radius: 50%;
-            position: absolute;
-            top: 30px;
-        }
-
-        .robot-eye.left {
-            left: 27px;
-        }
-
-        .robot-eye.right {
-            right: 27px;
-        }
-
-        .robot-smile {
-            width: 35px;
-            height: 16px;
-            border-bottom: 3px solid #15945d;
-            border-radius: 0 0 30px 30px;
-            position: absolute;
-            left: 35px;
-            top: 47px;
-        }
-
-        .antenna {
-            width: 4px;
-            height: 18px;
+            width: 70px;
+            height: 54px;
             background: white;
-            position: absolute;
-            left: 72px;
-            top: 0;
+            border: 4px solid #a2e9c4;
+            border-radius: 18px;
         }
 
-        .antenna::before {
+        .robot-head::before {
             content: "";
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #b9f6d2;
             position: absolute;
-            top: -7px;
-            left: -3px;
+            left: 29px;
+            top: -19px;
+            width: 6px;
+            height: 17px;
+            background: #a2e9c4;
+            border-radius: 5px;
+        }
+
+        .robot-head::after {
+            content: "";
+            position: absolute;
+            left: 26px;
+            top: -28px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #bdf2d4;
+        }
+
+        .eye {
+            position: absolute;
+            top: 17px;
+            width: 9px;
+            height: 9px;
+            background: var(--green);
+            border-radius: 50%;
+        }
+
+        .eye.left {
+            left: 16px;
+        }
+
+        .eye.right {
+            right: 16px;
+        }
+
+        .smile {
+            position: absolute;
+            width: 24px;
+            height: 10px;
+            border-bottom: 3px solid var(--green);
+            border-radius: 50%;
+            bottom: 9px;
+            left: 19px;
         }
 
         .robot-body {
             position: absolute;
-            width: 82px;
-            height: 65px;
-            background: #dff8e9;
-            border-radius: 18px;
-            left: 34px;
-            bottom: 5px;
+            top: 73px;
+            left: 27px;
+            width: 57px;
+            height: 45px;
+            background: #dff8ea;
+            border: 4px solid #a2e9c4;
+            border-radius: 14px;
         }
 
         .robot-body::after {
             content: "AI";
             position: absolute;
-            width: 35px;
-            height: 28px;
-            background: #15945d;
-            color: white;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            left: 18px;
+            top: 12px;
+            color: var(--green-dark);
             font-weight: 800;
-            left: 23px;
-            top: 18px;
+            font-size: 12px;
         }
 
         .arm {
-            width: 18px;
-            height: 48px;
-            background: white;
-            border-radius: 15px;
             position: absolute;
-            bottom: 15px;
+            top: 76px;
+            width: 13px;
+            height: 34px;
+            background: white;
+            border: 3px solid #a2e9c4;
+            border-radius: 10px;
         }
 
         .arm.left {
-            left: 13px;
-            transform: rotate(20deg);
+            left: 10px;
+            transform: rotate(18deg);
         }
 
         .arm.right {
-            right: 13px;
-            transform: rotate(-20deg);
+            right: 10px;
+            transform: rotate(-18deg);
         }
 
         @keyframes floatRobot {
-            0%,100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
         }
 
-        /* SUMMARY */
-        .summary {
-            margin-top: 28px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 18px;
+        /* =========================
+           MAIN
+        ========================== */
+
+        .container {
+            width: 88%;
+            max-width: 1250px;
+            margin: -18px auto 70px;
+            position: relative;
+            z-index: 5;
         }
 
-        .summary-card {
+        .card {
             background: white;
-            border: 1px solid #dce9e1;
-            border-radius: 18px;
-            padding: 23px;
-            box-shadow: 0 8px 24px rgba(30,70,50,.05);
-        }
-
-        .summary-card span {
-            color: #71847a;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .summary-card strong {
-            display: block;
-            margin-top: 7px;
-            font-size: 27px;
-            color: #116b45;
-        }
-
-        /* SECTION */
-        .section-title {
-            margin-top: 42px;
-            margin-bottom: 18px;
-        }
-
-        .section-title h2 {
-            font-size: 25px;
-            margin-bottom: 6px;
-        }
-
-        .section-title p {
-            color: #71847a;
-        }
-
-        /* RECOMMENDATION */
-        .recommendation {
-            background: white;
-            border: 1px solid #dce9e1;
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 25px;
-            margin-bottom: 18px;
-            box-shadow: 0 8px 24px rgba(30,70,50,.05);
+            margin-bottom: 22px;
+            box-shadow: 0 7px 22px rgba(17, 70, 45, .05);
         }
 
-        .rec-top {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 5px;
         }
 
-        .rec-info {
-            display: flex;
-            gap: 18px;
-        }
-
-        .rec-icon {
-            min-width: 54px;
-            height: 54px;
-            border-radius: 15px;
-            background: #e6f8ee;
-            color: #0e8150;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 23px;
-            font-weight: 800;
-        }
-
-        .rec-info h3 {
-            font-size: 19px;
-            margin-bottom: 7px;
-        }
-
-        .rec-info p {
-            color: #71847a;
+        .card-subtitle {
+            color: var(--muted);
+            font-size: 13px;
             line-height: 1.6;
         }
 
-        .priority {
-            white-space: nowrap;
-            height: fit-content;
-            padding: 7px 12px;
-            border-radius: 20px;
-            background: #fff4d9;
-            color: #9a6800;
+        /* =========================
+           SCORE
+        ========================== */
+
+        .score-section {
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .score-circle {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            margin: auto;
+
+            background:
+                conic-gradient(
+                    var(--green) 58%,
+                    #e7efeb 0
+                );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: "";
+            position: absolute;
+            width: 145px;
+            height: 145px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .score-number {
+            position: relative;
+            text-align: center;
+        }
+
+        .score-number strong {
+            display: block;
+            font-size: 40px;
+            color: var(--green-dark);
+        }
+
+        .score-number span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .analysis-box {
+            background: var(--green-soft);
+            border: 1px solid #cfeadd;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .analysis-label {
+            color: var(--green-dark);
             font-size: 12px;
             font-weight: 800;
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
-        .progress-area {
-            margin: 22px 0;
+        .analysis-box p {
+            color: #557064;
+            font-size: 14px;
+            line-height: 1.7;
         }
 
-        .progress-label {
+        /* =========================
+           TOPIC GRID
+        ========================== */
+
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .topic-card {
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 18px;
+            transition: .2s;
+        }
+
+        .topic-card:hover {
+            border-color: #b7ddc9;
+            transform: translateY(-2px);
+        }
+
+        .topic-top {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 13px;
-            color: #64776d;
-            font-weight: 700;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
-        .progress {
-            height: 9px;
-            background: #e8f0eb;
-            border-radius: 10px;
+        .topic-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .topic-score {
+            font-weight: 800;
+            color: var(--green-dark);
+        }
+
+        .bar {
+            width: 100%;
+            height: 8px;
+            background: #edf3ef;
+            border-radius: 20px;
             overflow: hidden;
         }
 
-        .progress div {
+        .bar span {
+            display: block;
             height: 100%;
-            background: linear-gradient(90deg, #24aa6c, #0c7448);
-            border-radius: inherit;
+            border-radius: 20px;
+
+            background: linear-gradient(
+                90deg,
+                #0c7d4c,
+                #39bd82
+            );
+
+            transition: width 1s ease;
         }
 
-        .rec-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-top: 1px solid #edf2ef;
-            padding-top: 18px;
+        .topic-status {
+            display: inline-block;
+            margin-top: 9px;
+            font-size: 11px;
+            padding: 5px 9px;
+            border-radius: 20px;
         }
 
-        .material {
-            color: #71847a;
-            font-size: 13px;
+        .weak {
+            background: #ffe9eb;
+            color: #b52c39;
         }
 
-        .action-btn {
-            border: none;
-            background: #11824f;
-            color: white;
-            padding: 11px 19px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 800;
+        .medium {
+            background: #fff3dc;
+            color: #996000;
         }
 
-        .action-btn:hover {
-            background: #0b6940;
-            transform: translateY(-1px);
+        .good {
+            background: #e7f8ee;
+            color: #087443;
         }
 
-        /* AI NOTE */
-        .ai-note {
-            margin-top: 30px;
-            padding: 23px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, #ecfaf2, #f8fcf9);
-            border: 1px solid #cce8d8;
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-        }
+        /* =========================
+           PRIORITY
+        ========================== */
 
-        .ai-badge {
-            width: 42px;
-            height: 42px;
-            min-width: 42px;
+        .priority {
+            border-left: 4px solid var(--red);
+            background: #fff8f8;
+            padding: 18px;
             border-radius: 12px;
-            background: #168b55;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
+            margin-top: 18px;
         }
 
-        .ai-note h3 {
-            margin-bottom: 6px;
+        .priority h3 {
+            color: #a92331;
+            font-size: 15px;
+            margin-bottom: 7px;
         }
 
-        .ai-note p {
-            color: #63766c;
+        .priority p {
+            color: #6d5558;
+            font-size: 13px;
             line-height: 1.6;
         }
 
-        /* TOAST */
-        .toast {
-            position: fixed;
-            right: 25px;
-            bottom: 25px;
-            background: #17352a;
+        /* =========================
+           RECOMMENDATION
+        ========================== */
+
+        .recommendation {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .material {
+            border: 1px solid #cde7d9;
+            background: var(--green-soft);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .material-label {
+            font-size: 11px;
+            color: var(--green-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .material h3 {
+            margin-bottom: 7px;
+        }
+
+        .material p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .material-tags {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-top: 13px;
+        }
+
+        .material-tags span {
+            background: white;
+            border: 1px solid #d7e9df;
+            border-radius: 20px;
+            padding: 5px 9px;
+            font-size: 10px;
+            color: #557064;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================== */
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: .2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--green);
             color: white;
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.2);
-            opacity: 0;
-            transform: translateY(20px);
-            pointer-events: none;
-            transition: .3s;
-            z-index: 100;
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
+        .btn-primary:hover {
+            background: var(--green-dark);
+            transform: translateY(-1px);
         }
 
-        @media (max-width: 800px) {
-            .topbar {
-                padding: 0 18px;
-            }
+        .btn-outline {
+            background: white;
+            color: var(--green-dark);
+            border: 1px solid #bcdcca;
+        }
 
-            .hero {
-                padding: 28px;
-            }
+        .btn-outline:hover {
+            background: var(--green-soft);
+        }
 
-            .hero h1 {
-                font-size: 30px;
-            }
+        /* =========================
+           LEARNING PATH
+        ========================== */
+
+        .path {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .path-step {
+            position: relative;
+            text-align: center;
+            padding: 17px 10px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .path-number {
+            width: 36px;
+            height: 36px;
+            margin: auto auto 9px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--green-light);
+            color: var(--green-dark);
+            font-weight: 800;
+        }
+
+        .path-step h4 {
+            font-size: 12px;
+        }
+
+        .path-step p {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================== */
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            padding: 20px;
+        }
+
+        /* =========================
+           QUIZ BUTTON EFFECT
+        ========================== */
+
+        #takeQuizBtn {
+            min-width: 145px;
+            position: relative;
+            z-index: 20;
+        }
+
+        #takeQuizBtn:active {
+            transform: scale(.97);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 850px) {
 
             .robot {
                 display: none;
             }
 
-            .summary {
+            .score-section {
                 grid-template-columns: 1fr;
             }
 
-            .rec-top {
-                flex-direction: column;
+            .topic-grid {
+                grid-template-columns: 1fr;
             }
 
-            .rec-footer {
-                flex-direction: column;
+            .recommendation {
+                grid-template-columns: 1fr;
+            }
+
+            .path {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+            }
+
+            .hero {
+                padding-left: 4%;
+                padding-right: 4%;
+            }
+
+            .hero-content h1 {
+                font-size: 29px;
+            }
+
+            .hero-top {
                 align-items: flex-start;
-                gap: 15px;
+            }
+
+            .brand h2 {
+                font-size: 18px;
+            }
+
+            .back-btn {
+                padding: 8px 11px;
+                font-size: 11px;
+            }
+
+            .path {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                width: 100%;
+            }
+
+            #takeQuizBtn {
+                width: 100%;
             }
         }
     </style>
@@ -505,299 +728,1402 @@
 
 <body>
 
-<div class="page">
+    <!-- =========================
+         HERO
+    ========================== -->
 
-    <header class="topbar">
-        <div class="brand">
-            <div class="brand-icon">TS</div>
-            Tech Spark
+    <header class="hero">
+
+        <div class="hero-top">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    TS
+                </div>
+
+                <div>
+                    <h2>Tech Spark</h2>
+                    <span>AI Learning Platform</span>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="back-btn"
+                onclick="goDashboard()"
+            >
+                â† Dashboard
+            </button>
+
         </div>
 
-        <button class="back-btn" onclick="goDashboard()">
-            ← Dashboard
-        </button>
+
+        <div class="hero-content">
+
+            <span class="tag">
+                AI COMPETENCY ANALYSIS
+            </span>
+
+            <h1>
+                Your Competency Gap
+            </h1>
+
+            <p>
+                Our AI has analyzed your assessment performance and identified
+                the topics where focused learning can improve your competency.
+            </p>
+
+        </div>
+
+
+        <!-- CSS ROBOT -->
+
+        <div class="robot">
+
+            <div class="robot-head">
+
+                <span class="eye left"></span>
+                <span class="eye right"></span>
+
+                <span class="smile"></span>
+
+            </div>
+
+            <div class="robot-body"></div>
+
+            <div class="arm left"></div>
+            <div class="arm right"></div>
+
+        </div>
+
     </header>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
 
     <main class="container">
 
-        <section class="hero">
-            <div class="hero-content">
-                <span class="eyebrow">AI-Powered Learning</span>
 
-                <h1>Your Personalized Learning Path</h1>
+        <!-- =========================
+             OVERALL SCORE
+        ========================== -->
+
+        <section class="card">
+
+            <div class="score-section">
+
+                <div>
+
+                    <div class="score-circle">
+
+                        <div class="score-number">
+
+                            <strong>58%</strong>
+
+                            <span>
+                                Overall Competency
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <h2 class="card-title">
+                        AI Competency Analysis
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Your current competency level is moderate. The AI has
+                        identified specific topics that need additional learning.
+                    </p>
+
+
+                    <div
+                        class="analysis-box"
+                        style="margin-top:18px;"
+                    >
+
+                        <div class="analysis-label">
+                            AI Analysis
+                        </div>
+
+                        <p>
+                            Your strongest performance is in Data Validation and
+                            Data Formatting. The largest learning gap is in
+                            Missing Values and Duplicate Records. The system has
+                            therefore prioritized Data Cleaning Fundamentals
+                            for your next learning activity.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             TOPIC ANALYSIS
+        ========================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                Topic-Level Competency
+            </h2>
+
+            <p class="card-subtitle">
+                AI breaks your overall competency into individual topics so that
+                learning can be targeted to the exact area that needs improvement.
+            </p>
+
+
+            <div class="topic-grid">
+
+
+                <!-- TOPIC 1 -->
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Missing Values
+                        </span>
+
+                        <span class="topic-score">
+                            32%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:32%;"></span>
+                    </div>
+
+                    <span class="topic-status weak">
+                        Priority Gap
+                    </span>
+
+                </div>
+
+
+                <!-- TOPIC 2 -->
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Duplicate Records
+                        </span>
+
+                        <span class="topic-score">
+                            38%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:38%;"></span>
+                    </div>
+
+                    <span class="topic-status weak">
+                        Needs Improvement
+                    </span>
+
+                </div>
+
+
+                <!-- TOPIC 3 -->
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Data Formatting
+                        </span>
+
+                        <span class="topic-score">
+                            51%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:51%;"></span>
+                    </div>
+
+                    <span class="topic-status medium">
+                        Developing
+                    </span>
+
+                </div>
+
+
+                <!-- TOPIC 4 -->
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Data Validation
+                        </span>
+
+                        <span class="topic-score">
+                            59%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:59%;"></span>
+                    </div>
+
+                    <span class="topic-status good">
+                        Relatively Strong
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRIORITY GAP -->
+
+            <div class="priority">
+
+                <h3>
+                    âš  Priority Learning Gap: Missing Values
+                </h3>
 
                 <p>
-                    Tech Spark analyzes your competency gaps and recommends
-                    the learning materials that can help you improve the areas
-                    where you need the most attention.
+                    Your assessment responses indicate that you need additional
+                    practice with identifying, handling, and validating missing
+                    values in datasets. This topic has therefore been selected
+                    as the first priority in your personalized learning path.
                 </p>
-            </div>
 
-            <div class="robot">
-                <div class="antenna"></div>
-
-                <div class="robot-head">
-                    <div class="robot-eye left"></div>
-                    <div class="robot-eye right"></div>
-                    <div class="robot-smile"></div>
-                </div>
-
-                <div class="arm left"></div>
-                <div class="arm right"></div>
-                <div class="robot-body"></div>
-            </div>
-        </section>
-
-        <section class="summary">
-
-            <div class="summary-card">
-                <span>Current Competency</span>
-                <strong id="competencyScore">42%</strong>
-            </div>
-
-            <div class="summary-card">
-                <span>Priority Gap</span>
-                <strong>Data Cleaning</strong>
-            </div>
-
-            <div class="summary-card">
-                <span>Recommended Materials</span>
-                <strong>3</strong>
             </div>
 
         </section>
 
-        <div class="section-title">
-            <h2>Recommended for You</h2>
-            <p>These resources are selected based on your current competency gaps.</p>
-        </div>
 
-        <!-- CARD 1 -->
-        <article class="recommendation">
+        <!-- =========================
+             RECOMMENDATION
+        ========================== -->
 
-            <div class="rec-top">
+        <section class="card">
 
-                <div class="rec-info">
+            <h2 class="card-title">
+                Recommended Learning
+            </h2>
 
-                    <div class="rec-icon">01</div>
+            <p class="card-subtitle">
+                Based on your competency gaps, the AI recommends the following
+                approved learning material.
+            </p>
 
-                    <div>
-                        <h3>Data Cleaning Fundamentals</h3>
 
-                        <p>
-                            Learn how to identify missing values, remove duplicate
-                            records, handle inconsistent data and prepare datasets
-                            for statistical analysis.
-                        </p>
+            <div
+                class="recommendation"
+                style="margin-top:20px;"
+            >
+
+                <div class="material">
+
+                    <div class="material-label">
+                        AI Recommended Material
+                    </div>
+
+                    <h3>
+                        Data Cleaning Fundamentals
+                    </h3>
+
+                    <p>
+                        A focused learning resource covering missing values,
+                        duplicate records, data formatting, and validation
+                        techniques.
+                    </p>
+
+
+                    <div class="material-tags">
+
+                        <span>
+                            Missing Values
+                        </span>
+
+                        <span>
+                            Data Cleaning
+                        </span>
+
+                        <span>
+                            Beginner Friendly
+                        </span>
+
+                        <span>
+                            Approved Material
+                        </span>
+
                     </div>
 
                 </div>
 
-                <span class="priority">HIGH PRIORITY</span>
 
-            </div>
+                <div class="actions">
 
-            <div class="progress-area">
+                    <!--
+                        IMPORTANT:
+                        competency-gap.html and quiz.html
+                        are in the SAME folder.
 
-                <div class="progress-label">
-                    <span>Your competency</span>
-                    <span>42%</span>
-                </div>
+                        Therefore:
+                        ./quiz.html
 
-                <div class="progress">
-                    <div style="width:42%"></div>
-                </div>
+                        directly opens quiz.html.
+                    -->
 
-            </div>
-
-            <div class="rec-footer">
-
-                <span class="material">
-                    📘 Learning material • Beginner
-                </span>
-
-                <button
-                    class="action-btn"
-                    onclick="startLearning('Data Cleaning Fundamentals')">
-                    Start Learning →
-                </button>
-
-            </div>
-
-        </article>
-
-
-        <!-- CARD 2 -->
-        <article class="recommendation">
-
-            <div class="rec-top">
-
-                <div class="rec-info">
-
-                    <div class="rec-icon">02</div>
-
-                    <div>
-                        <h3>Data Validation Techniques</h3>
-
-                        <p>
-                            Understand validation rules, data quality checks,
-                            incorrect values and techniques for improving
-                            reliability of statistical datasets.
-                        </p>
-                    </div>
+                    <a
+                        href="./quiz.html"
+                        class="btn btn-primary"
+                        id="takeQuizBtn"
+                    >
+                        Take AI Quiz â†’
+                    </a>
 
                 </div>
 
-                <span class="priority">MEDIUM</span>
-
-            </div>
-
-            <div class="progress-area">
-
-                <div class="progress-label">
-                    <span>Your competency</span>
-                    <span>48%</span>
-                </div>
-
-                <div class="progress">
-                    <div style="width:48%"></div>
-                </div>
-
-            </div>
-
-            <div class="rec-footer">
-
-                <span class="material">
-                    📘 Learning material • Intermediate
-                </span>
-
-                <button
-                    class="action-btn"
-                    onclick="startLearning('Data Validation Techniques')">
-                    Start Learning →
-                </button>
-
-            </div>
-
-        </article>
-
-
-        <!-- CARD 3 -->
-        <article class="recommendation">
-
-            <div class="rec-top">
-
-                <div class="rec-info">
-
-                    <div class="rec-icon">03</div>
-
-                    <div>
-                        <h3>Statistical Computing Basics</h3>
-
-                        <p>
-                            Strengthen your understanding of statistical computing,
-                            data processing and basic analytical operations.
-                        </p>
-                    </div>
-
-                </div>
-
-                <span class="priority">MEDIUM</span>
-
-            </div>
-
-            <div class="progress-area">
-
-                <div class="progress-label">
-                    <span>Your competency</span>
-                    <span>55%</span>
-                </div>
-
-                <div class="progress">
-                    <div style="width:55%"></div>
-                </div>
-
-            </div>
-
-            <div class="rec-footer">
-
-                <span class="material">
-                    📘 Learning material • Intermediate
-                </span>
-
-                <button
-                    class="action-btn"
-                    onclick="startLearning('Statistical Computing Basics')">
-                    Start Learning →
-                </button>
-
-            </div>
-
-        </article>
-
-
-        <section class="ai-note">
-
-            <div class="ai-badge">AI</div>
-
-            <div>
-                <h3>Why am I seeing these recommendations?</h3>
-
-                <p>
-                    Your recommendations are based on your competency assessment,
-                    topic-level performance and previous quiz results. As your
-                    competency improves, the learning path can change accordingly.
-                </p>
             </div>
 
         </section>
+
+
+        <!-- =========================
+             LEARNING PATH
+        ========================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                Personalized Learning Path
+            </h2>
+
+            <p class="card-subtitle">
+                Your learning journey automatically adapts based on competency
+                performance.
+            </p>
+
+
+            <div class="path">
+
+
+                <div class="path-step">
+
+                    <div class="path-number">
+                        1
+                    </div>
+
+                    <h4>
+                        Identify Gap
+                    </h4>
+
+                    <p>
+                        AI analyzes assessment
+                    </p>
+
+                </div>
+
+
+                <div class="path-step">
+
+                    <div class="path-number">
+                        2
+                    </div>
+
+                    <h4>
+                        Learn
+                    </h4>
+
+                    <p>
+                        Study targeted material
+                    </p>
+
+                </div>
+
+
+                <div class="path-step">
+
+                    <div class="path-number">
+                        3
+                    </div>
+
+                    <h4>
+                        Take Quiz
+                    </h4>
+
+                    <p>
+                        Test your understanding
+                    </p>
+
+                </div>
+
+
+                <div class="path-step">
+
+                    <div class="path-number">
+                        4
+                    </div>
+
+                    <h4>
+                        Update Competency
+                    </h4>
+
+                    <p>
+                        AI updates your profile
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             STRENGTHS
+        ========================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                Your Strength Areas
+            </h2>
+
+            <p class="card-subtitle">
+                These topics currently show stronger performance.
+            </p>
+
+
+            <div class="topic-grid">
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Data Validation
+                        </span>
+
+                        <span class="topic-score">
+                            59%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:59%;"></span>
+                    </div>
+
+                    <span class="topic-status good">
+                        Stronger Area
+                    </span>
+
+                </div>
+
+
+                <div class="topic-card">
+
+                    <div class="topic-top">
+
+                        <span class="topic-name">
+                            Data Formatting
+                        </span>
+
+                        <span class="topic-score">
+                            51%
+                        </span>
+
+                    </div>
+
+                    <div class="bar">
+                        <span style="width:51%;"></span>
+                    </div>
+
+                    <span class="topic-status medium">
+                        Developing
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
 
     </main>
 
-</div>
 
-<div class="toast" id="toast"></div>
+    <footer>
+
+        Tech Spark â€¢ SIH26101 â€¢ AI-Enabled Learning Platform
+
+    </footer>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
 
 <script>
+/* =========================================================
+   TECH SPARK - PERSONALIZED RECOMMENDATION PAGE
+   SIH26101
+========================================================= */
 
-    function goDashboard() {
-        window.location.href = "dashboard.html";
+const API_BASE_URL = "http://127.0.0.1:5000";
+
+
+/* =========================================================
+   READ LATEST QUIZ DATA
+========================================================= */
+
+function getWeakTopic() {
+
+    const weakTopic =
+        localStorage.getItem("weakTopic");
+
+    if (weakTopic && weakTopic.trim() !== "") {
+        return weakTopic;
     }
 
-    function startLearning(title) {
+    return "Data Cleaning";
+}
 
-        localStorage.setItem("selectedLearningMaterial", title);
 
-        window.location.href = "learning.html";
+function getCurrentCompetency() {
+
+    const updatedCompetency =
+        localStorage.getItem("updatedCompetency");
+
+    if (
+        updatedCompetency !== null &&
+        !isNaN(Number(updatedCompetency))
+    ) {
+        return Number(updatedCompetency);
     }
 
-    function showToast(message) {
+    const quizScore =
+        localStorage.getItem("quizScore");
 
-        const toast = document.getElementById("toast");
-
-        toast.textContent = message;
-        toast.classList.add("show");
-
-        setTimeout(() => {
-            toast.classList.remove("show");
-        }, 2500);
+    if (
+        quizScore !== null &&
+        !isNaN(Number(quizScore))
+    ) {
+        return Number(quizScore);
     }
 
-    /* Load latest quiz score */
-    const savedScore = localStorage.getItem("quizScore");
+    return 42;
+}
 
-    if (savedScore !== null) {
 
-        const score = Number(savedScore);
+function getQuizScore() {
 
-        if (!isNaN(score)) {
+    const value =
+        Number(
+            localStorage.getItem("quizScore")
+        );
 
-            document.getElementById("competencyScore").textContent =
-                score + "%";
+    if (!isNaN(value)) {
+        return value;
+    }
+
+    return 0;
+}
+
+
+/* =========================================================
+   SAFE NUMBER
+========================================================= */
+
+function clamp(value) {
+
+    value = Number(value);
+
+    if (isNaN(value)) {
+        value = 0;
+    }
+
+    return Math.max(
+        0,
+        Math.min(100, value)
+    );
+}
+
+
+/* =========================================================
+   UPDATE SUMMARY UI
+========================================================= */
+
+function updateSummary() {
+
+    const competency =
+        clamp(getCurrentCompetency());
+
+    const weakTopic =
+        getWeakTopic();
+
+    /* -----------------------------------------
+       Current Competency
+    ----------------------------------------- */
+
+    const competencyElements =
+        document.querySelectorAll(
+            "#currentCompetency, .current-competency"
+        );
+
+    competencyElements.forEach(function (element) {
+
+        element.textContent =
+            Math.round(competency) + "%";
+
+    });
+
+
+    /* -----------------------------------------
+       Priority Gap
+    ----------------------------------------- */
+
+    const weakTopicElements =
+        document.querySelectorAll(
+            "#priorityGap, #weakTopic, .priority-gap"
+        );
+
+    weakTopicElements.forEach(function (element) {
+
+        element.textContent =
+            weakTopic;
+
+    });
+
+
+    /* -----------------------------------------
+       Quiz Score
+    ----------------------------------------- */
+
+    const score =
+        clamp(getQuizScore());
+
+    const scoreElements =
+        document.querySelectorAll(
+            "#quizScore, .quiz-score"
+        );
+
+    scoreElements.forEach(function (element) {
+
+        element.textContent =
+            Math.round(score) + "%";
+
+    });
+
+
+    /* -----------------------------------------
+       Competency bars
+    ----------------------------------------- */
+
+    document
+        .querySelectorAll(
+            "[data-competency-bar]"
+        )
+        .forEach(function (bar) {
+
+            bar.style.width =
+                competency + "%";
+
+        });
+
+
+    console.log(
+        "Recommendation Context:",
+        {
+            competency: competency,
+            weakTopic: weakTopic,
+            quizScore: score
+        }
+    );
+}
+
+
+/* =========================================================
+   GET RECOMMENDATIONS FROM BACKEND
+========================================================= */
+
+async function loadRecommendation() {
+
+    const weakTopic =
+        getWeakTopic();
+
+    const competency =
+        clamp(getCurrentCompetency());
+
+    const score =
+        clamp(getQuizScore());
+
+
+    console.log(
+        "Loading personalized recommendation..."
+    );
+
+    console.log(
+        "Weak Topic:",
+        weakTopic
+    );
+
+    console.log(
+        "Competency:",
+        competency
+    );
+
+    console.log(
+        "Quiz Score:",
+        score
+    );
+
+
+    /* -----------------------------------------
+       First try AI learning cycle
+    ----------------------------------------- */
+
+    try {
+
+        const response =
+            await fetch(
+                API_BASE_URL +
+                "/ai/learning-cycle",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            weak_topics: [
+                                weakTopic
+                            ],
+                            num_questions: 5
+                        })
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Learning cycle HTTP " +
+                response.status
+            );
 
         }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "AI Learning Cycle:",
+            data
+        );
+
+
+        localStorage.setItem(
+            "aiLearningCycle",
+            JSON.stringify(data)
+        );
+
+
+        const recommendations =
+            data.learning_cycle &&
+            Array.isArray(
+                data.learning_cycle.recommendations
+            )
+                ? data.learning_cycle.recommendations
+                : (
+                    Array.isArray(
+                        data.recommendations
+                    )
+                        ? data.recommendations
+                        : []
+                );
+
+
+        if (recommendations.length > 0) {
+
+            displayRecommendations(
+                recommendations,
+                weakTopic,
+                competency
+            );
+
+            return;
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "AI learning cycle failed:",
+            error
+        );
+
     }
 
+
+    /* -----------------------------------------
+       Fallback /recommend endpoint
+    ----------------------------------------- */
+
+    try {
+
+        const response =
+            await fetch(
+                API_BASE_URL +
+                "/recommend",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            weak_topic:
+                                weakTopic
+                        })
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Recommendation HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Recommendation API:",
+            data
+        );
+
+
+        const recommendations =
+            Array.isArray(
+                data.recommendations
+            )
+                ? data.recommendations
+                : [];
+
+
+        if (recommendations.length > 0) {
+
+            displayRecommendations(
+                recommendations,
+                weakTopic,
+                competency
+            );
+
+            return;
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Recommendation API failed:",
+            error
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       Local fallback
+    ----------------------------------------- */
+
+    displayLocalRecommendation(
+        weakTopic,
+        competency
+    );
+}
+
+
+/* =========================================================
+   DISPLAY BACKEND RECOMMENDATIONS
+========================================================= */
+
+function displayRecommendations(
+    recommendations,
+    weakTopic,
+    competency
+) {
+
+    console.log(
+        "Recommendations:",
+        recommendations
+    );
+
+
+    /* -----------------------------------------
+       Find common recommendation containers
+    ----------------------------------------- */
+
+    const containers =
+        document.querySelectorAll(
+            "#recommendationList, " +
+            "#recommendationsList, " +
+            ".recommendation-grid, " +
+            ".recommendations-grid, " +
+            ".materials-grid"
+        );
+
+
+    let container = null;
+
+
+    if (containers.length > 0) {
+
+        container =
+            containers[0];
+
+    }
+
+
+    if (!container) {
+
+        console.warn(
+            "Recommendation container not found."
+        );
+
+        return;
+
+    }
+
+
+    /* -----------------------------------------
+       Build cards
+    ----------------------------------------- */
+
+    container.innerHTML = "";
+
+
+    recommendations.forEach(
+        function (item, index) {
+
+            const title =
+                item.title ||
+                item.material_title ||
+                item.name ||
+                "Recommended Learning Material";
+
+
+            const file =
+                item.file ||
+                item.filename ||
+                item.material_id ||
+                "";
+
+
+            const relevance =
+                Number(
+                    item.relevance_score
+                );
+
+
+            const relevanceText =
+                !isNaN(relevance)
+                    ? Math.round(relevance) + "%"
+                    : "Recommended";
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "recommendation-card";
+
+
+            card.innerHTML = `
+
+                <div class="recommendation-card-content">
+
+                    <span class="recommendation-label">
+                        AI RECOMMENDED
+                    </span>
+
+                    <h3>
+                        ${escapeHtml(title)}
+                    </h3>
+
+                    <p>
+                        Recommended because
+                        <strong>
+                            ${escapeHtml(weakTopic)}
+                        </strong>
+                        is currently identified
+                        as a priority competency gap.
+                    </p>
+
+                    <div class="recommendation-meta">
+
+                        <span>
+                            Current competency:
+                            ${Math.round(competency)}%
+                        </span>
+
+                        <span>
+                            Relevance:
+                            ${relevanceText}
+                        </span>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="start-learning-btn"
+                        onclick="startLearning(
+                            '${escapeJs(title)}',
+                            '${escapeJs(file)}'
+                        )"
+                    >
+                        Start Learning â†’
+                    </button>
+
+                </div>
+            `;
+
+
+            container.appendChild(card);
+
+        }
+    );
+
+
+    /* -----------------------------------------
+       Save first recommendation
+    ----------------------------------------- */
+
+    const first =
+        recommendations[0];
+
+
+    if (first) {
+
+        const title =
+            first.title ||
+            first.material_title ||
+            first.name ||
+            "Data Cleaning Fundamentals";
+
+
+        const file =
+            first.file ||
+            first.filename ||
+            first.material_id ||
+            "";
+
+
+        localStorage.setItem(
+            "recommendedMaterial",
+            file
+        );
+
+
+        localStorage.setItem(
+            "recommendedMaterialTitle",
+            title
+        );
+
+    }
+}
+
+
+/* =========================================================
+   LOCAL RECOMMENDATION FALLBACK
+========================================================= */
+
+function displayLocalRecommendation(
+    weakTopic,
+    competency
+) {
+
+    const title =
+        getLocalMaterialTitle(
+            weakTopic
+        );
+
+
+    const file =
+        localStorage.getItem(
+            "selectedLearningFile"
+        ) || "";
+
+
+    const container =
+        document.querySelector(
+            "#recommendationList, " +
+            "#recommendationsList, " +
+            ".recommendation-grid, " +
+            ".recommendations-grid, " +
+            ".materials-grid"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML = `
+
+        <div class="recommendation-card">
+
+            <div class="recommendation-card-content">
+
+                <span class="recommendation-label">
+                    AI RECOMMENDED
+                </span>
+
+                <h3>
+                    ${escapeHtml(title)}
+                </h3>
+
+                <p>
+                    Focus on
+                    <strong>
+                        ${escapeHtml(weakTopic)}
+                    </strong>
+                    because it is your current
+                    priority competency gap.
+                </p>
+
+                <div class="recommendation-meta">
+
+                    <span>
+                        Current competency:
+                        ${Math.round(competency)}%
+                    </span>
+
+                    <span>
+                        Targeted learning
+                    </span>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="start-learning-btn"
+                    onclick="startLearning(
+                        '${escapeJs(title)}',
+                        '${escapeJs(file)}'
+                    )"
+                >
+                    Start Learning â†’
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+
+    localStorage.setItem(
+        "recommendedMaterialTitle",
+        title
+    );
+
+    localStorage.setItem(
+        "recommendedMaterial",
+        file
+    );
+}
+
+
+/* =========================================================
+   LOCAL MATERIAL MAPPING
+========================================================= */
+
+function getLocalMaterialTitle(
+    weakTopic
+) {
+
+    const topic =
+        String(weakTopic)
+            .toLowerCase();
+
+
+    if (
+        topic.includes("missing")
+    ) {
+
+        return "Data Cleaning Fundamentals";
+
+    }
+
+
+    if (
+        topic.includes("duplicate")
+    ) {
+
+        return "Data Cleaning Fundamentals";
+
+    }
+
+
+    if (
+        topic.includes("format")
+    ) {
+
+        return "Data Formatting Techniques";
+
+    }
+
+
+    if (
+        topic.includes("validation")
+    ) {
+
+        return "Data Validation Techniques";
+
+    }
+
+
+    return "Data Cleaning Fundamentals";
+}
+
+
+/* =========================================================
+   START LEARNING
+========================================================= */
+
+function startLearning(
+    title,
+    file
+) {
+
+    localStorage.setItem(
+        "selectedLearningMaterial",
+        title || ""
+    );
+
+
+    localStorage.setItem(
+        "selectedLearningFile",
+        file || ""
+    );
+
+
+    window.location.href =
+        "learning.html";
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   ESCAPE JAVASCRIPT STRING
+========================================================= */
+
+function escapeJs(value) {
+
+    return String(value || "")
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'")
+        .replace(/\r/g, "")
+        .replace(/\n/g, "\\n");
+}
+
+
+/* =========================================================
+   PAGE LOAD
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        updateSummary();
+
+        loadRecommendation();
+
+    }
+);
+
+
+/* =========================================================
+   REFRESH RECOMMENDATIONS
+========================================================= */
+
+function refreshRecommendations() {
+
+    updateSummary();
+
+    loadRecommendation();
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function goDashboard() {
+
+    window.location.href =
+        "dashboard.html";
+
+}
 </script>
 
 </body>

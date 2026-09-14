@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -526,7 +527,7 @@
             height: 150px;
             border-radius: 50%;
             margin: 10px auto 22px;
-            background: conic-gradient(#18a957 68%, #e5f1ea 0);
+            background: conic-gradient(#18a957 42%, #e5f1ea 0);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -657,6 +658,7 @@
                 opacity: 0;
                 transform: translateY(25px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -668,6 +670,7 @@
                 opacity: 0;
                 transform: translateY(-15px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -678,6 +681,7 @@
             0%,100% {
                 transform: translateY(0);
             }
+
             50% {
                 transform: translateY(-13px);
             }
@@ -688,6 +692,7 @@
                 transform: scale(.9);
                 opacity: .5;
             }
+
             50% {
                 transform: scale(1.1);
                 opacity: .9;
@@ -699,6 +704,7 @@
                 transform: scale(1);
                 opacity: 1;
             }
+
             50% {
                 transform: scale(1.6);
                 opacity: .5;
@@ -709,6 +715,7 @@
             0%,45%,50%,100% {
                 transform: scaleY(1);
             }
+
             47% {
                 transform: scaleY(.1);
             }
@@ -719,6 +726,7 @@
                 transform: translateX(30px);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
@@ -797,518 +805,636 @@
 
 <body>
 
-<!-- =========================================
-     TOP BAR
-========================================= -->
+    <!-- =========================================
+         TOP BAR
+    ========================================= -->
 
-<header class="topbar">
+    <header class="topbar">
 
-    <div class="brand">
-        <div class="brand-logo">TS</div>
+        <div class="brand">
 
-        <div class="brand-text">
-            <strong>Tech Spark</strong>
-            <span>Competency Intelligence</span>
-        </div>
-    </div>
-
-    <button class="back-btn" onclick="goBack()">
-        ← Back
-    </button>
-
-</header>
-
-
-<!-- =========================================
-     HERO
-========================================= -->
-
-<section class="hero">
-
-    <div class="hero-content">
-
-        <div>
-
-            <div class="eyebrow">
-                <span class="live-dot"></span>
-                AI-PERSONALIZED LEARNING
+            <div class="brand-logo">
+                TS
             </div>
 
-            <h1>
-                Learn exactly what
-                <span>you need.</span>
-            </h1>
-
-            <p class="hero-description">
-                This learning material has been selected by Tech Spark AI
-                based on your competency gaps. Focus on the topics where
-                you need the most improvement.
-            </p>
-
-        </div>
-
-
-        <!-- CSS ROBOT -->
-
-        <div class="robot-area">
-
-            <div class="robot-glow"></div>
-
-            <div class="robot">
-
-                <div class="antenna"></div>
-
-                <div class="robot-head">
-
-                    <div class="ear left"></div>
-                    <div class="ear right"></div>
-
-                    <div class="eye left"></div>
-                    <div class="eye right"></div>
-
-                    <div class="mouth"></div>
-
-                </div>
-
-                <div class="robot-body">
-
-                    <div class="chest"></div>
-
-                </div>
-
-                <div class="arm left"></div>
-                <div class="arm right"></div>
-
+            <div class="brand-text">
+                <strong>Tech Spark</strong>
+                <span>Competency Intelligence</span>
             </div>
 
         </div>
 
-    </div>
+        <button class="back-btn" onclick="goBack()">
+            â† Back
+        </button>
 
-</section>
-
-
-<!-- =========================================
-     MAIN CONTENT
-========================================= -->
-
-<main class="container">
-
-    <div class="learning-grid">
+    </header>
 
 
-        <!-- =====================================
-             LEFT CONTENT
-        ====================================== -->
+    <!-- =========================================
+         HERO
+    ========================================= -->
 
-        <div class="card">
+    <section class="hero">
 
-            <div class="material-header">
+        <div class="hero-content">
 
-                <div class="material-label">
-                    Recommended Material
+            <div>
+
+                <div class="eyebrow">
+                    <span class="live-dot"></span>
+                    AI-PERSONALIZED LEARNING
                 </div>
 
-                <h2>
-                    Data Cleaning Fundamentals
-                </h2>
+                <h1>
+                    Learn exactly what
+                    <span>you need.</span>
+                </h1>
 
-                <p>
-                    Learn the essential techniques used to identify,
-                    correct and prepare data before analysis.
-                    This material focuses especially on the concepts
-                    where your competency score is currently low.
-                </p>
-
-                <div class="meta">
-
-                    <span>📄 PDF Material</span>
-
-                    <span>⏱ 24 Minutes</span>
-
-                    <span>🌱 Beginner Friendly</span>
-
-                    <span>✓ Approved Material</span>
-
-                </div>
-
-            </div>
-
-
-            <!-- WHY THIS MATERIAL -->
-
-            <div class="why-box">
-
-                <div class="why-title">
-                    🤖 Why is AI showing this material?
-                </div>
-
-                <p>
-                    Your competency analysis identified
-                    <strong>Missing Values</strong> and
-                    <strong>Duplicate Records</strong> as priority gaps.
-                    This material directly covers both topics.
+                <p class="hero-description">
+                    This learning material has been selected by Tech Spark AI
+                    based on your competency gaps. Focus on the topics where
+                    you need the most improvement.
                 </p>
 
             </div>
 
 
-            <!-- TOPICS -->
+            <!-- CSS ROBOT -->
 
-            <section class="section">
+            <div class="robot-area">
 
-                <h3 class="section-title">
-                    📚 What you will learn
-                </h3>
+                <div class="robot-glow"></div>
 
+                <div class="robot">
 
-                <div class="topic">
+                    <div class="antenna"></div>
 
-                    <div class="topic-top">
+                    <div class="robot-head">
 
-                        <div class="topic-title">
-                            01. Understanding Data Quality
-                        </div>
+                        <div class="ear left"></div>
+                        <div class="ear right"></div>
 
-                        <div class="topic-status">
-                            START
-                        </div>
+                        <div class="eye left"></div>
+                        <div class="eye right"></div>
+
+                        <div class="mouth"></div>
 
                     </div>
 
+                    <div class="robot-body">
+
+                        <div class="chest"></div>
+
+                    </div>
+
+                    <div class="arm left"></div>
+                    <div class="arm right"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         MAIN CONTENT
+    ========================================= -->
+
+    <main class="container">
+
+        <div class="learning-grid">
+
+
+            <!-- =====================================
+                 LEFT CONTENT
+            ====================================== -->
+
+            <div class="card">
+
+                <div class="material-header">
+
+                    <div class="material-label">
+                        Recommended Material
+                    </div>
+
+                    <h2 id="materialTitle">
+                        Data Cleaning Fundamentals
+                    </h2>
+
                     <p>
-                        Understand why clean and reliable data is
-                        important for accurate analysis and decision making.
+                        Learn the essential techniques used to identify,
+                        correct and prepare data before analysis.
+                        This material focuses especially on the concepts
+                        where your competency score is currently low.
+                    </p>
+
+                    <div class="meta">
+
+                        <span>ðŸ“„ PDF Material</span>
+
+                        <span>â± 24 Minutes</span>
+
+                        <span>ðŸŒ± Beginner Friendly</span>
+
+                        <span>âœ“ Approved Material</span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- WHY THIS MATERIAL -->
+
+                <div class="why-box">
+
+                    <div class="why-title">
+                        ðŸ¤– Why is AI showing this material?
+                    </div>
+
+                    <p>
+                        Your competency analysis identified
+                        <strong>Missing Values</strong> and
+                        <strong>Duplicate Records</strong> as priority gaps.
+                        This material directly covers both topics.
                     </p>
 
                 </div>
 
 
-                <div class="topic">
+                <!-- TOPICS -->
 
-                    <div class="topic-top">
+                <section class="section">
 
-                        <div class="topic-title">
-                            02. Handling Missing Values
-                        </div>
-
-                        <div class="topic-status">
-                            PRIORITY GAP
-                        </div>
-
-                    </div>
-
-                    <p>
-                        Learn how to identify missing values and choose
-                        appropriate techniques to handle them.
-                    </p>
-
-                </div>
-
-
-                <div class="topic">
-
-                    <div class="topic-top">
-
-                        <div class="topic-title">
-                            03. Removing Duplicate Records
-                        </div>
-
-                        <div class="topic-status">
-                            PRIORITY GAP
-                        </div>
-
-                    </div>
-
-                    <p>
-                        Understand how duplicate records affect datasets
-                        and how to detect and remove them.
-                    </p>
-
-                </div>
-
-
-                <div class="topic">
-
-                    <div class="topic-top">
-
-                        <div class="topic-title">
-                            04. Data Formatting
-                        </div>
-
-                        <div class="topic-status">
-                            REVIEW
-                        </div>
-
-                    </div>
-
-                    <p>
-                        Learn how to maintain consistent formats,
-                        data types and values across datasets.
-                    </p>
-
-                </div>
-
-
-                <!-- LESSON -->
-
-                <div class="lesson">
-
-                    <h3>
-                        💡 Quick Concept: Missing Values
+                    <h3 class="section-title">
+                        ðŸ“š What you will learn
                     </h3>
 
-                    <p>
-                        Missing values occur when information expected
-                        in a dataset is not available. For example,
-                        an employee record may contain a name and role
-                        but have no value for training hours.
-                    </p>
 
-                    <p>
-                        Before analysing data, missing values should
-                        be identified and handled carefully. Depending
-                        on the situation, we may remove the record,
-                        replace the value or use an appropriate
-                        statistical technique.
-                    </p>
+                    <div class="topic onclick="openTopic('Understanding Data Quality')"">
 
-                    <div class="example">
+                        <div class="topic-top">
 
-                        <strong>Example:</strong><br><br>
+                            <div class="topic-title">
+                                01. Understanding Data Quality
+                            </div>
 
-                        Dataset:
+                            <div class="topic-status">
+                                START
+                            </div>
 
-                        <br>
+                        </div>
 
-                        Employee → Training Hours
+                        <p>
+                            Understand why clean and reliable data is
+                            important for accurate analysis and decision making.
+                        </p>
 
-                        <br>
+                    </div>
 
-                        Ravi → 20
 
-                        <br>
+                    <div class="topic onclick="openTopic('Handling Missing Values')"">
 
-                        Anitha → —
+                        <div class="topic-top">
 
-                        <br>
+                            <div class="topic-title">
+                                02. Handling Missing Values
+                            </div>
 
-                        Kumar → 35
+                            <div class="topic-status">
+                                PRIORITY GAP
+                            </div>
 
-                        <br><br>
+                        </div>
 
-                        Here, Anitha's training hours are missing.
-                        The first step is to identify the missing value
-                        before deciding how to handle it.
+                        <p>
+                            Learn how to identify missing values and choose
+                            appropriate techniques to handle them.
+                        </p>
 
+                    </div>
+
+
+                    <div class="topic onclick="openTopic('Removing Duplicate Records')"">
+
+                        <div class="topic-top">
+
+                            <div class="topic-title">
+                                03. Removing Duplicate Records
+                            </div>
+
+                            <div class="topic-status">
+                                PRIORITY GAP
+                            </div>
+
+                        </div>
+
+                        <p>
+                            Understand how duplicate records affect datasets
+                            and how to detect and remove them.
+                        </p>
+
+                    </div>
+
+
+                    <div class="topic onclick="openTopic('Data Formatting')"">
+
+                        <div class="topic-top">
+
+                            <div class="topic-title">
+                                04. Data Formatting
+                            </div>
+
+                            <div class="topic-status">
+                                REVIEW
+                            </div>
+
+                        </div>
+
+                        <p>
+                            Learn how to maintain consistent formats,
+                            data types and values across datasets.
+                        </p>
+
+                    </div>
+
+
+                    <!-- LESSON -->
+
+                    <div class="lesson">
+
+                        <h3>
+                            ðŸ’¡ Quick Concept: Missing Values
+                        </h3>
+
+                        <p>
+                            Missing values occur when information expected
+                            in a dataset is not available. For example,
+                            an employee record may contain a name and role
+                            but have no value for training hours.
+                        </p>
+
+                        <p>
+                            Before analysing data, missing values should
+                            be identified and handled carefully. Depending
+                            on the situation, we may remove the record,
+                            replace the value or use an appropriate
+                            statistical technique.
+                        </p>
+
+                        <div class="example">
+
+                            <strong>Example:</strong>
+                            <br><br>
+
+                            Dataset:
+                            <br>
+
+                            Employee â†’ Training Hours
+                            <br>
+
+                            Ravi â†’ 20
+                            <br>
+
+                            Anitha â†’ â€”
+                            <br>
+
+                            Kumar â†’ 35
+
+                            <br><br>
+
+                            Here, Anitha's training hours are missing.
+                            The first step is to identify the missing value
+                            before deciding how to handle it.
+
+                        </div>
+
+                    </div>
+
+
+                </section>
+
+            </div>
+
+
+            <!-- =====================================
+                 RIGHT SIDEBAR
+            ====================================== -->
+
+            <aside class="card side-card">
+
+                <div class="side-title">
+                    Your Learning Progress
+                </div>
+
+
+                <div class="progress-circle">
+
+                    <div class="progress-number" id="progressNumber">
+                        42%
                     </div>
 
                 </div>
 
+                <div class="progress-label">
+                    Overall competency health
+                </div>
 
-            </section>
+
+                <!-- WEAK TOPIC -->
+
+                <div class="weak-topic">
+
+                    <small>
+                        AI PRIORITY TOPIC
+                    </small>
+
+                    <strong id="weakTopicDisplay">
+                        Missing Values
+                    </strong>
+
+                    <small>
+                        Current competency:
+                        <span id="currentCompetency">
+                            42%
+                        </span>
+                    </small>
+
+                </div>
+
+
+                <!-- ACTION -->
+
+                <button
+                    class="action-btn"
+                    onclick="takeQuiz()">
+
+                    Take AI Quiz â†’
+
+                </button>
+
+
+                <button
+                    class="action-btn complete-btn"
+                    onclick="markComplete()">
+
+                    âœ“ Mark Learning Complete
+
+                </button>
+
+
+                <div class="ai-note">
+
+                    ðŸ¤– <strong>AI Tip:</strong>
+
+                    Complete the priority topics first.
+                    Your next quiz will focus more heavily
+                    on concepts where you make mistakes.
+
+                </div>
+
+            </aside>
+
 
         </div>
 
-
-        <!-- =====================================
-             RIGHT SIDEBAR
-        ====================================== -->
-
-        <aside class="card side-card">
-
-            <div class="side-title">
-                Your Learning Progress
-            </div>
+    </main>
 
 
-            <div class="progress-circle">
+    <!-- =========================================
+         SUCCESS MESSAGE
+    ========================================= -->
 
-                <div class="progress-number" id="progressNumber">
-                    68%
-                </div>
-
-            </div>
-
-            <div class="progress-label">
-                Overall competency health
-            </div>
-
-
-            <!-- WEAK TOPIC -->
-
-            <div class="weak-topic">
-
-                <small>AI PRIORITY TOPIC</small>
-
-                <strong>
-                    Missing Values
-                </strong>
-
-                <small>
-                    Current competency: 32%
-                </small>
-
-            </div>
-
-
-            <!-- ACTION -->
-
-            <button
-                class="action-btn"
-                onclick="takeQuiz()">
-
-                Take AI Quiz →
-
-            </button>
-
-
-            <button
-                class="action-btn complete-btn"
-                onclick="markComplete()">
-
-                ✓ Mark Learning Complete
-
-            </button>
-
-
-            <div class="ai-note">
-
-                🤖 <strong>AI Tip:</strong>
-
-                Complete the priority topics first.
-                Your next quiz will focus more heavily
-                on concepts where you make mistakes.
-
-            </div>
-
-        </aside>
-
+    <div class="success" id="successMessage">
+        âœ“ Learning progress updated successfully!
     </div>
 
-</main>
+
+    <!-- =========================================
+         FOOTER
+    ========================================= -->
+
+    <footer>
+
+        <strong>Tech Spark</strong>
+        â€” Competency Intelligence Platform
+
+        <br><br>
+
+        AI-powered learning for India's Official Statistical System
+
+    </footer>
 
 
-<!-- =========================================
-     SUCCESS MESSAGE
-========================================= -->
+    <script>
 
-<div class="success" id="successMessage">
-    ✓ Learning progress updated successfully!
-</div>
+        /* =========================================
+           BACK BUTTON
+        ========================================= */
 
+        function goBack() {
 
-<!-- =========================================
-     FOOTER
-========================================= -->
-
-<footer>
-
-    <strong>Tech Spark</strong>
-    — Competency Intelligence Platform
-
-    <br><br>
-
-    AI-powered learning for India's Official Statistical System
-
-</footer>
-
-
-<script>
-
-    /* =========================================
-       BACK BUTTON
-    ========================================= */
-
-    function goBack() {
-
-        window.location.href = "recommendation.html";
-
-    }
-
-
-    /* =========================================
-       TAKE QUIZ
-    ========================================= */
-
-    function takeQuiz() {
-
-        // Save that employee opened learning material
-        localStorage.setItem(
-            "learningStarted",
-            "true"
-        );
-
-        window.location.href = "quiz.html";
-
-    }
-
-
-    /* =========================================
-       MARK COMPLETE
-    ========================================= */
-
-    function markComplete() {
-
-        localStorage.setItem(
-            "learningCompleted",
-            "true"
-        );
-
-        const message =
-            document.getElementById("successMessage");
-
-        message.style.display = "block";
-
-        setTimeout(function() {
-
-            message.style.display = "none";
-
-        }, 3000);
-
-    }
-
-
-    /* =========================================
-       TOPIC CLICK
-    ========================================= */
-
-    document.querySelectorAll(".topic").forEach(function(topic) {
-
-        topic.addEventListener("click", function() {
-
-            this.style.borderColor = "#18a957";
-
-            setTimeout(() => {
-
-                this.style.borderColor = "";
-
-            }, 1000);
-
-        });
-
-    });
-
-
-    /* =========================================
-       LOAD SAVED PROGRESS
-    ========================================= */
-
-    window.addEventListener("DOMContentLoaded", function() {
-
-        const completed =
-            localStorage.getItem("learningCompleted");
-
-        if (completed === "true") {
-
-            document.getElementById("progressNumber")
-                .textContent = "75%";
+            window.location.href = "recommendation.html";
 
         }
 
-    });
 
-</script>
+        /* =========================================
+           TAKE QUIZ
+        ========================================= */
+
+        function takeQuiz() {
+
+            // Save that employee opened learning material
+            localStorage.setItem(
+                "learningStarted",
+                "true"
+            );
+
+            window.location.href = "quiz.html";
+
+        }
+
+
+        /* =========================================
+           MARK COMPLETE
+        ========================================= */
+
+        function markComplete() {
+
+            localStorage.setItem(
+                "learningCompleted",
+                "true"
+            );
+
+            const message =
+                document.getElementById("successMessage");
+
+            message.style.display = "block";
+
+            setTimeout(function() {
+
+                message.style.display = "none";
+
+            }, 3000);
+
+        }
+
+
+        /* =========================================
+           TOPIC CLICK
+        ========================================= */
+
+        document.querySelectorAll(".topic").forEach(function(topic) {
+
+            topic.addEventListener("click", function() {
+
+                this.style.borderColor = "#18a957";
+
+                setTimeout(() => {
+
+                    this.style.borderColor = "";
+
+                }, 1000);
+
+            });
+
+        });
+
+
+
+        function openTopic(topic) {
+            localStorage.setItem("selectedLearningTopic", topic);
+            localStorage.setItem("weakTopic", topic);
+            localStorage.setItem("learningStarted", "true");
+            const lesson = document.querySelector(".lesson");
+            if (lesson) lesson.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+
+        /* =========================================
+           LOAD SAVED PROGRESS
+        ========================================= */
+
+        window.addEventListener("DOMContentLoaded", function() {
+
+            // Get latest updated competency
+            const savedCompetency =
+                localStorage.getItem("updatedCompetency");
+
+            // Get latest quiz score as fallback
+            const quizScore =
+                localStorage.getItem("quizScore");
+
+            // Default competency
+            let competency = 42;
+
+            // Priority 1: updated competency
+            if (
+                savedCompetency !== null &&
+                !isNaN(Number(savedCompetency))
+            ) {
+
+                competency = Number(savedCompetency);
+
+            }
+
+            // Priority 2: quiz score
+            else if (
+                quizScore !== null &&
+                !isNaN(Number(quizScore))
+            ) {
+
+                competency = Number(quizScore);
+
+            }
+
+
+            // Keep value between 0 and 100
+            competency = Math.max(
+                0,
+                Math.min(100, competency)
+            );
+
+
+            // Update progress number
+            document.getElementById("progressNumber")
+                .textContent =
+                Math.round(competency) + "%";
+
+
+            // Update current competency text
+            document.getElementById("currentCompetency")
+                .textContent =
+                Math.round(competency) + "%";
+
+
+            // Update progress circle
+            const circle =
+                document.querySelector(".progress-circle");
+
+            circle.style.background =
+                `conic-gradient(
+                    #18a957 ${competency}%,
+                    #e5f1ea 0
+                )`;
+
+
+            // Get weak topic
+            const weakTopic =
+                localStorage.getItem("weakTopic");
+
+            if (
+                weakTopic &&
+                weakTopic.trim() !== ""
+            ) {
+
+                document.getElementById("weakTopicDisplay")
+                    .textContent = weakTopic;
+
+            }
+
+
+            // Get selected learning material
+            const selectedMaterial =
+                localStorage.getItem(
+                    "selectedLearningMaterial"
+                );
+
+            if (
+                selectedMaterial &&
+                selectedMaterial.trim() !== ""
+            ) {
+
+                document.getElementById("materialTitle")
+                    .textContent = selectedMaterial;
+
+            }
+
+
+            // Check learning completion
+            const completed =
+                localStorage.getItem("learningCompleted");
+
+            if (completed === "true") {
+
+                document.getElementById("progressNumber")
+                    .textContent = "100%";
+
+                document.getElementById("currentCompetency")
+                    .textContent = "100%";
+
+                circle.style.background =
+                    "conic-gradient(#18a957 100%, #e5f1ea 0)";
+
+            }
+
+        });
+
+    </script>
 
 </body>
+
 </html>

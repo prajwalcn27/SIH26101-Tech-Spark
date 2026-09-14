@@ -1,4 +1,8 @@
 import json
+import os
+import re
+import urllib.request
+import urllib.error
 
 from question_manager import QuestionManager
 
@@ -18,41 +22,195 @@ from quiz_result_analyzer import QuizResultAnalyzer
 from competency_updater import CompetencyUpdater
 
 
-def run_complete_learning_cycle():
+def generate_ai_quiz_from_material(material_text, topic=None, num_questions=5):
+    """
+    Generate source-grounded MCQs from uploaded material using Gemini.
+    Returns the same question structure used by QuizManager.
+    Falls back to [] when Gemini is not configured or generation fails.
+    """
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not api_key or not material_text:
+        return []
+
+    topic_text = topic or "the selected learning topic"
+    prompt = f"""
+You are an educational assessment generator for the Tech Spark learning platform.
+
+Create exactly {num_questions} multiple-choice questions from ONLY the source material below.
+Focus on: {topic_text}.
+
+Rules:
+- 4 options per question.
+- Exactly one correct answer.
+- Questions must be directly supported by the source.
+- Do not use outside facts.
+- Mix understanding, application, and scenario questions.
+- Return ONLY valid JSON, no markdown.
+
+JSON format:
+[
+  {{
+    "id": "ai_1",
+    "question": "...",
+    "options": ["...", "...", "...", "..."],
+    "correct_answer": "A",
+    "topic": "{topic_text}"
+  }}
+]
+
+SOURCE MATERIAL:
+{material_text[:30000]}
+"""
+
+    payload = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.2,
+            "responseMimeType": "application/json"
+        }
+    }).encode("utf-8")
+
+    url = (
+        "https://generativelanguage.googleapis.com/v1beta/models/"
+        "gemini-2.0-flash:generateContent?key=" + api_key
+    )
+
+    try:
+        request = urllib.request.Request(
+            url,
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
+            data = json.loads(response.read().decode("utf-8"))
+
+        raw = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        raw = re.sub(r"^```json\s*", "", raw)
+        raw = re.sub(r"\s*```$", "", raw).strip()
+
+        questions = json.loads(raw)
+
+        if not isinstance(questions, list):
+            return []
+
+        cleaned = []
+        for i, q in enumerate(questions[:num_questions], start=1):
+            options = q.get("options", [])
+            if not q.get("question") or len(options) != 4:
+                continue
+
+            correct = str(q.get("correct_answer", "A")).upper()
+            if correct not in ("A", "B", "C", "D"):
+                correct = "A"
+
+            cleaned.append({
+                "id": q.get("id", f"ai_{i}"),
+                "question": q["question"],
+                "options": options,
+                "correct_answer": correct,
+                "topic": q.get("topic", topic_text)
+            })
+
+        return cleaned if len(cleaned) == num_questions else []
+
+    except Exception as error:
+        print(f"âš ï¸ Gemini quiz generation failed: {error}")
+        return []
+
+
+
+def run_complete_learning_cycle(weak_topics=None, num_questions=5, material_text=None, material_title=None):
+
+
+    if weak_topics is None:
+        weak_topics = []
 
     print("=" * 70)
     print("              COMPLETE LEARNING CYCLE")
     print("=" * 70)
 
+   
+
     # ==========================================================
     # STEP 1: QUESTION MANAGER
     # ==========================================================
 
-    print("\n📚 STEP 1: Loading Question Manager...")
+    print("\nðŸ“š STEP 1: Loading Question Manager...")
 
     question_manager = QuestionManager()
 
     question_manager.remove_duplicates()
 
-    assessment_questions = (
-        question_manager.get_random_questions(
-            number_of_questions=6
+    # Use weak topics when provided.
+    # Some competency gaps can be sub-topics of a broader topic.
+    # Example: "Missing Values" is covered under "Data Cleaning"
+    # in the current question bank.
+    if weak_topics:
+        assessment_questions = []
+
+        related_topic_map = {
+            "missing values": "Data Cleaning",
+            "duplicate records": "Data Cleaning",
+            "data formatting": "Data Cleaning",
+            "data validation": "Data Cleaning",
+        }
+
+        for topic in weak_topics:
+            topic = str(topic).strip()
+
+            # 1. Try an exact topic match first.
+            topic_questions = question_manager.get_questions(
+                topic=topic,
+                number_of_questions=num_questions
+            )
+
+            # 2. If there is no exact match, try the broader
+            #    topic that contains the competency gap.
+            if not topic_questions:
+                mapped_topic = related_topic_map.get(topic.lower())
+
+                if mapped_topic:
+                    print(
+                        f"   ðŸ”— '{topic}' mapped to "
+                        f"'{mapped_topic}'"
+                    )
+
+                    topic_questions = question_manager.get_questions(
+                        topic=mapped_topic,
+                        number_of_questions=num_questions
+                    )
+
+            assessment_questions.extend(topic_questions)
+
+        # Remove duplicates while preserving question order.
+        unique_questions = {}
+        for question in assessment_questions:
+            unique_questions[question.get("id")] = question
+
+        assessment_questions = list(unique_questions.values())
+
+        # Keep the requested assessment size.
+        assessment_questions = assessment_questions[:num_questions]
+
+    else:
+        assessment_questions = question_manager.get_random_questions(
+            number_of_questions=num_questions
         )
-    )
 
     if not assessment_questions:
 
-        print("❌ No assessment questions available.")
+        print("âŒ No assessment questions available.")
 
         return None
 
     print(
-        f"✅ Loaded {len(question_manager.questions)} "
+        f"âœ… Loaded {len(question_manager.questions)} "
         f"questions from question bank."
     )
 
     print(
-        f"✅ Selected {len(assessment_questions)} "
+        f"âœ… Selected {len(assessment_questions)} "
         f"assessment questions."
     )
 
@@ -60,7 +218,7 @@ def run_complete_learning_cycle():
     # STEP 2: INITIAL ASSESSMENT
     # ==========================================================
 
-    print("\n📝 STEP 2: Initial Assessment...")
+    print("\nðŸ“ STEP 2: Initial Assessment...")
 
     # Demo employee answers.
     # Later these answers will come from the frontend.
@@ -116,7 +274,7 @@ def run_complete_learning_cycle():
     if not assessment_results:
 
         print(
-            "❌ Assessment calculation failed."
+            "âŒ Assessment calculation failed."
         )
 
         return None
@@ -130,7 +288,7 @@ def run_complete_learning_cycle():
     # ==========================================================
 
     print(
-        "\n🔍 STEP 3: Competency "
+        "\nðŸ” STEP 3: Competency "
         "Gap Analysis..."
     )
 
@@ -155,7 +313,7 @@ def run_complete_learning_cycle():
     )
 
     print(
-        "\n📌 IDENTIFIED COMPETENCY GAPS"
+        "\nðŸ“Œ IDENTIFIED COMPETENCY GAPS"
     )
 
     for result in (
@@ -165,13 +323,13 @@ def run_complete_learning_cycle():
     ):
 
         print(
-            f"📘 {result['topic']:<20} "
-            f"{result['score']}% → "
+            f"ðŸ“˜ {result['topic']:<20} "
+            f"{result['score']}% â†’ "
             f"{result['status']} "
             f"[{result['priority']}]"
         )
 
-    print("\n⚠️ Weak Topics:")
+    print("\nâš ï¸ Weak Topics:")
 
     if gap_analysis["weak_topics"]:
 
@@ -182,13 +340,13 @@ def run_complete_learning_cycle():
         ):
 
             print(
-                f"   • {topic}"
+                f"   â€¢ {topic}"
             )
 
     else:
 
         print(
-            "   ✅ No weak topics found."
+            "   âœ… No weak topics found."
         )
 
     # ==========================================================
@@ -196,7 +354,7 @@ def run_complete_learning_cycle():
     # ==========================================================
 
     print(
-        "\n🎯 STEP 4: Personalized "
+        "\nðŸŽ¯ STEP 4: Personalized "
         "Learning Recommendation..."
     )
 
@@ -215,7 +373,7 @@ def run_complete_learning_cycle():
     )
 
     print(
-        "\n📚 RECOMMENDED MATERIAL"
+        "\nðŸ“š RECOMMENDED MATERIAL"
     )
 
     if recommendations:
@@ -225,7 +383,7 @@ def run_complete_learning_cycle():
         ):
 
             print(
-                f"\n📘 Topic: "
+                f"\nðŸ“˜ Topic: "
                 f"{recommendation['topic']}"
             )
 
@@ -275,7 +433,7 @@ def run_complete_learning_cycle():
     else:
 
         print(
-            "   ℹ️ No recommendations."
+            "   â„¹ï¸ No recommendations."
         )
 
     # ==========================================================
@@ -283,13 +441,34 @@ def run_complete_learning_cycle():
     # ==========================================================
 
     print(
-        "\n📝 STEP 5: Creating "
+        "\nðŸ“ STEP 5: Creating "
         "Targeted Quiz..."
     )
 
     quiz_manager = QuizManager(
         question_manager
     )
+
+    # If an uploaded material is supplied, generate a quiz directly
+    # from that source material. Existing question-bank behavior remains
+    # as the fallback for the current prototype flow.
+    ai_target_topic = None
+    if weak_topics:
+        ai_target_topic = str(weak_topics[0]).strip()
+
+    targeted_quiz = []
+    if material_text:
+        print("\nðŸ¤– Generating source-grounded AI quiz from uploaded material...")
+        targeted_quiz = generate_ai_quiz_from_material(
+            material_text=material_text,
+            topic=ai_target_topic,
+            num_questions=num_questions
+        )
+        if targeted_quiz:
+            target_topic = ai_target_topic or material_title or "Uploaded Material"
+            print(f"âœ… AI generated {len(targeted_quiz)} questions.")
+        else:
+            print("âš ï¸ AI generation unavailable. Using existing question bank.")
 
     weak_topics = (
         gap_analysis[
@@ -299,7 +478,7 @@ def run_complete_learning_cycle():
 
     target_topic = None
 
-    if weak_topics:
+    if not targeted_quiz and weak_topics:
 
         # ------------------------------------------------------
         # Select the weakest topic based on lowest score.
@@ -328,29 +507,58 @@ def run_complete_learning_cycle():
         )
 
         print(
-            f"\n🎯 Target Topic: "
+            f"\nðŸŽ¯ Target Topic: "
             f"{target_topic}"
         )
 
         targeted_quiz = (
             quiz_manager.create_targeted_quiz(
                 topic=target_topic,
-                number_of_questions=2
+                number_of_questions=num_questions
             )
         )
 
-    else:
+        # If the gap analyzer returns a sub-topic that does not have
+        # its own questions, use the broader topic from the question bank.
+        if not targeted_quiz:
+            related_topic_map = {
+                "missing values": "Data Cleaning",
+                "duplicate records": "Data Cleaning",
+                "data formatting": "Data Cleaning",
+                "data validation": "Data Cleaning",
+            }
+
+            mapped_topic = related_topic_map.get(
+                str(target_topic).strip().lower()
+            )
+
+            if mapped_topic:
+                print(
+                    f"   ðŸ”— Target quiz '{target_topic}' "
+                    f"mapped to '{mapped_topic}'"
+                )
+
+                target_topic = mapped_topic
+
+                targeted_quiz = (
+                    quiz_manager.create_targeted_quiz(
+                        topic=target_topic,
+                        number_of_questions=num_questions
+                    )
+                )
+
+    elif not targeted_quiz:
 
         targeted_quiz = (
             quiz_manager.create_quiz(
-                number_of_questions=2
+                number_of_questions=num_questions
             )
         )
 
     if not targeted_quiz:
 
         print(
-            "❌ Could not create targeted quiz."
+            "âŒ Could not create targeted quiz."
         )
 
         return None
@@ -364,7 +572,7 @@ def run_complete_learning_cycle():
     # ==========================================================
 
     print(
-        "\n✍️ STEP 6: Processing "
+        "\nâœï¸ STEP 6: Processing "
         "Quiz Attempt..."
     )
 
@@ -390,7 +598,7 @@ def run_complete_learning_cycle():
         )
 
     print(
-        "✅ Employee quiz answers received."
+        "âœ… Employee quiz answers received."
     )
 
     # ==========================================================
@@ -398,7 +606,7 @@ def run_complete_learning_cycle():
     # ==========================================================
 
     print(
-        "\n📊 STEP 7: Analyzing "
+        "\nðŸ“Š STEP 7: Analyzing "
         "Quiz Result..."
     )
 
@@ -416,7 +624,7 @@ def run_complete_learning_cycle():
     ):
 
         print(
-            "❌ Quiz result analysis failed."
+            "âŒ Quiz result analysis failed."
         )
 
         return None
@@ -458,7 +666,7 @@ def run_complete_learning_cycle():
     # ==========================================================
 
     print(
-        "\n🔄 STEP 8: Updating "
+        "\nðŸ”„ STEP 8: Updating "
         "Employee Competency..."
     )
 
@@ -491,7 +699,7 @@ def run_complete_learning_cycle():
 
     competency_updater = (
         CompetencyUpdater(
-            learning_weight=0.4
+            learning_weight=0.6
         )
     )
 
@@ -503,7 +711,7 @@ def run_complete_learning_cycle():
     )
 
     print(
-        "\n📈 UPDATED COMPETENCY PROFILE"
+        "\nðŸ“ˆ UPDATED COMPETENCY PROFILE"
     )
 
     for topic, data in (
@@ -513,7 +721,7 @@ def run_complete_learning_cycle():
     ):
 
         print(
-            f"\n📘 {topic}"
+            f"\nðŸ“˜ {topic}"
         )
 
         print(
@@ -543,7 +751,7 @@ def run_complete_learning_cycle():
     # ==========================================================
 
     print(
-        "\n💾 STEP 9: Creating "
+        "\nðŸ’¾ STEP 9: Creating "
         "Final Learning Profile..."
     )
 
@@ -608,7 +816,7 @@ def run_complete_learning_cycle():
         )
 
     print(
-        f"\n💾 Final learning profile saved to:"
+        f"\nðŸ’¾ Final learning profile saved to:"
         f"\n   {output_file}"
     )
 
@@ -631,39 +839,39 @@ def run_complete_learning_cycle():
     )
 
     print(
-        "\n✅ Question selection"
+        "\nâœ… Question selection"
     )
 
     print(
-        "✅ Initial assessment"
+        "âœ… Initial assessment"
     )
 
     print(
-        "✅ Competency gap analysis"
+        "âœ… Competency gap analysis"
     )
 
     print(
-        "✅ Personalized recommendation"
+        "âœ… Personalized recommendation"
     )
 
     print(
-        "✅ Targeted quiz"
+        "âœ… Targeted quiz"
     )
 
     print(
-        "✅ Quiz result analysis"
+        "âœ… Quiz result analysis"
     )
 
     print(
-        "✅ Competency update"
+        "âœ… Competency update"
     )
 
     print(
-        "✅ Final learning profile"
+        "âœ… Final learning profile"
     )
 
     print(
-        "\n🚀 AI LEARNING LOOP COMPLETED!"
+        "\nðŸš€ AI LEARNING LOOP COMPLETED!"
     )
 
     # ==========================================================

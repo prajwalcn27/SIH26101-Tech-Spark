@@ -1,39 +1,67 @@
 import json
-import re
 from pathlib import Path
 
 
 class TopicMatcher:
+    """
+    Matches competency topics with learning materials from content_index.json.
+
+    Supports the current Tech Spark content_index.json format:
+
+    {
+        "materials": [
+            {
+                "file": "Data_Cleaning.pdf",
+                "title": "Data Cleaning",
+                "topics": [
+                    "Missing Values",
+                    "Duplicate Records",
+                    "Data Formatting",
+                    "Data Validation",
+                    "Data Cleaning"
+                ]
+            }
+        ]
+    }
+
+    It also supports an optional "sections" list if a richer index is
+    generated later.
+    """
 
     def __init__(self, index_path=None):
 
-        # Always locate content_index.json relative
-        # to this Python file.
         BASE_DIR = Path(__file__).resolve().parent
 
         if index_path is None:
-            self.index_path = BASE_DIR / "content_index.json"
+            index_path = BASE_DIR / "content_index.json"
         else:
-            self.index_path = Path(index_path)
+            index_path = Path(index_path)
 
-        self.index = None
+            if not index_path.is_absolute():
+                index_path = BASE_DIR / index_path
+
+        self.index_path = index_path
+        self.materials = []
         self.sections = []
 
-        self.load_index()
+        self._load_index()
 
     # =========================================================
     # LOAD CONTENT INDEX
     # =========================================================
 
-    def load_index(self):
-
-        if not self.index_path.exists():
-
-            raise FileNotFoundError(
-                f"Content index not found: {self.index_path}"
-            )
+    def _load_index(self):
 
         try:
+
+            if not self.index_path.exists():
+
+                print(
+                    f"âŒ Content index not found: "
+                    f"{self.index_path}"
+                )
+
+                return
 
             with open(
                 self.index_path,
@@ -41,71 +69,173 @@ class TopicMatcher:
                 encoding="utf-8"
             ) as file:
 
-                self.index = json.load(file)
+                data = json.load(file)
 
-        except json.JSONDecodeError as error:
+            # -------------------------------------------------
+            # Current format: materials
+            # -------------------------------------------------
 
-            raise ValueError(
-                f"Invalid content_index.json: {error}"
+            materials = data.get(
+                "materials",
+                []
             )
 
-        # -----------------------------------------------------
-        # Read sections from the actual index structure
-        # -----------------------------------------------------
+            if isinstance(materials, list):
 
-        if isinstance(self.index, dict):
+                self.materials = materials
 
-            self.sections = self.index.get(
+            # -------------------------------------------------
+            # Optional richer format: sections
+            # -------------------------------------------------
+
+            sections = data.get(
                 "sections",
                 []
             )
 
-        elif isinstance(self.index, list):
+            if isinstance(sections, list):
 
-            self.sections = self.index
+                self.sections = sections
 
-        else:
+            # -------------------------------------------------
+            # If sections exist, use them directly.
+            # Otherwise convert materials into searchable
+            # material records.
+            # -------------------------------------------------
 
-            self.sections = []
+            if self.sections:
 
-        print(
-            f"✅ Content index loaded: "
-            f"{self.index_path.name}"
-        )
+                print(
+                    f"ðŸ“š Indexed sections: "
+                    f"{len(self.sections)}"
+                )
 
-        print(
-            f"📚 Indexed sections: "
-            f"{len(self.sections)}"
-        )
+            else:
 
-    # =========================================================
-    # GET ALL CONTENT
-    # =========================================================
+                print(
+                    f"ðŸ“š Indexed sections: "
+                    f"{len(self.materials)} materials"
+                )
 
-    def get_all_content(self):
+            print(
+                f"âœ… Content index loaded: "
+                f"{self.index_path.name}"
+            )
 
-        return self.sections
+        except json.JSONDecodeError as error:
+
+            print(
+                "âŒ Invalid content_index.json:"
+            )
+
+            print(error)
+
+        except Exception as error:
+
+            print(
+                "âŒ Failed to load content index:"
+            )
+
+            print(error)
 
     # =========================================================
     # NORMALIZE TEXT
     # =========================================================
 
-    def normalize_text(self, text):
+    @staticmethod
+    def _normalize(text):
 
         if text is None:
-
             return ""
 
-        text = str(text).lower()
-
-        # Remove extra spaces
-        text = re.sub(
-            r"\s+",
-            " ",
-            text
+        return " ".join(
+            str(text)
+            .lower()
+            .strip()
+            .split()
         )
 
-        return text.strip()
+    # =========================================================
+    # TOPIC RELATIONSHIP
+    # =========================================================
+
+    @staticmethod
+    def _is_topic_match(
+        requested_topic,
+        material_topics,
+        material_title=""
+    ):
+
+        requested = TopicMatcher._normalize(
+            requested_topic
+        )
+
+        if not requested:
+            return False
+
+        topics = [
+            TopicMatcher._normalize(topic)
+            for topic in material_topics
+        ]
+
+        title = TopicMatcher._normalize(
+            material_title
+        )
+
+        # Exact topic match
+        if requested in topics:
+            return True
+
+        # Topic contained in a broader topic/title
+        for topic in topics:
+
+            if (
+                requested in topic
+                or topic in requested
+            ):
+                return True
+
+        if requested in title or title in requested:
+            return True
+
+        # Known competency sub-topic mapping.
+        # This is important for the current project:
+        # Missing Values is part of Data Cleaning.
+        related_topics = {
+
+            "missing values": [
+                "data cleaning"
+            ],
+
+            "duplicate records": [
+                "data cleaning"
+            ],
+
+            "data formatting": [
+                "data cleaning"
+            ],
+
+            "data validation": [
+                "data cleaning"
+            ],
+
+            "data cleaning": [
+                "data cleaning"
+            ]
+        }
+
+        for related_topic in related_topics.get(
+            requested,
+            []
+        ):
+
+            if (
+                related_topic in topics
+                or related_topic in title
+            ):
+                return True
+
+        return False
 
     # =========================================================
     # MATCH TOPIC
@@ -114,280 +244,271 @@ class TopicMatcher:
     def match_topic(
         self,
         topic,
-        top_k=5
+        top_k=2
     ):
-        """
-        Find sections relevant to a topic.
-
-        Returns:
-            section_id
-            pages
-            text
-            relevance
-        """
 
         if not topic:
-
             return []
-
-        topic_text = self.normalize_text(topic)
 
         results = []
 
-        for section in self.sections:
+        # -----------------------------------------------------
+        # 1. Search richer section index first
+        # -----------------------------------------------------
 
-            if not isinstance(section, dict):
+        for index, section in enumerate(
+            self.sections
+        ):
 
+            if not isinstance(
+                section,
+                dict
+            ):
                 continue
 
-            section_text = self.normalize_text(
-                section.get("text", "")
+            section_topics = (
+                section.get("topics")
+                or section.get("topic")
+                or []
             )
 
-            if not section_text:
-
-                continue
-
-            score = 0
-
-            # -------------------------------------------------
-            # Exact phrase match
-            # -------------------------------------------------
-
-            if topic_text in section_text:
-
-                score += 50
-
-            # -------------------------------------------------
-            # Individual keyword matching
-            # -------------------------------------------------
-
-            words = topic_text.split()
-
-            matched_words = 0
-
-            for word in words:
-
-                if len(word) < 3:
-
-                    continue
-
-                if word in section_text:
-
-                    matched_words += 1
-
-            if words:
-
-                keyword_score = (
-                    matched_words / len(words)
-                ) * 50
-
-                score += keyword_score
-
-            # -------------------------------------------------
-            # Topic-specific keywords
-            # -------------------------------------------------
-
-            topic_keywords = {
-
-                "data cleaning": [
-                    "data cleaning",
-                    "missing values",
-                    "duplicate",
-                    "incorrect data",
-                    "inconsistent",
-                    "outliers",
-                    "standardization",
-                    "validation"
-                ],
-
-                "data validation": [
-                    "data validation",
-                    "validation",
-                    "required fields",
-                    "unique",
-                    "valid numbers"
-                ],
-
-                "decision tree": [
-                    "decision tree",
-                    "node",
-                    "root",
-                    "leaf",
-                    "classification"
-                ],
-
-                "naive bayes": [
-                    "naive bayes",
-                    "bayes",
-                    "probability",
-                    "conditional probability"
-                ],
-
-                "statistics": [
-                    "statistics",
-                    "mean",
-                    "median",
-                    "mode",
-                    "variance",
-                    "standard deviation"
+            if isinstance(
+                section_topics,
+                str
+            ):
+                section_topics = [
+                    section_topics
                 ]
-            }
 
-            keywords = topic_keywords.get(
-                topic_text,
-                []
+            title = (
+                section.get("title")
+                or section.get("name")
+                or ""
             )
 
-            keyword_matches = 0
-
-            for keyword in keywords:
-
-                if keyword in section_text:
-
-                    keyword_matches += 1
-
-            if keywords:
-
-                score += (
-                    keyword_matches /
-                    len(keywords)
-                ) * 50
-
-            # -------------------------------------------------
-            # Add matching section
-            # -------------------------------------------------
-
-            if score > 0:
-
-                pages = section.get(
-                    "pages",
-                    []
-                )
-
-                section_id = section.get(
-                    "section_id"
-                )
-
-                word_count = section.get(
-                    "word_count",
-                    0
-                )
+            if self._is_topic_match(
+                topic,
+                section_topics,
+                title
+            ):
 
                 results.append({
 
-                    "section_id": section_id,
+                    "section_id":
+                        section.get(
+                            "section_id",
+                            f"section_{index + 1}"
+                        ),
 
-                    "pages": pages,
+                    "page":
+                        section.get(
+                            "page"
+                        ),
 
-                    "page": (
-                        pages[0]
-                        if pages
-                        else None
+                    "pages":
+                        section.get(
+                            "pages",
+                            []
+                        ),
+
+                    "text":
+                        section.get(
+                            "text",
+                            ""
+                        ),
+
+                    "file":
+                        section.get(
+                            "file",
+                            ""
+                        ),
+
+                    "title":
+                        title,
+
+                    "relevance":
+                        self._calculate_score(
+                            topic,
+                            section_topics,
+                            title
+                        )
+                })
+
+        # -----------------------------------------------------
+        # 2. Search current materials format
+        # -----------------------------------------------------
+
+        for index, material in enumerate(
+            self.materials
+        ):
+
+            if not isinstance(
+                material,
+                dict
+            ):
+                continue
+
+            material_topics = material.get(
+                "topics",
+                []
+            )
+
+            if isinstance(
+                material_topics,
+                str
+            ):
+                material_topics = [
+                    material_topics
+                ]
+
+            title = material.get(
+                "title",
+                ""
+            )
+
+            if not self._is_topic_match(
+                topic,
+                material_topics,
+                title
+            ):
+                continue
+
+            score = self._calculate_score(
+                topic,
+                material_topics,
+                title
+            )
+
+            results.append({
+
+                "section_id":
+                    material.get(
+                        "section_id",
+                        f"material_{index + 1}"
                     ),
 
-                    "text": section.get(
+                "page":
+                    material.get(
+                        "page"
+                    ),
+
+                "pages":
+                    material.get(
+                        "pages",
+                        []
+                    ),
+
+                "text":
+                    material.get(
                         "text",
                         ""
                     ),
 
-                    "word_count": word_count,
-
-                    "relevance": round(
-                        min(score, 100),
-                        2
+                "file":
+                    material.get(
+                        "file",
+                        ""
                     ),
 
-                    "score": round(
-                        min(score, 100),
-                        2
-                    ),
+                "title":
+                    title,
 
-                    "topic": topic
+                "relevance":
+                    score
+            })
 
-                })
+        # -----------------------------------------------------
+        # Remove duplicates
+        # -----------------------------------------------------
 
-        # Sort highest relevance first
+        unique = {}
+
+        for result in results:
+
+            key = (
+                result.get("file"),
+                result.get("section_id")
+            )
+
+            unique[key] = result
+
+        results = list(
+            unique.values()
+        )
+
+        # Highest relevance first
         results.sort(
-            key=lambda item: item.get(
-                "relevance",
-                0
-            ),
+            key=lambda item:
+                item.get(
+                    "relevance",
+                    0
+                ),
             reverse=True
         )
 
         return results[:top_k]
 
     # =========================================================
-    # SEARCH
+    # RELEVANCE SCORE
     # =========================================================
 
-    def search(
-        self,
-        query,
-        top_k=5
+    @staticmethod
+    def _calculate_score(
+        requested_topic,
+        material_topics,
+        title
     ):
-        """
-        Search for a word or phrase
-        across all indexed sections.
-        """
 
-        if not query:
-
-            return []
-
-        query_text = self.normalize_text(
-            query
+        requested = TopicMatcher._normalize(
+            requested_topic
         )
 
-        results = []
+        normalized_topics = [
+            TopicMatcher._normalize(topic)
+            for topic in material_topics
+        ]
 
-        for section in self.sections:
+        normalized_title = (
+            TopicMatcher._normalize(title)
+        )
 
-            if not isinstance(section, dict):
+        # Exact topic = strongest match
+        if requested in normalized_topics:
+            return 100.0
 
-                continue
+        # Sub-topic covered by broader topic
+        if requested == "missing values":
+            if "data cleaning" in normalized_topics:
+                return 95.0
 
-            text = self.normalize_text(
-                section.get(
-                    "text",
-                    ""
-                )
-            )
+        if requested == "duplicate records":
+            if "data cleaning" in normalized_topics:
+                return 90.0
 
-            if query_text in text:
+        if requested == "data formatting":
+            if "data cleaning" in normalized_topics:
+                return 90.0
 
-                pages = section.get(
-                    "pages",
-                    []
-                )
+        if requested == "data validation":
+            if "data cleaning" in normalized_topics:
+                return 90.0
 
-                results.append({
+        # Partial topic match
+        for item in normalized_topics:
 
-                    "section_id": section.get(
-                        "section_id"
-                    ),
+            if (
+                requested in item
+                or item in requested
+            ):
+                return 85.0
 
-                    "pages": pages,
+        if (
+            requested in normalized_title
+            or normalized_title in requested
+        ):
+            return 80.0
 
-                    "page": (
-                        pages[0]
-                        if pages
-                        else None
-                    ),
-
-                    "text": section.get(
-                        "text",
-                        ""
-                    ),
-
-                    "relevance": 100,
-
-                    "score": 100
-
-                })
-
-        return results[:top_k]
+        return 50.0
 
 
 # =============================================================
@@ -400,76 +521,43 @@ if __name__ == "__main__":
     print("TOPIC MATCHER TEST")
     print("=" * 60)
 
-    try:
+    matcher = TopicMatcher()
 
-        matcher = TopicMatcher()
+    test_topics = [
+        "Missing Values",
+        "Data Cleaning",
+        "Duplicate Records",
+        "Data Validation"
+    ]
 
-        print(
-            "\n✅ TopicMatcher initialized successfully."
-        )
-
-        print(
-            f"📚 Total indexed sections: "
-            f"{len(matcher.sections)}"
-        )
-
-        # -----------------------------------------------------
-        # Test Data Cleaning
-        # -----------------------------------------------------
-
-        test_topic = "Data Cleaning"
-
-        results = matcher.match_topic(
-            test_topic,
-            top_k=5
-        )
+    for topic in test_topics:
 
         print(
-            f"\n🔎 Search topic: {test_topic}"
+            f"\nðŸ” Searching for: {topic}"
         )
 
-        print(
-            f"✅ Matches found: {len(results)}"
+        matches = matcher.match_topic(
+            topic,
+            top_k=2
         )
 
-        for index, result in enumerate(
-            results,
-            start=1
-        ):
+        if not matches:
 
             print(
-                f"\n{index}. "
-                f"Section {result.get('section_id')}"
+                "   âŒ No matching material."
             )
 
-            print(
-                f"   Pages: "
-                f"{result.get('pages')}"
-            )
+        else:
 
-            print(
-                f"   Relevance: "
-                f"{result.get('relevance')}%"
-            )
+            for match in matches:
 
-            preview = result.get(
-                "text",
-                ""
-            )[:200]
+                print(
+                    f"   âœ… {match.get('title')} "
+                    f"| {match.get('file')} "
+                    f"| Relevance: "
+                    f"{match.get('relevance')}%"
+                )
 
-            print(
-                f"   Preview: "
-                f"{preview}..."
-            )
-
-        print("\n" + "=" * 60)
-        print("✅ TOPIC MATCHER TEST COMPLETED")
-        print("=" * 60)
-
-    except Exception as error:
-
-        print(
-            "\n❌ Topic Matcher Test Failed:"
-        )
-
-        print(error)
+    print("\n" + "=" * 60)
+    print("âœ… TOPIC MATCHER TEST COMPLETED")
+    print("=" * 60)

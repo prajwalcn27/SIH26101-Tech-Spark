@@ -657,7 +657,7 @@
                 class="back-btn"
                 onclick="goBack()"
             >
-                ← Competency Gap
+                â† Competency Gap
             </button>
 
         </div>
@@ -726,7 +726,7 @@
                     </h2>
 
                     <p>
-                        5 questions • Select one answer for each question
+                        5 questions â€¢ Select one answer for each question
                     </p>
 
                 </div>
@@ -806,7 +806,7 @@
                     onclick="previousQuestion()"
                     disabled
                 >
-                    ← Previous
+                    â† Previous
                 </button>
 
 
@@ -816,7 +816,7 @@
                     id="nextBtn"
                     onclick="nextQuestion()"
                 >
-                    Next →
+                    Next â†’
                 </button>
 
             </div>
@@ -910,7 +910,7 @@
                         class="btn btn-primary"
                         onclick="goToResult()"
                     >
-                        View Detailed Result →
+                        View Detailed Result â†’
                     </button>
 
                 </div>
@@ -924,7 +924,7 @@
 
     <footer>
 
-        Tech Spark • SIH26101 • AI-Enabled Learning Platform
+        Tech Spark â€¢ SIH26101 â€¢ AI-Enabled Learning Platform
 
     </footer>
 
@@ -939,7 +939,7 @@
            QUIZ QUESTIONS
         ========================================== */
 
-        const questions = [
+        let questions = [
 
             {
                 question:
@@ -1028,6 +1028,7 @@
             new Array(questions.length).fill(null);
 
         let timeLeft = 300;
+        let quizLoading = false;
 
         let timerInterval = null;
 
@@ -1038,9 +1039,32 @@
            INITIALIZE
         ========================================== */
 
+        function loadLearningContext() {
+            const selectedTopic = localStorage.getItem("selectedLearningTopic") ||
+                                  localStorage.getItem("weakTopic") ||
+                                  "Data Cleaning";
+            const materialTitle = localStorage.getItem("selectedLearningMaterial") ||
+                                  "Data Cleaning Fundamentals";
+
+            const heroTitle = document.querySelector(".hero-content h1");
+            if (heroTitle) heroTitle.textContent = selectedTopic + " Quiz";
+
+            const heroDescription = document.querySelector(".hero-content p");
+            if (heroDescription) {
+                heroDescription.textContent = "Test your understanding of " + selectedTopic +
+                    " from " + materialTitle + ". Your answers will help AI identify areas that need more practice.";
+            }
+
+            console.log("Selected Material:", materialTitle);
+            console.log("Selected Topic:", selectedTopic);
+        }
+
         document.addEventListener(
             "DOMContentLoaded",
-            function () {
+            async function () {
+                loadLearningContext();
+
+                await loadAIQuestions();
 
                 loadQuestion();
 
@@ -1048,6 +1072,142 @@
 
             }
         );
+
+
+        /* ==========================================
+           LOAD AI QUESTIONS FROM FLASK
+        ========================================== */
+
+        async function loadAIQuestions() {
+
+            const weakTopic =
+                localStorage.getItem("selectedLearningTopic") ||
+                localStorage.getItem("weakTopic") ||
+                "Data Cleaning";
+
+            const materialFile =
+                localStorage.getItem("selectedLearningFile") ||
+                "";
+
+            const materialTitle =
+                localStorage.getItem("selectedLearningMaterial") ||
+                "Data Cleaning Fundamentals";
+
+            quizLoading = true;
+
+            try {
+
+                console.log("Requesting AI-generated quiz...");
+                console.log("Topic:", weakTopic);
+                console.log("Material:", materialFile || materialTitle);
+
+                const response = await fetch(
+                    "http://127.0.0.1:5000/ai/learning-cycle",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            weak_topics: [weakTopic],
+                            num_questions: 5,
+                            material_file: materialFile,
+                            material_title: materialTitle
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                console.log("AI Quiz API Response:", data);
+
+                if (data.status !== "success") {
+                    throw new Error(
+                        data.message || "AI quiz generation failed"
+                    );
+                }
+
+                const aiQuestions =
+                    data.learning_cycle &&
+                    data.learning_cycle.targeted_quiz &&
+                    data.learning_cycle.targeted_quiz.questions;
+
+                if (!Array.isArray(aiQuestions) || aiQuestions.length === 0) {
+                    throw new Error(
+                        "No AI-generated questions were returned."
+                    );
+                }
+
+                const convertedQuestions = aiQuestions
+                    .filter(function (question) {
+                        return question &&
+                            question.question &&
+                            Array.isArray(question.options) &&
+                            question.options.length >= 4;
+                    })
+                    .map(function (question) {
+
+                        const correctLetter =
+                            String(
+                                question.correct_answer || "A"
+                            ).trim().toUpperCase();
+
+                        let answerIndex =
+                            "ABCD".indexOf(correctLetter);
+
+                        if (answerIndex < 0) {
+                            answerIndex = 0;
+                        }
+
+                        return {
+                            question: question.question,
+                            options: question.options.slice(0, 4),
+                            answer: answerIndex,
+                            topic: question.topic || weakTopic
+                        };
+                    });
+
+                if (convertedQuestions.length === 0) {
+                    throw new Error(
+                        "AI questions were returned in an invalid format."
+                    );
+                }
+
+                questions = convertedQuestions;
+
+                selectedAnswers =
+                    new Array(questions.length).fill(null);
+
+                localStorage.setItem(
+                    "quizSource",
+                    "AI-generated from uploaded material"
+                );
+
+                localStorage.setItem(
+                    "quizQuestionCount",
+                    String(questions.length)
+                );
+
+                console.log(
+                    "AI-generated questions loaded:",
+                    questions.length
+                );
+
+            } catch (error) {
+
+                console.warn(
+                    "AI quiz unavailable. Using fallback question bank.",
+                    error
+                );
+
+                localStorage.setItem(
+                    "quizSource",
+                    "Fallback question bank"
+                );
+            }
+
+            quizLoading = false;
+        }
 
 
         /* ==========================================
@@ -1181,12 +1341,12 @@
             ) {
 
                 nextButton.textContent =
-                    "Submit Quiz ✓";
+                    "Submit Quiz âœ“";
 
             } else {
 
                 nextButton.textContent =
-                    "Next →";
+                    "Next â†’";
 
             }
 
@@ -1349,166 +1509,493 @@
 
         }
 
+/* ==========================================
+   SUBMIT QUIZ TO BACKEND
+========================================== */
 
-        /* ==========================================
-           SUBMIT QUIZ
-        ========================================== */
+async function submitQuiz() {
 
-        function submitQuiz() {
+if (quizSubmitted) {
+    return;
+}
 
-            if (quizSubmitted) {
+quizSubmitted = true;
 
-                return;
-
-            }
-
-
-            quizSubmitted = true;
+clearInterval(timerInterval);
 
 
-            clearInterval(
-                timerInterval
+// ======================================
+// CHECK ANSWERS
+// ======================================
+
+let correct = 0;
+
+questions.forEach(function (question, index) {
+
+    if (
+        selectedAnswers[index] ===
+        question.answer
+    ) {
+        correct++;
+    }
+
+});
+
+
+const localScore =
+    Math.round(
+        (correct / questions.length) * 100
+    );
+
+
+// ======================================
+// PREPARE DATA FOR FLASK
+// ======================================
+
+const backendQuestions =
+    questions.map(function (question, index) {
+
+        const correctLetter =
+            String.fromCharCode(
+                65 + question.answer
             );
 
+        return {
 
-            let correct = 0;
+            id: index + 1,
+
+            question:
+                question.question,
+
+            options: {
+                A: question.options[0],
+                B: question.options[1],
+                C: question.options[2],
+                D: question.options[3]
+            },
+
+            correct_answer:
+                correctLetter,
+
+            topic:
+                question.topic ||
+                localStorage.getItem(
+                    "selectedLearningTopic"
+                ) ||
+                localStorage.getItem(
+                    "weakTopic"
+                ) ||
+                "Data Cleaning"
+
+        };
+
+    });
 
 
-            questions.forEach(
-                function (question, index) {
+// ======================================
+// EMPLOYEE ANSWERS
+// ======================================
 
-                    if (
-                        selectedAnswers[index] ===
-                        question.answer
-                    ) {
-
-                        correct++;
-
-                    }
-
-                }
-            );
+const backendAnswers = {};
 
 
-            const score =
-                Math.round(
-                    (correct /
-                        questions.length) * 100
+selectedAnswers.forEach(
+    function (answer, index) {
+
+        if (answer !== null) {
+
+            backendAnswers[
+                String(index + 1)
+            ] =
+                String.fromCharCode(
+                    65 + answer
                 );
-
-
-            /* Save quiz information */
-
-            localStorage.setItem(
-                "quizScore",
-                score
-            );
-
-
-            localStorage.setItem(
-                "quizCorrectAnswers",
-                correct
-            );
-
-
-            localStorage.setItem(
-                "quizTotalQuestions",
-                questions.length
-            );
-
-
-            localStorage.setItem(
-                "quizCompleted",
-                "true"
-            );
-
-
-            localStorage.setItem(
-                "quizAnswers",
-                JSON.stringify(
-                    selectedAnswers
-                )
-            );
-
-
-            /* Show result */
-
-            document.getElementById(
-                "quizSection"
-            ).style.display =
-                "none";
-
-
-            document.getElementById(
-                "resultSection"
-            ).style.display =
-                "block";
-
-
-            document.getElementById(
-                "scoreNumber"
-            ).textContent =
-                score + "%";
-
-
-            document.getElementById(
-                "resultCircle"
-            ).style.setProperty(
-                "--score",
-                score + "%"
-            );
-
-
-            if (score >= 80) {
-
-                document.getElementById(
-                    "resultTitle"
-                ).textContent =
-                    "Excellent Performance!";
-
-                document.getElementById(
-                    "resultMessage"
-                ).textContent =
-                    "You have demonstrated strong understanding of the learning material.";
-
-            }
-
-            else if (score >= 60) {
-
-                document.getElementById(
-                    "resultTitle"
-                ).textContent =
-                    "Good Progress!";
-
-                document.getElementById(
-                    "resultMessage"
-                ).textContent =
-                    "You have a good foundation, but some topics need additional practice.";
-
-            }
-
-            else {
-
-                document.getElementById(
-                    "resultTitle"
-                ).textContent =
-                    "More Practice Recommended";
-
-                document.getElementById(
-                    "resultMessage"
-                ).textContent =
-                    "The AI recommends reviewing the priority competency topics before attempting another assessment.";
-
-            }
-
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
 
         }
 
+    }
+);
+
+
+const weakTopic =
+    localStorage.getItem("selectedLearningTopic") ||
+    localStorage.getItem("weakTopic") ||
+    "Data Cleaning";
+
+
+// ======================================
+// SEND TO FLASK
+// ======================================
+
+let backendResult = null;
+
+
+try {
+
+    console.log(
+        "Sending quiz answers to Flask..."
+    );
+
+
+    const response =
+        await fetch(
+            "http://127.0.0.1:5000/quiz/submit",
+            {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    questions:
+                        backendQuestions,
+
+                    answers:
+                        backendAnswers,
+
+                    weak_topic:
+                        weakTopic
+
+                })
+
+            }
+        );
+
+
+    backendResult =
+        await response.json();
+
+
+    console.log(
+        "Backend Quiz Response:",
+        backendResult
+    );
+
+
+    if (
+        backendResult.status !==
+        "success"
+    ) {
+
+        throw new Error(
+            backendResult.message ||
+            "Quiz submission failed"
+        );
+
+    }
+
+
+} catch (error) {
+
+    console.error(
+        "Backend submission error:",
+        error
+    );
+
+
+    // Keep the frontend result
+    // working if backend is unavailable.
+
+    backendResult = null;
+
+}
+
+
+// ======================================
+// GET FINAL RESULT
+// ======================================
+
+let finalScore =
+    localScore;
+
+let finalCorrect =
+    correct;
+
+let finalTotal =
+    questions.length;
+
+let updatedCompetency =
+    localScore;
+
+let finalWeakTopics = [
+    weakTopic
+];
+
+let mistakes = [];
+
+
+// ======================================
+// USE BACKEND RESULT
+// ======================================
+
+if (
+    backendResult &&
+    backendResult.quiz_result
+) {
+
+    const result =
+        backendResult.quiz_result;
+
+
+    finalScore =
+        Number(
+            result.score_percentage
+        ) || localScore;
+
+
+    finalCorrect =
+        Number(
+            result.correct_answers
+        ) || 0;
+
+
+    finalTotal =
+        Number(
+            result.total_questions
+        ) || questions.length;
+
+
+    const backendCompetency = Number(result.updated_competency);
+        updatedCompetency = !isNaN(backendCompetency)
+            ? backendCompetency
+            : finalScore;
+
+
+    if (
+        Array.isArray(
+            result.weak_topics
+        ) &&
+        result.weak_topics.length > 0
+    ) {
+
+        finalWeakTopics =
+            result.weak_topics;
+
+    }
+
+
+    if (
+        Array.isArray(
+            result.mistakes
+        )
+    ) {
+
+        mistakes =
+            result.mistakes;
+
+    }
+
+
+    // Save complete backend result
+
+    localStorage.setItem(
+        "quizBackendResult",
+        JSON.stringify(result)
+    );
+
+}
+
+
+// ======================================
+// SAVE QUIZ INFORMATION
+// ======================================
+
+localStorage.setItem(
+    "quizScore",
+    finalScore
+);
+
+
+localStorage.setItem(
+    "quizCorrectAnswers",
+    finalCorrect
+);
+
+
+localStorage.setItem(
+    "quizTotalQuestions",
+    finalTotal
+);
+
+
+localStorage.setItem(
+    "quizCompleted",
+    "true"
+);
+
+
+localStorage.setItem(
+    "quizAnswers",
+    JSON.stringify(
+        selectedAnswers
+    )
+);
+
+
+localStorage.setItem(
+    "updatedCompetency",
+    updatedCompetency
+);
+
+
+localStorage.setItem(
+    "weakTopic",
+    finalWeakTopics[0] || weakTopic
+);
+
+localStorage.setItem(
+    "selectedLearningTopic",
+    finalWeakTopics[0] || weakTopic
+);
+
+
+localStorage.setItem(
+    "quizMistakes",
+    JSON.stringify(
+        mistakes
+    )
+);
+
+
+// ======================================
+// SHOW RESULT
+// ======================================
+
+document.getElementById(
+    "quizSection"
+).style.display =
+    "none";
+
+
+document.getElementById(
+    "resultSection"
+).style.display =
+    "block";
+
+
+document.getElementById(
+    "scoreNumber"
+).textContent =
+    finalScore + "%";
+
+
+document.getElementById(
+    "resultCircle"
+).style.setProperty(
+    "--score",
+    finalScore + "%"
+);
+
+
+// ======================================
+// RESULT MESSAGE
+// ======================================
+
+if (finalScore >= 80) {
+
+    document.getElementById(
+        "resultTitle"
+    ).textContent =
+        "Excellent Performance!";
+
+
+    document.getElementById(
+        "resultMessage"
+    ).textContent =
+        "You have demonstrated strong understanding of the learning material.";
+
+}
+
+else if (finalScore >= 60) {
+
+    document.getElementById(
+        "resultTitle"
+    ).textContent =
+        "Good Progress!";
+
+
+    document.getElementById(
+        "resultMessage"
+    ).textContent =
+        "You have a good foundation, but some topics need additional practice.";
+
+}
+
+else {
+
+    document.getElementById(
+        "resultTitle"
+    ).textContent =
+        "More Practice Recommended";
+
+
+    document.getElementById(
+        "resultMessage"
+    ).textContent =
+        "AI identified " +
+        finalWeakTopics.join(", ") +
+        " as a priority learning area. Continue practising before moving to advanced topics.";
+
+}
+
+
+// ======================================
+// CONSOLE
+// ======================================
+
+console.log(
+    "================================="
+);
+
+console.log(
+    "      TECH SPARK QUIZ RESULT"
+);
+
+console.log(
+    "================================="
+);
+
+console.log(
+    "Score:",
+    finalScore + "%"
+);
+
+console.log(
+    "Correct:",
+    finalCorrect
+);
+
+console.log(
+    "Total:",
+    finalTotal
+);
+
+console.log(
+    "Weak Topics:",
+    finalWeakTopics
+);
+
+console.log(
+    "Updated Competency:",
+    updatedCompetency + "%"
+);
+
+console.log(
+    "Mistakes:",
+    mistakes
+);
+
+
+window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+});
+
+}
 
         /* ==========================================
            NAVIGATION

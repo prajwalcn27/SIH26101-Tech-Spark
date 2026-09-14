@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
 import os
 import sys
 
@@ -8,6 +9,7 @@ import sys
 # ==========================================
 
 app = Flask(__name__)
+CORS(app)
 
 # Maximum upload size = 10 MB
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
@@ -64,8 +66,10 @@ try:
     from complete_learning_cycle import (
         run_complete_learning_cycle
     )
+
 except ImportError as error:
     run_complete_learning_cycle = None
+
     print(
         f"Warning: AI learning cycle import failed: {error}"
     )
@@ -124,7 +128,9 @@ ALLOWED_EXTENSIONS = {
 
 
 def allowed_file(filename):
-    """Check whether the uploaded file is supported."""
+    """
+    Check whether the uploaded file is supported.
+    """
 
     if not filename:
         return False
@@ -178,11 +184,195 @@ def ai_learning_cycle():
                 )
             }), 500
 
+
+        # ======================================
+        # GET REQUEST DATA
+        # ======================================
+
+        data = request.get_json(
+            silent=True
+        ) or {}
+
+        weak_topics = data.get(
+            "weak_topics",
+            []
+        )
+
+        num_questions = data.get(
+            "num_questions",
+            5
+        )
+
+        # Optional material selection sent by the frontend.
+        # If not provided, the API automatically finds a material
+        # whose topics match the employee's weak topic.
+        material_file = str(
+            data.get("material_file", "")
+        ).strip()
+
+        material_title = str(
+            data.get("material_title", "")
+        ).strip()
+
+
+        # ======================================
+        # VALIDATE WEAK TOPICS
+        # ======================================
+
+        if not isinstance(
+            weak_topics,
+            list
+        ):
+            weak_topics = [weak_topics]
+
+        weak_topics = [
+            str(topic).strip()
+            for topic in weak_topics
+            if str(topic).strip()
+        ]
+
+
+        # ======================================
+        # VALIDATE NUMBER OF QUESTIONS
+        # ======================================
+
+        try:
+
+            num_questions = int(
+                num_questions
+            )
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            num_questions = 5
+
+
+        if num_questions <= 0:
+            num_questions = 5
+
+
+        print(
+            f"Weak Topics: {weak_topics}"
+        )
+
+        print(
+            f"Number of Questions: {num_questions}"
+        )
+
+
+        # ======================================
+        # FIND MATERIAL FOR AI QUIZ GENERATION
+        # ======================================
+
+        selected_material = None
+
+        # 1. Prefer the exact file selected by the employee.
+        if material_file and isinstance(materials, list):
+            for material in materials:
+                if str(material.get("file", "")).lower() == material_file.lower():
+                    selected_material = material
+                    break
+
+        # 2. Otherwise find a material containing the weak topic.
+        if selected_material is None and isinstance(materials, list):
+            for material in materials:
+                material_topics = material.get("topics", []) or []
+                material_topics_lower = [
+                    str(topic).strip().lower()
+                    for topic in material_topics
+                ]
+
+                if any(
+                    topic.lower() in material_topics_lower
+                    or any(
+                        topic.lower() in material_topic
+                        or material_topic in topic.lower()
+                        for material_topic in material_topics_lower
+                    )
+                    for topic in weak_topics
+                ):
+                    selected_material = material
+                    break
+
+        # 3. If there is still no exact topic match, use the first
+        # available uploaded material.
+        if selected_material is None and isinstance(materials, list) and materials:
+            selected_material = materials[0]
+
+        material_text = None
+
+        if selected_material is not None:
+            selected_file = str(
+                selected_material.get("file", "")
+            ).strip()
+
+            selected_title = str(
+                selected_material.get("title", "")
+            ).strip()
+
+            if not material_title:
+                material_title = selected_title
+
+            if not material_file:
+                material_file = selected_file
+
+            selected_base_name = os.path.splitext(
+                os.path.basename(selected_file)
+            )[0]
+
+            extracted_text_path = os.path.join(
+                DOCUMENT_PROCESSING_DIR,
+                selected_base_name + "_extracted.txt"
+            )
+
+            if os.path.exists(extracted_text_path):
+                with open(
+                    extracted_text_path,
+                    "r",
+                    encoding="utf-8"
+                ) as material_text_file:
+                    material_text = material_text_file.read()
+
+                print(
+                    f"AI source material loaded: {selected_file}"
+                )
+                print(
+                    f"AI source text length: {len(material_text)}"
+                )
+            else:
+                print(
+                    f"Extracted text not found: {extracted_text_path}"
+                )
+
+        if material_text:
+            print(
+                "AI quiz generation will use the uploaded material."
+            )
+        else:
+            print(
+                "No uploaded material text found. "
+                "Using the existing quiz question bank fallback."
+            )
+
+
+        # ======================================
+        # RUN COMPLETE AI LEARNING CYCLE
+        # ======================================
+
         print(
             "Starting complete AI learning cycle..."
         )
 
-        result = run_complete_learning_cycle()
+        result = run_complete_learning_cycle(
+            weak_topics=weak_topics,
+            num_questions=num_questions,
+            material_text=material_text,
+            material_title=material_title
+        )
+
 
         if result is None:
 
@@ -193,17 +383,24 @@ def ai_learning_cycle():
                 )
             }), 500
 
+
         print(
             "AI learning cycle completed successfully."
         )
+
 
         return jsonify({
             "status": "success",
             "message": (
                 "AI learning cycle completed successfully"
             ),
-            "learning_cycle": result
+            "learning_cycle": result,
+            "material": {
+                "file": material_file,
+                "title": material_title
+            }
         }), 200
+
 
     except Exception as error:
 
@@ -211,6 +408,7 @@ def ai_learning_cycle():
         print(
             "AI LEARNING CYCLE ERROR:"
         )
+
         print(error)
 
         return jsonify({
@@ -230,7 +428,10 @@ def ai_learning_cycle():
 )
 def upload_material():
 
-    # Check whether file exists
+    # ======================================
+    # CHECK WHETHER FILE EXISTS
+    # ======================================
+
     if "file" not in request.files:
 
         return jsonify({
@@ -238,9 +439,14 @@ def upload_material():
             "message": "No file uploaded"
         }), 400
 
+
     file = request.files["file"]
 
-    # Check filename
+
+    # ======================================
+    # CHECK FILENAME
+    # ======================================
+
     if file.filename == "":
 
         return jsonify({
@@ -248,7 +454,11 @@ def upload_material():
             "message": "No file selected"
         }), 400
 
-    # Check file format
+
+    # ======================================
+    # CHECK FILE FORMAT
+    # ======================================
+
     if not allowed_file(file.filename):
 
         return jsonify({
@@ -259,20 +469,30 @@ def upload_material():
             )
         }), 400
 
-    # Secure filename
+
+    # ======================================
+    # SECURE FILENAME
+    # ======================================
+
     filename = os.path.basename(
         file.filename
     )
 
-    # Save uploaded file
+
+    # ======================================
+    # SAVE UPLOADED FILE
+    # ======================================
+
     file_path = os.path.join(
         LEARNING_MATERIALS_DIR,
         filename
     )
 
+
     try:
 
         file.save(file_path)
+
 
         # ==================================
         # EXTRACT TEXT
@@ -284,20 +504,26 @@ def upload_material():
                 "Document extraction module is unavailable."
             )
 
+
         extracted_text = extract_text(
             file_path
         )
+
 
         # ==================================
         # CLEAN TEXT
         # ==================================
 
         if clean_text is not None:
+
             cleaned_text = clean_text(
                 extracted_text
             )
+
         else:
+
             cleaned_text = extracted_text
+
 
         # ==================================
         # EXTRACT TOPICS
@@ -313,23 +539,27 @@ def upload_material():
 
             topics = []
 
+
         # ==================================
         # SAVE EXTRACTED TEXT
         # ==================================
 
-        file_name_without_extension = os.path.splitext(
-            filename
-        )[0]
+        file_name_without_extension = (
+            os.path.splitext(filename)[0]
+        )
+
 
         text_filename = (
             file_name_without_extension
             + "_extracted.txt"
         )
 
+
         text_file_path = os.path.join(
             DOCUMENT_PROCESSING_DIR,
             text_filename
         )
+
 
         with open(
             text_file_path,
@@ -341,13 +571,18 @@ def upload_material():
                 cleaned_text
             )
 
+
         # ==================================
         # ADD MATERIAL TO RECOMMENDER
         # ==================================
 
         material_exists = False
 
-        if isinstance(materials, list):
+
+        if isinstance(
+            materials,
+            list
+        ):
 
             for material in materials:
 
@@ -362,6 +597,7 @@ def upload_material():
 
                     break
 
+
             if not material_exists:
 
                 materials.append({
@@ -375,24 +611,36 @@ def upload_material():
                         topics
                 })
 
+
         # ==================================
         # RESPONSE
         # ==================================
 
         return jsonify({
+
             "status": "success",
+
             "message": (
                 "Learning material uploaded "
                 "and processed successfully"
             ),
+
             "file": filename,
+
             "file_type": os.path.splitext(
                 filename
             )[1].lower(),
+
             "text_file": text_filename,
+
             "topics": topics,
-            "text_length": len(cleaned_text)
+
+            "text_length": len(
+                cleaned_text
+            )
+
         }), 200
+
 
     except Exception as error:
 
@@ -401,12 +649,17 @@ def upload_material():
 
             os.remove(file_path)
 
+
         return jsonify({
+
             "status": "error",
+
             "message": (
                 "Document processing failed"
             ),
+
             "error": str(error)
+
         }), 500
 
 
@@ -422,11 +675,16 @@ def get_materials():
 
     material_list = []
 
-    if isinstance(materials, list):
+
+    if isinstance(
+        materials,
+        list
+    ):
 
         for material in materials:
 
             material_list.append({
+
                 "title":
                     material.get("title"),
 
@@ -434,13 +692,25 @@ def get_materials():
                     material.get("file"),
 
                 "topics":
-                    material.get("topics", [])
+                    material.get(
+                        "topics",
+                        []
+                    )
+
             })
 
+
     return jsonify({
+
         "status": "success",
-        "count": len(material_list),
-        "materials": material_list
+
+        "count": len(
+            material_list
+        ),
+
+        "materials":
+            material_list
+
     })
 
 
@@ -474,6 +744,7 @@ def recommend():
         silent=True
     )
 
+
     if not data:
 
         return jsonify({
@@ -481,17 +752,21 @@ def recommend():
             "message": "JSON data is required"
         }), 400
 
+
     weak_topic = data.get(
         "weak_topic"
     )
 
+
     # Also support the new "topic" field
     # without breaking the old API.
+
     if not weak_topic:
 
         weak_topic = data.get(
             "topic"
         )
+
 
     if not weak_topic:
 
@@ -501,6 +776,7 @@ def recommend():
                 "weak_topic or topic is required"
             )
         }), 400
+
 
     # ==================================
     # GET BEST RECOMMENDATION
@@ -515,27 +791,43 @@ def recommend():
             )
         }), 500
 
+
     recommendation = get_recommendation(
         weak_topic,
         materials
     )
 
+
     if recommendation is None:
 
         return jsonify({
+
             "status": "success",
+
             "message": (
                 "No suitable learning "
                 "material found"
             ),
-            "weak_topic": weak_topic,
-            "recommendation": None
+
+            "weak_topic":
+                weak_topic,
+
+            "recommendation":
+                None
+
         }), 200
 
+
     return jsonify({
+
         "status": "success",
-        "weak_topic": weak_topic,
-        "recommendation": recommendation
+
+        "weak_topic":
+            weak_topic,
+
+        "recommendation":
+            recommendation
+
     }), 200
 
 
@@ -553,6 +845,7 @@ def recommend_multiple():
         silent=True
     )
 
+
     if not data:
 
         return jsonify({
@@ -560,9 +853,11 @@ def recommend_multiple():
             "message": "JSON data is required"
         }), 400
 
+
     weak_topics = data.get(
         "weak_topics"
     )
+
 
     if not isinstance(
         weak_topics,
@@ -577,6 +872,7 @@ def recommend_multiple():
             )
         }), 400
 
+
     if get_all_recommendations is None:
 
         return jsonify({
@@ -586,36 +882,380 @@ def recommend_multiple():
             )
         }), 500
 
+
     recommendations = get_all_recommendations(
         weak_topics,
         materials
     )
 
+
     return jsonify({
+
         "status": "success",
-        "weak_topics": weak_topics,
-        "recommendations": recommendations
+
+        "weak_topics":
+            weak_topics,
+
+        "recommendations":
+            recommendations
+
     }), 200
 
-
 # ==========================================
-# ERROR: FILE TOO LARGE
+# SUBMIT EMPLOYEE QUIZ
 # ==========================================
 
-@app.errorhandler(413)
-def file_too_large(error):
+@app.route(
+    "/quiz/submit",
+    methods=["POST"]
+)
+def submit_quiz():
 
-    return jsonify({
-        "status": "error",
-        "message": (
-            "File too large. "
-            "Maximum allowed size is 10 MB."
+    print()
+    print("=" * 60)
+    print("           QUIZ SUBMISSION API")
+    print("=" * 60)
+
+    try:
+
+        # ======================================
+        # GET REQUEST DATA
+        # ======================================
+
+        data = request.get_json(
+            silent=True
+        ) or {}
+
+        questions = data.get(
+            "questions",
+            []
         )
-    }), 413
+
+        answers = data.get(
+            "answers",
+            {}
+        )
+
+        weak_topic = data.get(
+            "weak_topic",
+            "Missing Values"
+        )
 
 
-# ==========================================
-# START SERVER
+        # ======================================
+        # VALIDATION
+        # ======================================
+
+        if not questions:
+
+            return jsonify({
+                "status": "error",
+                "message": "Questions are required"
+            }), 400
+
+
+        if not isinstance(answers, dict):
+
+            return jsonify({
+                "status": "error",
+                "message": "Answers must be an object"
+            }), 400
+
+
+        # ======================================
+        # CALCULATE RESULT
+        # ======================================
+
+        total_questions = len(
+            questions
+        )
+
+        correct_answers = 0
+
+        wrong_answers = 0
+
+        mistakes = []
+
+
+        for question in questions:
+
+            question_id = str(
+                question.get(
+                    "id",
+                    ""
+                )
+            )
+
+            correct_answer = str(
+                question.get(
+                    "correct_answer",
+                    ""
+                )
+            ).strip().upper()
+
+            employee_answer = str(
+                answers.get(
+                    question_id,
+                    ""
+                )
+            ).strip().upper()
+
+
+            if (
+                employee_answer
+                and
+                employee_answer == correct_answer
+            ):
+
+                correct_answers += 1
+
+            else:
+
+                wrong_answers += 1
+
+                mistakes.append({
+
+                    "question_id":
+                        question_id,
+
+                    "question":
+                        question.get(
+                            "question",
+                            ""
+                        ),
+
+                    "employee_answer":
+                        employee_answer
+                        if employee_answer
+                        else "Not Answered",
+
+                    "correct_answer":
+                        correct_answer,
+
+                    "topic":
+                        question.get(
+                            "topic",
+                            weak_topic
+                        )
+
+                })
+
+
+        # ======================================
+        # SCORE
+        # ======================================
+
+        if total_questions > 0:
+
+            score_percentage = round(
+                (
+                    correct_answers
+                    /
+                    total_questions
+                ) * 100,
+                2
+            )
+
+        else:
+
+            score_percentage = 0
+
+
+        # ======================================
+        # DETERMINE WEAK TOPICS
+        # ======================================
+
+        weak_topics = []
+
+        topic_stats = {}
+
+
+        for question in questions:
+
+            topic = question.get(
+                "topic",
+                weak_topic
+            )
+
+            if topic not in topic_stats:
+
+                topic_stats[topic] = {
+                    "total": 0,
+                    "correct": 0
+                }
+
+
+            topic_stats[topic]["total"] += 1
+
+
+            question_id = str(
+                question.get(
+                    "id",
+                    ""
+                )
+            )
+
+            employee_answer = str(
+                answers.get(
+                    question_id,
+                    ""
+                )
+            ).strip().upper()
+
+            correct_answer = str(
+                question.get(
+                    "correct_answer",
+                    ""
+                )
+            ).strip().upper()
+
+
+            if (
+                employee_answer
+                and
+                employee_answer == correct_answer
+            ):
+
+                topic_stats[topic]["correct"] += 1
+
+
+        for topic, stats in topic_stats.items():
+
+            topic_score = (
+                stats["correct"]
+                /
+                stats["total"]
+            ) * 100
+
+
+            if topic_score < 50:
+
+                weak_topics.append(
+                    topic
+                )
+
+
+        # If no topic is below 50%,
+        # use the selected weak topic.
+
+        if not weak_topics:
+
+            weak_topics = [
+                weak_topic
+            ]
+
+
+        # ======================================
+        # UPDATED COMPETENCY
+        # ======================================
+
+        updated_competency = round(
+            score_percentage,
+            2
+        )
+
+
+        # ======================================
+        # RESPONSE
+        # ======================================
+
+        result = {
+
+            "score_percentage":
+                score_percentage,
+
+            "correct_answers":
+                correct_answers,
+
+            "wrong_answers":
+                wrong_answers,
+
+            "total_questions":
+                total_questions,
+
+            "weak_topics":
+                weak_topics,
+
+            "mistakes":
+                mistakes,
+
+            "topic_statistics":
+                topic_stats,
+
+            "updated_competency":
+                updated_competency
+
+        }
+
+
+        print(
+            f"Total Questions: "
+            f"{total_questions}"
+        )
+
+        print(
+            f"Correct Answers: "
+            f"{correct_answers}"
+        )
+
+        print(
+            f"Wrong Answers: "
+            f"{wrong_answers}"
+        )
+
+        print(
+            f"Score: "
+            f"{score_percentage}%"
+        )
+
+        print(
+            f"Weak Topics: "
+            f"{weak_topics}"
+        )
+
+        print(
+            "Quiz submission processed successfully."
+        )
+
+
+        return jsonify({
+
+            "status":
+                "success",
+
+            "message":
+                "Quiz submitted successfully",
+
+            "quiz_result":
+                result
+
+        }), 200
+
+
+    except Exception as error:
+
+        print()
+        print(
+            "QUIZ SUBMISSION ERROR:"
+        )
+
+        print(error)
+
+
+        return jsonify({
+
+            "status":
+                "error",
+
+            "message":
+                "Quiz submission failed",
+
+            "error":
+                str(error)
+
+        }), 500
+        # ==========================================
+# START FLASK SERVER
 # ==========================================
 
 if __name__ == "__main__":
@@ -624,34 +1264,21 @@ if __name__ == "__main__":
     print("===================================")
     print("       TECH SPARK API")
     print("===================================")
-    print()
-
-    print(
-        "Supported formats:"
-    )
-
-    print(
-        "PDF | PPTX | DOCX"
-    )
 
     print()
-
-    print(
-        "AI endpoint:"
-    )
-
-    print(
-        "POST /ai/learning-cycle"
-    )
+    print("Supported formats:")
+    print("PDF | PPTX | DOCX")
 
     print()
-
-    print(
-        "Server running on "
-        "http://127.0.0.1:5000"
-    )
+    print("AI endpoint:")
+    print("POST /ai/learning-cycle")
 
     print()
+    print("Quiz endpoint:")
+    print("POST /quiz/submit")
+
+    print()
+    print("Server running on http://127.0.0.1:5000")
 
     app.run(
         host="127.0.0.1",

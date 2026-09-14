@@ -1,12 +1,11 @@
 import os
-import pymupdf
+import fitz
 from pptx import Presentation
 from docx import Document
 
 
 def extract_text_from_pdf(file_path):
-    """Extract text from a PDF file."""
-    document = pymupdf.open(file_path)
+    document = fitz.open(file_path)
 
     text = ""
 
