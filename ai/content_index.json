@@ -1,0 +1,15 @@
+{
+    "materials": [
+      {
+        "file": "Data_Cleaning.pdf",
+        "title": "Data Cleaning",
+        "topics": [
+          "Missing Values",
+          "Duplicate Records",
+          "Data Formatting",
+          "Data Validation",
+          "Data Cleaning"
+        ]
+      }
+    ]
+  }
