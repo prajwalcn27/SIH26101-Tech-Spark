@@ -958,6 +958,8 @@
         </a>
 
 
+        <!-- Roles & Competencies opens the dashboard section.
+             Use the Add Role button inside the section for full role management. -->
         <a href="#roles"
             class="nav-link"
             data-section="roles">
@@ -1009,9 +1011,9 @@
         </a>
 
 
-        <a href="#quizzes"
+        <a href="quiz-management.html"
             class="nav-link"
-            data-section="quizzes">
+            style="text-decoration:none;">
 
             <span class="nav-icon">
                 <i class="fa-solid fa-brain"></i>
@@ -1031,9 +1033,9 @@
         </div>
 
 
-        <a href="#analytics"
+        <a href="/pages/admin/competency-analytics.html"
             class="nav-link"
-            data-section="analytics">
+            style="text-decoration:none;">
 
             <span class="nav-icon">
                 <i class="fa-solid fa-chart-line"></i>
@@ -1372,6 +1374,13 @@
                         </p>
 
                     </div>
+
+                    <a href="role-management.html"
+                       class="btn btn-primary"
+                       style="text-decoration:none; white-space:nowrap;">
+                        <i class="fa-solid fa-plus"></i>
+                        Add Role
+                    </a>
 
                 </div>
 
@@ -1718,9 +1727,16 @@
 
                     <i class="fa-solid fa-brain"></i>
 
-                    <p>
-                        Quiz review interface.
+                    <p style="margin-bottom:15px;">
+                        Manage and review AI-generated competency quizzes.
                     </p>
+
+                    <a href="quiz-management.html"
+                       class="btn btn-primary"
+                       style="display:inline-block; text-decoration:none;">
+                        <i class="fa-solid fa-list-check"></i>
+                        Open Quiz Management
+                    </a>
 
                 </div>
 
@@ -1780,31 +1796,37 @@
             <div class="content-card">
 
                 <div class="section-header">
-
                     <div>
-
-                        <h2>
-                            Recent Activity
-                        </h2>
-
-                        <p>
-                            Recent platform activities.
-                        </p>
-
+                        <h2>Recent Activity</h2>
+                        <p>Monitor important learning, material and competency events.</p>
                     </div>
 
+                    <button type="button"
+                        class="btn btn-secondary"
+                        onclick="loadActivity()">
+                        <i class="fa-solid fa-rotate"></i>
+                        Refresh
+                    </button>
                 </div>
 
+                <div class="activity-summary">
+                    <div class="activity-summary-card">
+                        <strong id="activityTotal">0</strong>
+                        <span>Total Activities</span>
+                    </div>
 
-                <div class="empty">
+                    <div class="activity-summary-card">
+                        <strong id="activityLearning">0</strong>
+                        <span>Learning Activities</span>
+                    </div>
 
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-
-                    <p>
-                        Recent activities will appear here.
-                    </p>
-
+                    <div class="activity-summary-card">
+                        <strong id="activityMaterials">0</strong>
+                        <span>Material Activities</span>
+                    </div>
                 </div>
+
+                <div id="activityList" class="activity-list"></div>
 
             </div>
 
@@ -1901,6 +1923,12 @@
             if (sectionId === "materials") {
 
                 loadMaterials();
+
+            }
+
+            if (sectionId === "activity") {
+
+                loadActivity();
 
             }
 
@@ -2777,6 +2805,115 @@
 
 
         /* =========================================================
+           ACTIVITY
+        ========================================================== */
+
+        function activityRelativeTime(dateValue) {
+            const date = new Date(dateValue);
+            if (Number.isNaN(date.getTime())) return "Recently";
+
+            const diff = Math.max(0, Date.now() - date.getTime());
+            const minutes = Math.floor(diff / 60000);
+
+            if (minutes < 1) return "Just now";
+            if (minutes < 60) return minutes + " min ago";
+
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return hours + (hours === 1 ? " hour ago" : " hours ago");
+
+            const days = Math.floor(hours / 24);
+            return days + (days === 1 ? " day ago" : " days ago");
+        }
+
+        function loadActivity() {
+            const list = document.getElementById("activityList");
+            if (!list) return;
+
+            const now = Date.now();
+
+            const activities = [
+                {
+                    icon: "fa-cloud-arrow-up",
+                    title: "Learning material uploaded",
+                    description: "Data Cleaning learning material was added for AI-powered learning.",
+                    tag: "MATERIAL",
+                    time: new Date(now - 8 * 60000).toISOString()
+                },
+                {
+                    icon: "fa-shield-halved",
+                    title: "Material verification completed",
+                    description: "An approved learning resource is available for employee training.",
+                    tag: "VERIFICATION",
+                    time: new Date(now - 32 * 60000).toISOString()
+                },
+                {
+                    icon: "fa-brain",
+                    title: "AI quiz generated",
+                    description: "A competency-focused quiz was generated from approved learning content.",
+                    tag: "AI QUIZ",
+                    time: new Date(now - 75 * 60000).toISOString()
+                },
+                {
+                    icon: "fa-user-graduate",
+                    title: "Employee completed assessment",
+                    description: "An employee competency assessment was submitted for analysis.",
+                    tag: "ASSESSMENT",
+                    time: new Date(now - 3 * 60 * 60000).toISOString()
+                },
+                {
+                    icon: "fa-chart-line",
+                    title: "Competency profile updated",
+                    description: "Learning results were used to update the employee competency profile.",
+                    tag: "COMPETENCY",
+                    time: new Date(now - 6 * 60 * 60000).toISOString()
+                }
+            ];
+
+            const localMaterials = JSON.parse(
+                localStorage.getItem("techSparkMaterials") || "[]"
+            );
+
+            if (Array.isArray(localMaterials) && localMaterials.length) {
+                activities.unshift({
+                    icon: "fa-file-lines",
+                    title: "Uploaded materials available",
+                    description: localMaterials.length +
+                        " material record(s) are available in the platform.",
+                    tag: "SYSTEM",
+                    time: new Date(now - 2 * 60000).toISOString()
+                });
+            }
+
+            document.getElementById("activityTotal").textContent = activities.length;
+            document.getElementById("activityLearning").textContent =
+                activities.filter(a =>
+                    ["AI QUIZ", "ASSESSMENT", "COMPETENCY"].includes(a.tag)
+                ).length;
+            document.getElementById("activityMaterials").textContent =
+                activities.filter(a =>
+                    ["MATERIAL", "VERIFICATION", "SYSTEM"].includes(a.tag)
+                ).length;
+
+            list.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fa-solid ${activity.icon}"></i>
+                    </div>
+
+                    <div>
+                        <h4>${escapeHtml(activity.title)}</h4>
+                        <p>${escapeHtml(activity.description)}</p>
+                        <span class="activity-tag">${escapeHtml(activity.tag)}</span>
+                    </div>
+
+                    <div class="activity-time">
+                        ${escapeHtml(activityRelativeTime(activity.time))}
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        /* =========================================================
            INITIALIZE
         ========================================================== */
 
@@ -2790,6 +2927,10 @@
                 // directly on the Learning Materials section.
                 if (window.location.hash === "#materials") {
                     loadMaterials();
+                }
+
+                if (window.location.hash === "#activity") {
+                    loadActivity();
                 }
 
             }
