@@ -4694,3 +4694,41 @@ a {
     }
 
 }
+
+/* =========================================================
+   PLATFORM INTERACTION POLISH
+========================================================= */
+
+body.admin-dashboard {
+    font-family: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+.stat-card,
+.content-card,
+.material-card,
+.activity-summary-card {
+    transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+
+.stat-card:hover,
+.material-card:hover,
+.activity-summary-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(57, 169, 255, .36);
+    box-shadow: 0 20px 42px rgba(0, 0, 0, .22);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid rgba(114, 199, 255, .48);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .stat-card:hover,
+    .material-card:hover,
+    .activity-summary-card:hover { transform: none; }
+}

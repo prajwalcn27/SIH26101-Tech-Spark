@@ -14,9 +14,14 @@
     <link rel="stylesheet" href="../css/login.css">
 </head>
 
-<body class="login-page">
+<body class="login-page" data-role-mode="employee">
 
     <main class="login-container">
+
+        <a class="login-back-link" href="../index.html">
+            <span aria-hidden="true">&#8592;</span>
+            Back to Tech Spark
+        </a>
 
         <!-- =========================================
              LEFT SIDE - INFORMATION
@@ -58,6 +63,27 @@
 
 
                 <!-- Highlights -->
+
+                <div class="login-network" aria-hidden="true">
+                    <div class="network-label"><span class="network-pulse"></span><span id="networkLabel">LEARNING NETWORK</span></div>
+                    <svg viewBox="0 0 520 190" role="presentation">
+                        <defs>
+                            <linearGradient id="networkGradient" x1="0" x2="1">
+                                <stop offset="0" stop-color="#3bb8ca" />
+                                <stop offset="1" stop-color="#b9e36b" />
+                            </linearGradient>
+                        </defs>
+                        <path class="network-line line-one" d="M56 95 C142 28 190 32 260 95 S380 162 464 95" />
+                        <path class="network-line line-two" d="M56 95 C142 162 190 158 260 95 S380 28 464 95" />
+                        <path class="network-line line-three" d="M56 95 H464" />
+                        <circle class="network-node node-one" cx="56" cy="95" r="13" />
+                        <circle class="network-node node-two" cx="180" cy="53" r="10" />
+                        <circle class="network-node node-three" cx="260" cy="95" r="18" />
+                        <circle class="network-node node-four" cx="340" cy="137" r="10" />
+                        <circle class="network-node node-five" cx="464" cy="95" r="13" />
+                    </svg>
+                    <div class="network-caption" id="networkCaption">Assess · analyse · learn · improve</div>
+                </div>
                 <div class="login-highlights">
 
                     <!-- Highlight 01 -->
@@ -161,7 +187,7 @@
                         Sign in to your account
                     </h2>
 
-                    <p>
+                    <p id="loginModeDescription">
                         Continue your personalized learning journey.
                     </p>
 
@@ -279,14 +305,24 @@
                         </div>
 
 
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="Enter your password"
-                            autocomplete="current-password"
-                            required
-                        >
+                        <div class="password-input-wrap">
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                id="passwordToggle"
+                                aria-label="Show password"
+                                aria-pressed="false">
+                                <span aria-hidden="true">&#9673;</span>
+                            </button>
+                        </div>
 
                     </div>
 
@@ -316,14 +352,15 @@
                     <!-- Login Button -->
                     <button
                         type="submit"
-                        class="login-button">
+                        class="login-button"
+                        id="loginSubmitButton">
 
                         <span>
                             Sign in
                         </span>
 
-                        <span class="button-arrow">
-                            →
+                        <span class="button-arrow" aria-hidden="true">
+                            &#8594;
                         </span>
 
                     </button>

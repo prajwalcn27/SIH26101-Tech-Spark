@@ -4,6 +4,8 @@
 
    document.addEventListener("DOMContentLoaded", () => {
 
+    document.body.classList.add("page-ready");
+
     /* =====================================================
        NAVBAR SCROLL EFFECT
        ===================================================== */
@@ -110,7 +112,7 @@
        ===================================================== */
 
     const animatedElements = document.querySelectorAll(
-        ".process-step, .difference-card, .assistant-card, .impact-item"
+        ".process-item, .process-step, .difference-card, .assistant-card, .impact-item, .hero-feature"
     );
 
     const revealObserver = new IntersectionObserver(
@@ -134,7 +136,8 @@
         }
     );
 
-    animatedElements.forEach(element => {
+    animatedElements.forEach((element, index) => {
+        element.style.transitionDelay = `${Math.min(index * 55, 330)}ms`;
         revealObserver.observe(element);
     });
 

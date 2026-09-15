@@ -30,7 +30,8 @@ def main():
         port=int(os.getenv("MYSQL_PORT", "3308")),
         user=os.getenv("MYSQL_USER", "root"),
         password=os.getenv("MYSQL_PASSWORD", ""),
-        database=os.getenv("MYSQL_DATABASE", "sih26101_db")
+        database=os.getenv("MYSQL_DATABASE", "sih26101_db"),
+        ssl_disabled=True
     )
     cursor = db.cursor()
     try:

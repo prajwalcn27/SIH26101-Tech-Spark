@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, session, redirect
+from flask import Flask, request, jsonify, send_from_directory, session, redirect, g
 from flask_cors import CORS
 import mysql.connector
 from werkzeug.security import check_password_hash
@@ -85,13 +85,40 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # DATABASE CONNECTION
 # =========================================================
 
-db = mysql.connector.connect(
-    host=os.getenv("MYSQL_HOST", "127.0.0.1"),
-    port=int(os.getenv("MYSQL_PORT", "3308")),
-    user=os.getenv("MYSQL_USER", "root"),
-    password=os.getenv("MYSQL_PASSWORD", ""),
-    database=os.getenv("MYSQL_DATABASE", "sih26101_db")
-)
+def get_db_connection():
+    return mysql.connector.connect(
+        host=os.getenv("MYSQL_HOST", "127.0.0.1"),
+        port=int(os.getenv("MYSQL_PORT", "3308")),
+        user=os.getenv("MYSQL_USER", "root"),
+        password=os.getenv("MYSQL_PASSWORD", ""),
+        database=os.getenv("MYSQL_DATABASE", "sih26101_db"),
+        ssl_disabled=True,
+        autocommit=False
+    )
+
+
+class DBProxy:
+    def __getattr__(self, name):
+        conn = g.get("db")
+        if conn is None:
+            conn = get_db_connection()
+            g.db = conn
+        return getattr(conn, name)
+
+    def close(self):
+        conn = g.pop("db", None)
+        if conn is not None and conn.is_connected():
+            conn.close()
+
+
+app.teardown_appcontext
+def close_db_connection(_error):
+    db = g.pop("db", None)
+    if db is not None and db.is_connected():
+        db.close()
+
+
+db = DBProxy()
 
 
 # =========================================================
@@ -106,7 +133,7 @@ def allowed_file(filename):
     )
 
 
-PUBLIC_API_PATHS = {"/api/health", "/api/project", "/api/login"}
+PUBLIC_API_PATHS = {"/api/health", "/api/project", "/api/login", "/api/session"}
 ADMIN_API_PATHS = {
     "/api/users",
     "/api/learning-materials/upload"
@@ -122,11 +149,11 @@ def require_authenticated_session():
         if not session.get("user"):
             return jsonify({"success": False, "message": "Authentication required"}), 401
 
-    if (
-        path in ADMIN_API_PATHS
-        or path == "/upload-material"
-        or path.startswith("/api/quizzes")
-    ) and session.get("user", {}).get("role") != "admin":
+    if path in ADMIN_API_PATHS or path == "/upload-material":
+        if session.get("user", {}).get("role") != "admin":
+            return jsonify({"success": False, "message": "Administrator access required"}), 403
+
+    if request.endpoint in {"create_quiz", "add_quiz_question"} and session.get("user", {}).get("role") != "admin":
         return jsonify({"success": False, "message": "Administrator access required"}), 403
 
     if path in {
@@ -196,6 +223,27 @@ def project_info():
         "project": "AI-enabled Skill Intelligence and Learning Platform",
         "team": "Tech Spark",
         "problem_statement": "SIH26101"
+    })
+
+
+@app.route("/api/session", methods=["GET"])
+def session_status():
+    user = session.get("user")
+    if not user:
+        return jsonify({
+            "success": False,
+            "message": "No active session",
+            "user": None
+        }), 401
+
+    return jsonify({
+        "success": True,
+        "user": {
+            "id": user.get("id"),
+            "name": user.get("name"),
+            "role": user.get("role"),
+            "email": user.get("email") if user.get("email") else None
+        }
     })
 
 
@@ -304,7 +352,8 @@ def login():
         session["user"] = {
             "id": user["id"],
             "role": user.get("role"),
-            "name": user.get("name")
+            "name": user.get("name"),
+            "email": user.get("email")
         }
 
         return jsonify({

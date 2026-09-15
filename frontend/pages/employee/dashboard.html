@@ -187,21 +187,21 @@
         <div class="sidebar-profile">
 
             <div class="profile-avatar">
-                AS
+                --
             </div>
 
             <div class="profile-details">
 
                 <strong>
-                    Amit Sharma
+                    Loading profile...
                 </strong>
 
                 <span>
-                    Employee ID: EMP1024
+                    Authenticated employee
                 </span>
 
                 <span>
-                    Data & Analytics Division
+                    Loading role details...
                 </span>
 
             </div>
@@ -286,7 +286,7 @@
                     </p>
 
                     <h1>
-                        Amit Sharma
+                        Loading profile...
                         <span>ðŸ‘‹</span>
                     </h1>
 
@@ -371,7 +371,7 @@
                     <div>
 
                         <strong>
-                            68%
+                            --
                         </strong>
 
                     </div>
@@ -398,7 +398,7 @@
                     <div class="improvement">
 
                         <strong>
-                            â†‘ +12%
+                            --
                         </strong>
 
                         <span>
@@ -436,11 +436,11 @@
                     </p>
 
                     <h2>
-                        Data Cleaning
+                        Loading priority gap...
                     </h2>
 
                     <div class="gap-score">
-                        42%
+                        --
                     </div>
 
                     <span class="attention">
@@ -449,7 +449,7 @@
 
                     <div class="gap-progress">
 
-                        <div style="width:42%"></div>
+                        <div style="width:0%"></div>
 
                     </div>
 
@@ -506,13 +506,11 @@
                     </p>
 
                     <h2>
-                        You learn best with
-                        hands-on datasets!
+                        Loading your AI insight...
                     </h2>
 
                     <p>
-                        Try practical exercises with real
-                        government data for faster improvement.
+                        Your personalized insight will appear here when your competency profile is ready.
                     </p>
 
                 </div>
@@ -1019,7 +1017,7 @@
                              </strong>
  
                              <b>
-                                 42%
+                                 --
                              </b>
  
                          </div>
@@ -1027,7 +1025,7 @@
  
                          <div class="skill-bar">
  
-                             <div style="width:42%"></div>
+                             <div style="width:0%"></div>
  
                          </div>
  
@@ -1079,7 +1077,7 @@
  
  
                      <strong class="topic-score">
-                         42%
+                         --
                      </strong>
  
  
@@ -2719,6 +2717,102 @@ console.log(
         // INITIALIZE ALL DYNAMIC DASHBOARD FEATURES
         // =========================================================
 
+        function setText(selector, value) {
+            const element = document.querySelector(selector);
+            if (element && value !== undefined && value !== null) {
+                element.textContent = value;
+            }
+        }
+
+        function scoreLabel(score) {
+            if (score >= 75) return "Strong";
+            if (score >= 60) return "Good";
+            return "Needs Improvement";
+        }
+
+        async function loadEmployeeIntelligence() {
+            try {
+                const sessionResponse = await fetch("/api/session");
+                const sessionPayload = await sessionResponse.json();
+                const user = sessionPayload.user;
+
+                if (!sessionResponse.ok || !user || !user.id) {
+                    return;
+                }
+
+                setText(".welcome-area h1", `${user.name || "Employee"} 👋`);
+                setText(".sidebar-profile .profile-details strong", user.name || "Employee");
+                setText(".header-avatar", (user.name || "E").slice(0, 2).toUpperCase());
+                setText(".sidebar-profile .profile-avatar", (user.name || "E").slice(0, 2).toUpperCase());
+
+                const [competencyResponse, gapResponse, recommendationResponse] = await Promise.all([
+                    fetch(`/api/employees/${user.id}/competencies`),
+                    fetch(`/api/employees/${user.id}/gaps`),
+                    fetch(`/api/employees/${user.id}/recommendations`)
+                ]);
+
+                const competencyPayload = await competencyResponse.json();
+                const gapPayload = await gapResponse.json();
+                const recommendationPayload = await recommendationResponse.json();
+                const competencies = Array.isArray(competencyPayload.competencies)
+                    ? competencyPayload.competencies
+                    : [];
+                const gaps = Array.isArray(gapPayload.gaps) ? gapPayload.gaps : [];
+                const recommendations = Array.isArray(recommendationPayload.recommendations)
+                    ? recommendationPayload.recommendations
+                    : [];
+
+                if (competencies.length) {
+                    const average = competencies.reduce((total, item) => total + Number(item.score || 0), 0) / competencies.length;
+                    const healthScore = document.querySelector(".health-ring strong");
+                    if (healthScore) {
+                        healthScore.textContent = `${Math.round(average)}%`;
+                        const started = performance.now();
+                        function animateHealth(now) {
+                            const progress = Math.min(1, (now - started) / 700);
+                            healthScore.textContent = `${Math.round(average * (1 - Math.pow(1 - progress, 3)))}%`;
+                            if (progress < 1) requestAnimationFrame(animateHealth);
+                        }
+                        requestAnimationFrame(animateHealth);
+                    }
+                    setText(".health-card .card-description", average >= 70 ? "Your competency profile is progressing well." : "Focus on your priority gap to keep improving.");
+
+                    document.querySelectorAll(".competency-card").forEach(function (card) {
+                        const title = card.querySelector(".competency-header strong");
+                        const score = card.querySelector(".competency-header b");
+                        const bar = card.querySelector(".skill-bar div");
+                        const status = card.querySelector(".competency-info > span");
+                        const item = competencies.find(entry => entry.competency_name.toLowerCase() === title?.textContent.trim().toLowerCase());
+
+                        if (item && score && bar && status) {
+                            const currentScore = Number(item.score || 0);
+                            score.textContent = `${Math.round(currentScore)}%`;
+                            bar.style.width = `${Math.max(0, Math.min(100, currentScore))}%`;
+                            status.textContent = scoreLabel(currentScore);
+                        }
+                    });
+                }
+
+                if (gaps.length) {
+                    const priorityGap = gaps.reduce((highest, item) => Number(item.gap_score || 0) > Number(highest.gap_score || 0) ? item : highest, gaps[0]);
+                    setText(".gap-card .gap-content h2", priorityGap.competency_name);
+                    setText(".gap-card .gap-score", `${Math.round(Number(priorityGap.current_score || 0))}%`);
+                    setText(".gap-card .attention", priorityGap.gap_level || "Needs Attention");
+                    const gapBar = document.querySelector(".gap-card .gap-progress div");
+                    if (gapBar) gapBar.style.width = `${Math.max(0, Math.min(100, Number(priorityGap.current_score || 0)))}%`;
+                }
+
+                const recommendation = recommendations[0];
+                if (recommendation) {
+                    setText(".recommendation-card h2", recommendation.reason || "Recommended learning path");
+                    setText(".recommended-material strong", recommendation.material_title || "Learning material");
+                    setText(".recommended-material span", recommendation.competency_name || "AI-selected for your competency profile");
+                }
+            } catch (error) {
+                console.warn("Employee intelligence could not be loaded:", error);
+            }
+        }
+
         document.addEventListener(
             "DOMContentLoaded",
             async function() {
@@ -2730,6 +2824,8 @@ console.log(
                 enableMaterialSearch();
 
                 await loadEmployeeMaterials();
+
+                await loadEmployeeIntelligence();
 
             }
         );

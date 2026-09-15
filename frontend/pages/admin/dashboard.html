@@ -952,7 +952,7 @@
             Employees
 
             <span class="badge">
-                248
+                --
             </span>
 
         </a>
@@ -1125,7 +1125,7 @@
                     </div>
 
                     <h3>
-                        248
+                        --
                     </h3>
 
                     <p>
@@ -1142,7 +1142,7 @@
                     </div>
 
                     <h3>
-                        12
+                        --
                     </h3>
 
                     <p>
@@ -1159,7 +1159,7 @@
                     </div>
 
                     <h3>
-                        86
+                        --
                     </h3>
 
                     <p>
@@ -1176,7 +1176,7 @@
                     </div>
 
                     <h3>
-                        74%
+                        --
                     </h3>
 
                     <p>
@@ -1280,65 +1280,7 @@
                         <tbody>
 
                             <tr>
-
-                                <td>
-                                    Employee 001
-                                </td>
-
-                                <td>
-                                    Statistical Officer
-                                </td>
-
-                                <td>
-                                    82%
-                                </td>
-
-                                <td>
-                                    Active
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    Employee 002
-                                </td>
-
-                                <td>
-                                    Data Analyst
-                                </td>
-
-                                <td>
-                                    74%
-                                </td>
-
-                                <td>
-                                    Active
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    Employee 003
-                                </td>
-
-                                <td>
-                                    Data Officer
-                                </td>
-
-                                <td>
-                                    68%
-                                </td>
-
-                                <td>
-                                    Needs Training
-                                </td>
-
+                                <td colspan="4">Loading employees...</td>
                             </tr>
 
                         </tbody>
@@ -1850,6 +1792,7 @@
          JAVASCRIPT
     ========================================================== -->
 
+    <script src="../../js/auth.js"></script>
     <script>
 
         /* =========================================================
@@ -1858,6 +1801,67 @@
 
         const API_BASE_URL =
             window.API_BASE_URL || "http://127.0.0.1:5000";
+
+        async function loadAdminOverview() {
+            const [usersResponse, materialsResponse, sessionResponse] = await Promise.all([
+                fetch(`${API_BASE_URL}/api/users`),
+                fetch(`${API_BASE_URL}/api/learning-materials`),
+                fetch("/api/session")
+            ]);
+
+            const usersPayload = await usersResponse.json();
+            const materialsPayload = await materialsResponse.json();
+            const sessionPayload = await sessionResponse.json();
+            const users = Array.isArray(usersPayload.users) ? usersPayload.users : [];
+            const materials = Array.isArray(materialsPayload.materials) ? materialsPayload.materials : [];
+            const admin = sessionPayload.user;
+
+            if (admin) {
+                const profileName = document.querySelector(".profile strong");
+                const profileAvatar = document.querySelector(".profile .avatar");
+                if (profileName) profileName.textContent = admin.name || "Administrator";
+                if (profileAvatar) profileAvatar.textContent = (admin.name || "A").slice(0, 1).toUpperCase();
+            }
+
+            const employeeCount = users.filter(user => user.role === "employee").length;
+            const statCards = document.querySelectorAll("#overview .stat-card h3");
+            function animateMetric(element, value) {
+                if (!element) return;
+                element.textContent = String(value);
+                const duration = 520;
+                const started = performance.now();
+                function frame(now) {
+                    const progress = Math.min(1, (now - started) / duration);
+                    element.textContent = String(Math.round(value * (1 - Math.pow(1 - progress, 3))));
+                    if (progress < 1) requestAnimationFrame(frame);
+                }
+                requestAnimationFrame(frame);
+            }
+            animateMetric(statCards[0], employeeCount);
+            animateMetric(statCards[1], materials.length);
+            if (statCards[2]) statCards[2].textContent = "—";
+            if (statCards[3]) statCards[3].textContent = "—";
+
+            const employeeBadge = document.querySelector('.nav-link[data-section="employees"] .badge');
+            const materialBadge = document.querySelector('.nav-link[data-section="materials"] .badge');
+            if (employeeBadge) employeeBadge.textContent = String(employeeCount);
+            if (materialBadge) materialBadge.textContent = String(materials.length);
+
+            const employeeRows = document.querySelector("#employees table tbody");
+            if (employeeRows) {
+                const employees = users.filter(user => user.role === "employee");
+                employeeRows.innerHTML = employees.length
+                    ? employees.map(user => `
+                        <tr>
+                            <td>${escapeHtml(user.name || "Employee")}</td>
+                            <td>Employee</td>
+                            <td>—</td>
+                            <td>Active</td>
+                        </tr>
+                    `).join("")
+                    : `<tr><td colspan="4">No employees available yet.</td></tr>`;
+            }
+        }
 
 
         /* =========================================================
@@ -2933,6 +2937,14 @@
         document.addEventListener(
             "DOMContentLoaded",
             function () {
+
+                if (typeof requireLogin === "function") {
+                    requireLogin("admin");
+                }
+
+                loadAdminOverview().catch(function (error) {
+                    console.warn("Admin overview could not be loaded:", error);
+                });
 
                 loadInitialSection();
 

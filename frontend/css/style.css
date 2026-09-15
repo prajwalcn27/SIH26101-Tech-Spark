@@ -31,6 +31,48 @@ body {
     overflow-x: hidden;
 }
 
+body:not(.page-ready) .hero-left,
+body:not(.page-ready) .hero-right {
+    opacity: 0;
+}
+
+.hero-left,
+.hero-right {
+    transition: opacity .55s ease, transform .55s ease;
+}
+
+.hero-left { transform: translateY(10px); }
+.hero-right { transform: translateY(10px) scale(.985); }
+body.page-ready .hero-left,
+body.page-ready .hero-right { opacity: 1; transform: none; }
+
+.process-item,
+.process-step,
+.difference-card,
+.assistant-card,
+.impact-item,
+.hero-feature {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity .45s ease, transform .45s ease;
+}
+
+.revealed {
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-left,
+    .hero-right,
+    .process-item,
+    .process-step,
+    .difference-card,
+    .assistant-card,
+    .impact-item,
+    .hero-feature { opacity: 1; transform: none; transition: none; }
+}
+
 
 a {
     text-decoration: none;
@@ -1190,6 +1232,8 @@ a {
     backdrop-filter: blur(10px);
 
     transition: transform .25s ease;
+    animation: previewEnter .7s .18s ease both;
+    overflow: hidden;
 }
 
 
@@ -1233,6 +1277,7 @@ a {
 
     box-shadow:
         0 0 10px #42e99c;
+    animation: livePulse 1.8s ease-in-out infinite;
 }
 
 
@@ -1264,7 +1309,12 @@ a {
 
     box-shadow:
         0 5px 15px rgba(0, 0, 0, .035);
+    animation: cardLift .5s ease both;
 }
+
+.dash-card:nth-child(2) { animation-delay: .12s; }
+.dash-card:nth-child(3) { animation-delay: .22s; }
+.dash-card:nth-child(4) { animation-delay: .32s; }
 
 
 .dash-heading {
@@ -1301,6 +1351,7 @@ a {
             #177d54 0 68%,
             #dfece5 68% 100%
         );
+    animation: ringReveal .8s .45s ease both;
 }
 
 
@@ -1382,6 +1433,8 @@ a {
     border-radius: inherit;
 
     background: #f18436;
+    transform-origin: left center;
+    animation: barReveal .9s .5s ease both;
 }
 
 
@@ -1889,6 +1942,46 @@ a {
     color: #89948e;
 
     font-size: 22px;
+    position: relative;
+    color: #8b9892;
+}
+
+.process-arrow::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #44c996;
+    box-shadow: 0 0 0 4px rgba(68, 201, 150, .08);
+    animation: loopDot 2.3s ease-in-out infinite;
+}
+
+.robot-wrapper:hover { filter: brightness(1.08); }
+.robot-wrapper:hover .robot-ring { animation-duration: 1.3s; opacity: .95; }
+
+@keyframes previewEnter {
+    from { opacity: 0; transform: translateY(18px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cardLift {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ringReveal { from { transform: scale(.76) rotate(-30deg); opacity: .2; } to { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes barReveal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes livePulse { 50% { transform: scale(1.45); opacity: .62; } }
+@keyframes loopDot { 0%, 100% { transform: translate(-28px, -2px); opacity: .2; } 50% { transform: translate(28px, -2px); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard,
+    .dash-card,
+    .health-ring,
+    .gap-progress div,
+    .dashboard-live i,
+    .process-arrow::after { animation: none; }
 }
 
 
@@ -2650,7 +2743,7 @@ footer {
 
 
     .hero-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
 
@@ -2700,6 +2793,17 @@ footer {
 
 @media (max-width: 700px) {
 
+    .nav-start {
+        display: none;
+    }
+
+    .difference-card {
+        width: 100%;
+        min-width: 0;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
 
     .hero {
         padding-bottom: 60px;
@@ -2722,13 +2826,18 @@ footer {
         width: 650px;
 
         transform:
-            scale(.72);
+            scale(clamp(.28, calc(100vw / 900px), .72));
 
         transform-origin:
             top left;
 
         margin-bottom:
             -100px;
+    }
+
+    .hero-left,
+    .hero-right {
+        min-width: 0;
     }
 
 

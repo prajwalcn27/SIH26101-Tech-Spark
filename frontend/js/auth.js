@@ -10,11 +10,18 @@
 
    function selectRole(role) {
 
+    const normalizedRole = role === "admin" ? "admin" : "employee";
+    const page = document.body;
+
+    if (page) {
+        page.dataset.roleMode = normalizedRole;
+    }
+
     const roleInput =
         document.getElementById("selectedRole");
 
     if (roleInput) {
-        roleInput.value = role;
+        roleInput.value = normalizedRole;
     }
 
 
@@ -24,7 +31,7 @@
 
     const roleCards =
         document.querySelectorAll(
-            ".role-card"
+            ".role-option"
         );
 
     roleCards.forEach(function (card) {
@@ -40,7 +47,7 @@
 
     const selectedCard =
         document.querySelector(
-            '[data-role="' + role + '"]'
+            '[data-role="' + normalizedRole + '"]'
         );
 
     if (selectedCard) {
@@ -63,7 +70,7 @@
 
     if (roleText) {
 
-        if (role === "admin") {
+        if (normalizedRole === "admin") {
 
             roleText.textContent =
                 "Administrator";
@@ -75,6 +82,28 @@
 
         }
 
+    }
+
+    const networkLabel = document.getElementById("networkLabel");
+    const networkCaption = document.getElementById("networkCaption");
+    const modeDescription = document.getElementById("loginModeDescription");
+
+    if (networkLabel) {
+        networkLabel.textContent = normalizedRole === "admin"
+            ? "COMMAND NETWORK"
+            : "LEARNING NETWORK";
+    }
+
+    if (networkCaption) {
+        networkCaption.textContent = normalizedRole === "admin"
+            ? "People · skills · gaps · insight"
+            : "Assess · analyse · learn · improve";
+    }
+
+    if (modeDescription) {
+        modeDescription.textContent = normalizedRole === "admin"
+            ? "Enter the command center for organization-wide competency intelligence."
+            : "Continue your personalized learning journey.";
     }
 
 }
@@ -127,6 +156,9 @@ async function handleLogin(event) {
         roleInput
             ? roleInput.value
             : "employee";
+
+    const submitButton =
+        document.getElementById("loginSubmitButton");
 
 
     /*
@@ -210,6 +242,12 @@ async function handleLogin(event) {
 
     let user;
 
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.classList.add("is-loading");
+        submitButton.querySelector("span:first-child").textContent = "Signing in...";
+    }
+
     try {
 
         const response = await fetch("/api/login", {
@@ -236,7 +274,17 @@ async function handleLogin(event) {
 
     } catch (error) {
 
-        showLoginMessage(error.message, "error");
+        showLoginMessage(
+            error.message === "This account does not have access to the selected role."
+                ? error.message
+                : "Unable to sign in. Please check your email and password.",
+            "error"
+        );
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.classList.remove("is-loading");
+            submitButton.querySelector("span:first-child").textContent = "Sign in";
+        }
         return false;
     }
 
@@ -279,7 +327,7 @@ async function handleLogin(event) {
      */
 
     showLoginMessage(
-        "Login successful. Redirecting...",
+        "Authentication successful. Redirecting...",
         "success"
     );
 
@@ -594,12 +642,49 @@ function getCurrentUser() {
 
 }
 
+async function syncCurrentUserFromServer() {
+    try {
+        const response = await fetch("/api/session", {
+            method: "GET",
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+            localStorage.removeItem("techSparkUser");
+            localStorage.removeItem("isLoggedIn");
+            return null;
+        }
+
+        const payload = await response.json();
+
+        if (!payload || !payload.success || !payload.user) {
+            localStorage.removeItem("techSparkUser");
+            localStorage.removeItem("isLoggedIn");
+            return null;
+        }
+
+        const user = payload.user;
+        localStorage.setItem("techSparkUser", JSON.stringify(user));
+        localStorage.setItem("isLoggedIn", "true");
+        return user;
+    } catch (error) {
+        console.warn("Unable to sync user session from server:", error);
+        return getCurrentUser();
+    }
+}
+
 
 /* =========================================================
    7. CHECK LOGIN
    ========================================================= */
 
-function isLoggedIn() {
+async function isLoggedIn() {
+
+    const serverUser = await syncCurrentUserFromServer();
+
+    if (serverUser) {
+        return true;
+    }
 
     const user =
         getCurrentUser();
@@ -622,40 +707,21 @@ function isLoggedIn() {
    8. REQUIRE LOGIN
    ========================================================= */
 
-function requireLogin(
+async function requireLogin(
     requiredRole
 ) {
 
-    /*
-     * User is not logged in
-     */
+    const serverUser = await syncCurrentUserFromServer();
+    const user = serverUser || getCurrentUser();
 
-    if (!isLoggedIn()) {
-
+    if (!user) {
         redirectToLogin();
-
         return false;
-
     }
-
-
-    const user =
-        getCurrentUser();
-
-
-    /*
-     * If no role requirement,
-     * login is enough.
-     */
 
     if (!requiredRole) {
         return true;
     }
-
-
-    /*
-     * Normalize roles
-     */
 
     const actualRole =
         String(
@@ -671,23 +737,14 @@ function requireLogin(
             .toLowerCase()
             .trim();
 
-
-    /*
-     * Wrong role
-     */
-
     if (
         actualRole !== expectedRole
     ) {
-
         redirectByRole(
             actualRole
         );
-
         return false;
-
     }
-
 
     return true;
 
@@ -1095,6 +1152,18 @@ document.addEventListener(
                 handleLogin
             );
 
+        }
+
+        const passwordToggle = document.getElementById("passwordToggle");
+        const passwordInput = document.getElementById("password");
+
+        if (passwordToggle && passwordInput) {
+            passwordToggle.addEventListener("click", function () {
+                const showing = passwordInput.type === "text";
+                passwordInput.type = showing ? "password" : "text";
+                passwordToggle.setAttribute("aria-pressed", String(!showing));
+                passwordToggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+            });
         }
 
 
