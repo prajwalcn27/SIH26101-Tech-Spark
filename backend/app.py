@@ -1,9 +1,41 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, session, redirect
 from flask_cors import CORS
 import mysql.connector
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
 import os
+import sys
+
+
+# =========================================================
+# DOCUMENT PROCESSING IMPORTS
+# =========================================================
+
+PROJECT_ROOT = os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))
+)
+
+FRONTEND_DIR = os.path.join(PROJECT_ROOT, "frontend")
+
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+
+DOCUMENT_PROCESSING_DIR = os.path.join(
+    PROJECT_ROOT,
+    "document_processing"
+)
+
+if DOCUMENT_PROCESSING_DIR not in sys.path:
+    sys.path.insert(0, DOCUMENT_PROCESSING_DIR)
+
+try:
+    from document_extractor import extract_text
+    from text_cleaner import clean_text
+    from topic_extractor import extract_topics
+except ImportError:
+    extract_text = None
+    clean_text = None
+    extract_topics = None
 
 
 # =========================================================
@@ -11,7 +43,22 @@ import os
 # =========================================================
 
 app = Flask(__name__)
-CORS(app)
+app.config.update(
+    SECRET_KEY=os.getenv("FLASK_SECRET_KEY", os.urandom(32)),
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax"
+)
+CORS(
+    app,
+    resources={
+        r"/*": {
+            "origins": os.getenv(
+                "CORS_ORIGINS",
+                "http://127.0.0.1:5000,http://localhost:5000"
+            ).split(",")
+        }
+    }
+)
 
 
 # =========================================================
@@ -25,9 +72,7 @@ UPLOAD_FOLDER = os.path.join(
 
 ALLOWED_EXTENSIONS = {
     "pdf",
-    "ppt",
     "pptx",
-    "doc",
     "docx"
 }
 
@@ -41,10 +86,11 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # =========================================================
 
 db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root",
-    database="sih26101_db"
+    host=os.getenv("MYSQL_HOST", "127.0.0.1"),
+    port=int(os.getenv("MYSQL_PORT", "3308")),
+    user=os.getenv("MYSQL_USER", "root"),
+    password=os.getenv("MYSQL_PASSWORD", ""),
+    database=os.getenv("MYSQL_DATABASE", "sih26101_db")
 )
 
 
@@ -60,17 +106,69 @@ def allowed_file(filename):
     )
 
 
+PUBLIC_API_PATHS = {"/api/health", "/api/project", "/api/login"}
+ADMIN_API_PATHS = {
+    "/api/users",
+    "/api/learning-materials/upload"
+}
+
+
+@app.before_request
+def require_authenticated_session():
+    """Keep server authorization independent of editable browser storage."""
+    path = request.path
+
+    if path.startswith("/api/") and path not in PUBLIC_API_PATHS:
+        if not session.get("user"):
+            return jsonify({"success": False, "message": "Authentication required"}), 401
+
+    if (
+        path in ADMIN_API_PATHS
+        or path == "/upload-material"
+        or path.startswith("/api/quizzes")
+    ) and session.get("user", {}).get("role") != "admin":
+        return jsonify({"success": False, "message": "Administrator access required"}), 403
+
+    if path in {
+        "/ai/learning-cycle", "/upload-material", "/materials", "/recommend",
+        "/recommend-multiple", "/quiz/submit"
+    } and not session.get("user"):
+        return jsonify({"success": False, "message": "Authentication required"}), 401
+
+    if path.startswith("/pages/") and path != "/pages/login.html":
+        if not session.get("user"):
+            return redirect("/pages/login.html")
+
+    if path.startswith("/pages/admin/") and session.get("user", {}).get("role") != "admin":
+        return redirect("/pages/employee/dashboard.html")
+
+
+def assessment_access_allowed(assessment_id):
+    """Return whether the signed-in user owns an assessment or is an admin."""
+    cursor = db.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            "SELECT employee_id FROM assessments WHERE id = %s",
+            (assessment_id,)
+        )
+        assessment = cursor.fetchone()
+    finally:
+        cursor.close()
+
+    user = session.get("user", {})
+    return bool(assessment) and (
+        user.get("role") == "admin"
+        or int(assessment["employee_id"]) == int(user.get("id", 0))
+    )
+
+
 # =========================================================
 # HOME
 # =========================================================
 
 @app.route("/", methods=["GET"])
 def home():
-
-    return jsonify({
-        "success": True,
-        "message": "SIH26101 Tech Spark Backend is running"
-    })
+    return send_from_directory(FRONTEND_DIR, "index.html")
 
 
 # =========================================================
@@ -148,7 +246,7 @@ def login():
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
 
         email = data.get("email")
         password = data.get("password")
@@ -195,16 +293,19 @@ def login():
 
             password_valid = False
 
-        # Prototype fallback for plaintext passwords
-        if not password_valid and stored_password == password:
-            password_valid = True
-
         if not password_valid:
 
             return jsonify({
                 "success": False,
                 "message": "Invalid email or password"
             }), 401
+
+        session.clear()
+        session["user"] = {
+            "id": user["id"],
+            "role": user.get("role"),
+            "name": user.get("name")
+        }
 
         return jsonify({
             "success": True,
@@ -223,6 +324,12 @@ def login():
             "success": False,
             "message": str(e)
         }), 500
+
+
+@app.route("/api/logout", methods=["POST"])
+def logout_api():
+    session.clear()
+    return jsonify({"success": True, "message": "Logged out"})
 
 
 # =========================================================
@@ -318,9 +425,10 @@ def upload_learning_material():
 
     try:
 
-        # Check file
+        # -------------------------------------------------
+        # Validate request
+        # -------------------------------------------------
         if "file" not in request.files:
-
             return jsonify({
                 "success": False,
                 "message": "No file provided"
@@ -328,71 +436,69 @@ def upload_learning_material():
 
         file = request.files["file"]
 
-        if file.filename == "":
-
+        if not file.filename:
             return jsonify({
                 "success": False,
                 "message": "No file selected"
             }), 400
 
-        # Check file type
         if not allowed_file(file.filename):
-
             return jsonify({
                 "success": False,
                 "message": "File type not allowed"
             }), 400
 
-        # Get form data
         title = request.form.get("title")
         description = request.form.get(
             "description",
             ""
         )
-
-        uploaded_by = request.form.get(
-            "uploaded_by"
-        )
-
+        uploaded_by = request.form.get("uploaded_by")
         source = request.form.get(
             "source",
             "Local"
         )
 
         if not title:
-
             return jsonify({
                 "success": False,
                 "message": "Title is required"
             }), 400
 
         if not uploaded_by:
-
             return jsonify({
                 "success": False,
                 "message": "uploaded_by is required"
             }), 400
 
-        # Secure filename
+        # -------------------------------------------------
+        # Secure and save uploaded file
+        # -------------------------------------------------
         original_filename = secure_filename(
             file.filename
         )
 
-        # Save file
-        file.save(
-            os.path.join(
-                app.config["UPLOAD_FOLDER"],
-                original_filename
-            )
+        if not original_filename:
+            return jsonify({
+                "success": False,
+                "message": "Invalid file name"
+            }), 400
+
+        file_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            original_filename
         )
 
-        # File extension
+        file.save(file_path)
+
         file_type = original_filename.rsplit(
             ".",
             1
         )[1].lower()
 
-        # Database insert
+        # -------------------------------------------------
+        # Insert learning material
+        # -------------------------------------------------
         cursor = db.cursor()
 
         cursor.execute("""
@@ -424,42 +530,223 @@ def upload_learning_material():
         material_id = cursor.lastrowid
 
         db.commit()
-
         cursor.close()
 
+        # -------------------------------------------------
+        # Document Processing
+        # PDF / PPTX / DOCX
+        # -------------------------------------------------
+        topics = []
+        extracted_text_length = 0
+        processing_status = "Skipped"
+
+        if file_type in ["pdf", "pptx", "docx"]:
+
+            if (
+                extract_text is None
+                or clean_text is None
+                or extract_topics is None
+            ):
+                return jsonify({
+                    "success": True,
+                    "message":
+                        "Learning material uploaded, "
+                        "but document-processing modules "
+                        "are not available",
+                    "material": {
+                        "id": material_id,
+                        "title": title,
+                        "file_name": original_filename,
+                        "file_type": file_type,
+                        "source": source,
+                        "status": "Uploaded"
+                    }
+                }), 201
+
+            try:
+
+                extracted_text = extract_text(
+                    file_path
+                )
+
+                cleaned_text = clean_text(
+                    extracted_text
+                )
+
+                topics = extract_topics(
+                    cleaned_text
+                )
+
+                if topics is None:
+                    topics = []
+
+                extracted_text_length = len(
+                    extracted_text or ""
+                )
+
+                processing_status = "Processed"
+
+            except Exception as processing_error:
+
+                return jsonify({
+                    "success": True,
+                    "message":
+                        "Learning material uploaded, "
+                        "but document processing failed",
+                    "material": {
+                        "id": material_id,
+                        "title": title,
+                        "file_name": original_filename,
+                        "file_type": file_type,
+                        "source": source,
+                        "status": "Uploaded"
+                    },
+                    "processing": {
+                        "status": "Failed",
+                        "error": str(processing_error)
+                    }
+                }), 201
+
+        # -------------------------------------------------
+        # Map extracted topics to competencies
+        # -------------------------------------------------
+        topic_to_competency = {
+            "data cleaning": "Data Cleaning",
+            "missing values": "Data Cleaning",
+            "duplicate records": "Data Cleaning",
+            "incorrect data": "Data Cleaning",
+            "inconsistent formats": "Data Cleaning",
+            "outliers": "Data Cleaning",
+            "standardization": "Data Cleaning",
+            "validation": "Data Cleaning",
+            "data quality": "Data Cleaning",
+
+            "excel": "Excel",
+            "formulas": "Excel",
+            "charts": "Data Visualization",
+
+            "statistics": "Statistics",
+            "mean": "Statistics",
+            "median": "Statistics",
+            "probability": "Statistics",
+            "data analysis": "Statistics"
+        }
+
+        mapped_topics = []
+
+        if topics:
+
+            cursor = db.cursor(
+                dictionary=True
+            )
+
+            for topic in topics:
+
+                topic_text = str(topic).strip()
+
+                if not topic_text:
+                    continue
+
+                competency_name = (
+                    topic_to_competency.get(
+                        topic_text.lower()
+                    )
+                )
+
+                # If the extracted topic itself matches
+                # a competency, use it directly.
+                if not competency_name:
+                    competency_name = topic_text
+
+                cursor.execute("""
+                    SELECT id, name
+                    FROM competencies
+                    WHERE LOWER(name) = LOWER(%s)
+                    LIMIT 1
+                """, (
+                    competency_name,
+                ))
+
+                competency = cursor.fetchone()
+
+                if not competency:
+                    continue
+
+                competency_id = competency["id"]
+
+                cursor.execute("""
+                    SELECT id
+                    FROM material_topics
+                    WHERE material_id = %s
+                      AND competency_id = %s
+                    LIMIT 1
+                """, (
+                    material_id,
+                    competency_id
+                ))
+
+                existing_topic = cursor.fetchone()
+
+                if not existing_topic:
+
+                    cursor.execute("""
+                        INSERT INTO material_topics
+                        (
+                            material_id,
+                            competency_id
+                        )
+                        VALUES
+                        (%s, %s)
+                    """, (
+                        material_id,
+                        competency_id
+                    ))
+
+                mapped_topics.append({
+                    "topic": topic_text,
+                    "competency_id": competency_id,
+                    "competency": competency["name"]
+                })
+
+            db.commit()
+            cursor.close()
+
+        # -------------------------------------------------
+        # Final response
+        # -------------------------------------------------
         return jsonify({
 
             "success": True,
 
             "message":
-                "Learning material uploaded successfully",
+                "Learning material uploaded and "
+                "processed successfully",
 
             "material": {
-
                 "id": material_id,
-
                 "title": title,
-
                 "description": description,
+                "file_name": original_filename,
+                "file_type": file_type,
+                "source": source,
+                "status": "Processed"
+            },
 
-                "file_name":
-                    original_filename,
-
-                "file_type":
-                    file_type,
-
-                "source":
-                    source,
-
-                "status":
-                    "Uploaded"
+            "processing": {
+                "status": processing_status,
+                "text_length": extracted_text_length,
+                "topics": topics,
+                "mapped_topics": mapped_topics
             }
 
         }), 201
 
     except Exception as e:
 
-        db.rollback()
+        try:
+            db.rollback()
+        except Exception:
+            pass
 
         return jsonify({
             "success": False,
@@ -1886,6 +2173,16 @@ def create_assessment():
                     "employee_id is required"
             }), 400
 
+        authenticated_user = session.get("user", {})
+        if (
+            authenticated_user.get("role") != "admin"
+            and int(employee_id) != int(authenticated_user.get("id", 0))
+        ):
+            return jsonify({
+                "success": False,
+                "message": "You can only create an assessment for your own account"
+            }), 403
+
         if not title:
 
             return jsonify({
@@ -1964,6 +2261,9 @@ def add_assessment_question(
 ):
 
     try:
+
+        if not assessment_access_allowed(assessment_id):
+            return jsonify({"success": False, "message": "Assessment access denied"}), 403
 
         data = request.get_json()
 
@@ -2098,6 +2398,9 @@ def get_assessment_questions(
 
     try:
 
+        if not assessment_access_allowed(assessment_id):
+            return jsonify({"success": False, "message": "Assessment access denied"}), 403
+
         cursor = db.cursor(
             dictionary=True
         )
@@ -2154,6 +2457,9 @@ def submit_assessment(
 ):
 
     try:
+
+        if not assessment_access_allowed(assessment_id):
+            return jsonify({"success": False, "message": "Assessment access denied"}), 403
 
         data = request.get_json()
 
@@ -2731,10 +3037,41 @@ def add_competency_gap(
 # RUN APPLICATION
 # =========================================================
 
+# The AI/document service started life as a second Flask application.  Register
+# its routes on this application so the browser has one origin, one port, and
+# one consistent API surface.  The module keeps ownership of its AI pipeline;
+# only its HTTP routes are mounted here.
+try:
+    import recommendation_api
+
+    for ai_rule in recommendation_api.app.url_map.iter_rules():
+        if ai_rule.endpoint == "static":
+            continue
+
+        app.add_url_rule(
+            ai_rule.rule,
+            endpoint=f"ai_service_{ai_rule.endpoint}",
+            view_func=recommendation_api.app.view_functions[ai_rule.endpoint],
+            methods=[
+                method for method in ai_rule.methods
+                if method in {"GET", "POST", "PUT", "PATCH", "DELETE"}
+            ]
+        )
+except Exception as ai_service_error:
+    # Core database APIs remain available if optional AI dependencies are not
+    # installed; AI endpoints return their own actionable errors when called.
+    print(f"Warning: AI routes were not registered: {ai_service_error}")
+
+
+@app.route("/<path:asset_path>", methods=["GET"])
+def frontend_asset(asset_path):
+    """Serve the existing static frontend from the same origin as the API."""
+    return send_from_directory(FRONTEND_DIR, asset_path)
+
 if __name__ == "__main__":
 
     app.run(
         host="127.0.0.1",
         port=5000,
-        debug=True
+        debug=os.getenv("FLASK_DEBUG", "false").lower() == "true"
     )

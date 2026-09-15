@@ -84,7 +84,7 @@
    2. LOGIN
    ========================================================= */
 
-function handleLogin(event) {
+async function handleLogin(event) {
 
     /*
      * Prevent normal form submission
@@ -208,37 +208,37 @@ function handleLogin(event) {
     }
 
 
-    /*
-     * Get user name
-     */
+    let user;
 
-    const name =
-        createUserName(email);
+    try {
 
+        const response = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
 
-    /*
-     * Create user object
-     *
-     * This is frontend/demo authentication.
-     * The Flask backend can replace this later
-     * with real authentication.
-     */
+        const payload = await response.json();
 
-    const user = {
+        if (!response.ok || !payload.success || !payload.user) {
+            throw new Error(payload.message || "Unable to sign in.");
+        }
 
-        name: name,
+        user = payload.user;
 
-        email: email,
+        if (user.role !== selectedRole) {
+            throw new Error(
+                "This account does not have access to the selected role."
+            );
+        }
 
-        role:
-            selectedRole === "admin"
-                ? "admin"
-                : "employee",
+        user.loginTime = new Date().toISOString();
 
-        loginTime:
-            new Date().toISOString()
+    } catch (error) {
 
-    };
+        showLoginMessage(error.message, "error");
+        return false;
+    }
 
 
     /*
@@ -310,95 +310,18 @@ function handleLogin(event) {
 
 function demoLogin(role) {
 
-    /*
-     * Default role
-     */
+    const roleInput = document.getElementById("selectedRole");
 
-    role =
-        role === "admin"
-            ? "admin"
-            : "employee";
-
-
-    /*
-     * Demo users
-     */
-
-    let user;
-
-
-    if (role === "admin") {
-
-        user = {
-
-            name: "Tech Spark Admin",
-
-            email: "admin@techspark.com",
-
-            role: "admin",
-
-            loginTime:
-                new Date().toISOString(),
-
-            demo: true
-
-        };
-
-    } else {
-
-        user = {
-
-            name: "Tech Spark Employee",
-
-            email: "employee@techspark.com",
-
-            role: "employee",
-
-            loginTime:
-                new Date().toISOString(),
-
-            demo: true
-
-        };
-
+    if (roleInput) {
+        roleInput.value = role === "admin" ? "admin" : "employee";
     }
 
-
-    /*
-     * Save demo session
-     */
-
-    try {
-
-        localStorage.setItem(
-            "techSparkUser",
-            JSON.stringify(user)
-        );
-
-        localStorage.setItem(
-            "isLoggedIn",
-            "true"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Demo login failed:",
-            error
-        );
-
-        return false;
-
-    }
-
-
-    /*
-     * Redirect
-     */
-
-    redirectByRole(
-        role
+    showLoginMessage(
+        "Demo access is disabled. Sign in with a registered account.",
+        "error"
     );
+
+    return false;
 
 }
 
@@ -835,7 +758,13 @@ function redirectToLogin() {
    10. LOGOUT
    ========================================================= */
 
-function logout() {
+async function logout() {
+
+    try {
+        await fetch("/api/logout", { method: "POST" });
+    } catch (error) {
+        console.warn("Server logout could not be completed:", error);
+    }
 
     try {
 

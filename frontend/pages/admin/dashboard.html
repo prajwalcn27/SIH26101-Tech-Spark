@@ -2438,11 +2438,24 @@
                         file
                     );
 
+                    const currentUser = JSON.parse(
+                        localStorage.getItem("techSparkUser") || "null"
+                    );
+
+                    if (!currentUser || !currentUser.id) {
+                        throw new Error("Please sign in as an administrator before uploading.");
+                    }
+
+                    formData.append("title", title);
+                    formData.append("description", description);
+                    formData.append("uploaded_by", currentUser.id);
+                    formData.append("source", "Admin dashboard");
+
 
                     const response =
                         await fetch(
                             API_BASE_URL +
-                            "/upload-material",
+                            "/api/learning-materials/upload",
                             {
                                 method: "POST",
                                 body: formData
@@ -2576,7 +2589,7 @@
                 const response =
                     await fetch(
                         API_BASE_URL +
-                        "/materials"
+                        "/api/learning-materials"
                     );
 
 

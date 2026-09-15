@@ -1599,697 +1599,798 @@
          JAVASCRIPT
     ========================= -->
 
-    <script>
+   <script>
 
-        const API_BASE_URL = "http://127.0.0.1:5000";
-        
-        const questions =
-            document.querySelectorAll(".question-card");
-        
-        const nextBtn =
-            document.getElementById("nextBtn");
-        
-        const previousBtn =
-            document.getElementById("previousBtn");
-        
-        const warning =
-            document.getElementById("warning");
-        
-        const progressFill =
-            document.getElementById("progressFill");
-        
-        const progressText =
-            document.getElementById("progressText");
-        
-        const progressPercent =
-            document.getElementById("progressPercent");
-        
-        const questionActions =
-            document.getElementById("questionActions");
-        
-        const instructionCard =
-            document.getElementById("instructionCard");
-        
-        const analyzingCard =
-            document.getElementById("analyzingCard");
-        
-        const resultCard =
-            document.getElementById("resultCard");
-        
-        const analyzingText =
-            document.getElementById("analyzingText");
-        
-        const scoreNumber =
-            document.getElementById("scoreNumber");
-        
-        const scoreCircle =
-            document.getElementById("scoreCircle");
-        
-        
-        let currentQuestion = 0;
-        
-        let score = 0;
-        
-        
-        // ============================================================
-        // SHOW QUESTION
-        // ============================================================
-        
-        function showQuestion(index) {
-        
-            questions.forEach(function(question, i) {
-        
-                question.classList.toggle(
-                    "active",
-                    i === index
-                );
-        
-            });
-        
-        
-            const percentage =
-                Math.round(
-                    ((index + 1) / questions.length) * 100
-                );
-        
-        
-            progressFill.style.width =
-                percentage + "%";
-        
-        
-            progressText.textContent =
-                "Question " +
-                (index + 1) +
-                " of " +
-                questions.length;
-        
-        
-            progressPercent.textContent =
-                percentage + "%";
-        
-        
-            previousBtn.style.visibility =
-                index === 0
-                    ? "hidden"
-                    : "visible";
-        
-        
-            nextBtn.textContent =
-                index === questions.length - 1
-                    ? "Finish Assessment"
-                    : "Next â†’";
-        
-        
-            warning.style.display =
-                "none";
+const API_BASE_URL = "http://127.0.0.1:5000";
+const currentUser = JSON.parse(
+    localStorage.getItem("techSparkUser") || "null"
+);
+const EMPLOYEE_ID = Number(currentUser && currentUser.id);
+
+const questionCards = document.querySelectorAll(".question-card");
+const nextBtn = document.getElementById("nextBtn");
+const previousBtn = document.getElementById("previousBtn");
+const warning = document.getElementById("warning");
+
+const progressFill = document.getElementById("progressFill");
+const progressText = document.getElementById("progressText");
+const progressPercent = document.getElementById("progressPercent");
+
+const questionActions = document.getElementById("questionActions");
+const instructionCard = document.getElementById("instructionCard");
+
+const analyzingCard = document.getElementById("analyzingCard");
+const resultCard = document.getElementById("resultCard");
+
+const analyzingText = document.getElementById("analyzingText");
+const scoreNumber = document.getElementById("scoreNumber");
+const scoreCircle = document.getElementById("scoreCircle");
+
+let currentQuestion = 0;
+let assessmentId = null;
+let backendQuestions = [];
+let answers = {};
+
+
+/* =========================================================
+   CREATE / LOAD ASSESSMENT
+========================================================= */
+
+async function initializeAssessment() {
+
+    try {
+
+        if (!EMPLOYEE_ID || !currentUser || currentUser.role !== "employee") {
+            window.location.href = "../login.html";
+            return;
         }
-        
-        
-        // ============================================================
-        // GET SELECTED ANSWER
-        // ============================================================
-        
-        function getSelectedAnswer() {
-        
-            const current =
-                questions[currentQuestion];
-        
-            return current.querySelector(
-                'input[type="radio"]:checked'
+
+        const savedAssessment =
+            localStorage.getItem("techspark_assessment_id");
+
+        if (savedAssessment) {
+
+            assessmentId = parseInt(savedAssessment);
+
+            const response = await fetch(
+                `${API_BASE_URL}/api/assessments/${assessmentId}/questions`
             );
-        }
-        
-        
-        // ============================================================
-        // SAVE WEAK TOPIC
-        // ============================================================
-        
-        function saveWeakTopic() {
-        
-            /*
-               The current assessment is focused on
-               Data Cleaning / Missing Values.
-            */
-        
-            localStorage.setItem(
-                "weakTopic",
-                "Missing Values"
-            );
-        }
-        
-        
-        // ============================================================
-        // NEXT BUTTON
-        // ============================================================
-        
-        nextBtn.addEventListener(
-            "click",
-            function() {
-        
-                const selected =
-                    getSelectedAnswer();
-        
-        
-                if (!selected) {
-        
-                    warning.style.display =
-                        "block";
-        
-                    warning.style.animation =
-                        "none";
-        
-                    void warning.offsetWidth;
-        
-                    warning.style.animation =
-                        "shake .35s ease";
-        
-                    return;
-                }
-        
-        
-                if (
-                    selected.value === "correct"
-                ) {
-        
-                    score++;
-        
-                }
-        
-        
-                if (
-                    currentQuestion <
-                    questions.length - 1
-                ) {
-        
-                    currentQuestion++;
-        
-                    showQuestion(
-                        currentQuestion
-                    );
-        
-                }
-        
-                else {
-        
-                    finishAssessment();
-        
-                }
-        
+
+            const data = await response.json();
+
+            if (data.success && data.questions.length > 0) {
+
+                backendQuestions = data.questions;
+
+                renderBackendQuestions();
+
+                return;
             }
-        );
-        
-        
-        // ============================================================
-        // PREVIOUS BUTTON
-        // ============================================================
-        
-        previousBtn.addEventListener(
-            "click",
-            function() {
-        
-                if (currentQuestion > 0) {
-        
-                    currentQuestion--;
-        
-                    showQuestion(
-                        currentQuestion
-                    );
-        
-                }
-        
-            }
-        );
-        
-        
-        // ============================================================
-        // OPTION SELECTION
-        // ============================================================
-        
-        document
-            .querySelectorAll(".option")
-            .forEach(function(option) {
-        
-                option.addEventListener(
-                    "click",
-                    function() {
-        
-                        const card =
-                            this.closest(
-                                ".question-card"
-                            );
-        
-        
-                        card
-                            .querySelectorAll(".option")
-                            .forEach(
-                                function(item) {
-        
-                                    item.classList.remove(
-                                        "selected"
-                                    );
-        
-                                }
-                            );
-        
-        
-                        this.classList.add(
-                            "selected"
-                        );
-        
-        
-                        const radio =
-                            this.querySelector(
-                                "input"
-                            );
-        
-        
-                        radio.checked = true;
-        
-        
-                        warning.style.display =
-                            "none";
-        
-                    }
-                );
-        
-            });
-        
-        
-        // ============================================================
-        // FINISH ASSESSMENT
-        // ============================================================
-        
-        async function finishAssessment() {
-        
-            questions.forEach(
-                function(question) {
-        
-                    question.style.display =
-                        "none";
-        
-                }
-            );
-        
-        
-            instructionCard.style.display =
-                "none";
-        
-        
-            questionActions.style.display =
-                "none";
-        
-        
-            warning.style.display =
-                "none";
-        
-        
-            analyzingCard.classList.add(
-                "active"
-            );
-        
-        
-            progressFill.style.width =
-                "100%";
-        
-        
-            progressText.textContent =
-                "Analyzing Results";
-        
-        
-            progressPercent.textContent =
-                "100%";
-        
-        
-            const messages = [
-        
-                "Checking competency areas...",
-        
-                "Identifying knowledge gaps...",
-        
-                "Analyzing topic performance...",
-        
-                "Preparing personalized recommendations..."
-        
-            ];
-        
-        
-            let messageIndex = 0;
-        
-        
-            const analysisInterval =
-                setInterval(
-                    function() {
-        
-                        analyzingText.textContent =
-                            messages[messageIndex];
-        
-        
-                        messageIndex++;
-        
-        
-                        if (
-                            messageIndex >=
-                            messages.length
-                        ) {
-        
-                            clearInterval(
-                                analysisInterval
-                            );
-        
-                        }
-        
-                    },
-                    650
-                );
-        
-        
-            /*
-               Save the weak topic before calling backend.
-            */
-        
-            saveWeakTopic();
-        
-        
-            /*
-               Call Flask AI learning cycle.
-            */
-        
-            await sendAssessmentToBackend();
-        
-        
-            /*
-               Give the AI animation time to finish.
-            */
-        
-            setTimeout(
-                function() {
-        
-                    analyzingCard.classList.remove(
-                        "active"
-                    );
-        
-        
-                    showResult();
-        
+        }
+
+        /* Create new assessment */
+
+        const response = await fetch(
+            `${API_BASE_URL}/api/assessments`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
                 },
-                2900
-            );
-        
-        }
-        
-        
-        // ============================================================
-        // SEND ASSESSMENT TO BACKEND
-        // ============================================================
-        
-        async function sendAssessmentToBackend() {
-        
-            const percentage =
-                Math.round(
-                    (score / questions.length) * 100
-                );
-        
-        
-            console.log(
-                "======================================"
-            );
-        
-            console.log(
-                "TECH SPARK ASSESSMENT"
-            );
-        
-            console.log(
-                "Score:",
-                percentage + "%"
-            );
-        
-        
-            /*
-               The current assessment is about
-               Data Cleaning / Missing Values.
-            */
-        
-            const weakTopics = [
-                "Missing Values"
-            ];
-        
-        
-            try {
-        
-                console.log(
-                    "Calling AI learning cycle..."
-                );
-        
-        
-                const response =
-                    await fetch(
-                        `${API_BASE_URL}/ai/learning-cycle`,
-                        {
-                            method: "POST",
-        
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-        
-                            body: JSON.stringify({
-        
-                                weak_topics:
-                                    weakTopics,
-        
-                                num_questions: 5
-        
-                            })
-                        }
-                    );
-        
-        
-                if (!response.ok) {
-        
-                    throw new Error(
-                        "Backend returned HTTP "
-                        + response.status
-                    );
-        
-                }
-        
-        
-                const data =
-                    await response.json();
-        
-        
-                console.log(
-                    "AI Learning Cycle Response:",
-                    data
-                );
-        
-        
-                if (
-                    data.status === "success"
-                ) {
-        
-                    console.log(
-                        "âœ… AI learning cycle completed."
-                    );
-        
-        
-                    /*
-                       Save assessment score.
-                    */
-        
-                    localStorage.setItem(
-                        "techspark_assessment_score",
-                        percentage
-                    );
-        
-        
-                    /*
-                       Save score for recommendation page.
-                    */
-        
-                    localStorage.setItem(
-                        "quizScore",
-                        percentage
-                    );
-        
-        
-                    /*
-                       Save weak topic.
-                    */
-        
-                    localStorage.setItem(
-                        "weakTopic",
-                        "Missing Values"
-                    );
-        
-        
-                    /*
-                       Save complete AI response.
-                    */
-        
-                    localStorage.setItem(
-                        "aiLearningCycle",
-                        JSON.stringify(data)
-                    );
-        
-        
-                    /*
-                       Save updated competency if available.
-                    */
-        
-                    const learningCycle =
-                        data.learning_cycle
-                        || data;
-        
-        
-                    const updatedCompetency =
-                        learningCycle.updated_competency;
-        
-        
-                    if (
-                        updatedCompetency
-                    ) {
-        
-                        localStorage.setItem(
-                            "updatedCompetency",
-                            JSON.stringify(
-                                updatedCompetency
-                            )
-                        );
-        
-                    }
-        
-                }
-        
+                body: JSON.stringify({
+                    employee_id: EMPLOYEE_ID,
+                    title: "Initial Competency Assessment",
+                    total_questions: 4
+                })
             }
-        
-            catch (error) {
-        
-                /*
-                   IMPORTANT:
-                   The assessment should still show
-                   the result even if backend temporarily
-                   fails.
-                */
-        
-                console.error(
-                    "âŒ AI Learning Cycle Error:",
-                    error
-                );
-        
-        
-                localStorage.setItem(
-                    "techspark_assessment_score",
-                    percentage
-                );
-        
-        
-                localStorage.setItem(
-                    "quizScore",
-                    percentage
-                );
-        
-        
-                localStorage.setItem(
-                    "weakTopic",
-                    "Missing Values"
-                );
-        
-            }
-        
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.message);
         }
-        
-        
-        // ============================================================
-        // SHOW RESULT
-        // ============================================================
-        
-        function showResult() {
-        
-            resultCard.classList.add(
-                "active"
-            );
-        
-        
-            const percentage =
-                Math.round(
-                    (score / questions.length) * 100
-                );
-        
-        
-            scoreNumber.textContent =
-                "0%";
-        
-        
-            const degrees =
-                percentage * 3.6;
-        
-        
-            scoreCircle.style.setProperty(
-                "--score-degree",
-                degrees + "deg"
-            );
-        
-        
-            let current = 0;
-        
-        
-            const counter =
-                setInterval(
-                    function() {
-        
-                        current += 1;
-        
-        
-                        scoreNumber.textContent =
-                            current + "%";
-        
-        
-                        if (
-                            current >= percentage
-                        ) {
-        
-                            clearInterval(counter);
-        
-                        }
-        
+
+        assessmentId = data.assessment.id;
+
+        localStorage.setItem(
+            "techspark_assessment_id",
+            assessmentId
+        );
+
+        /* Add the four assessment questions */
+
+        const questions = [
+            {
+                question_text:
+                    "What is the main purpose of cleaning a dataset?",
+                option_a:
+                    "To identify and correct inaccurate or inconsistent data",
+                option_b:
+                    "To make the dataset larger",
+                option_c:
+                    "To remove every column from the dataset",
+                option_d:
+                    "To convert every value into text",
+                correct_answer: "A",
+                competency_id: 2
+            },
+
+            {
+                question_text:
+                    "What should you generally do when a dataset contains missing values?",
+                option_a:
+                    "Always ignore them without checking",
+                option_b:
+                    "Analyze the missing values and choose an appropriate treatment",
+                option_c:
+                    "Duplicate all missing records",
+                option_d:
+                    "Replace every missing value with zero automatically",
+                correct_answer: "B",
+                competency_id: 2
+            },
+
+            {
+                question_text:
+                    "Which tool is commonly used to analyze and manipulate tabular data using Python?",
+                option_a: "Flask",
+                option_b: "Pandas",
+                option_c: "HTML",
+                option_d: "CSS",
+                correct_answer: "B",
+                competency_id: 6
+            },
+
+            {
+                question_text:
+                    "Why is data validation important before using data for analysis?",
+                option_a:
+                    "It helps ensure the data follows expected rules and formats",
+                option_b:
+                    "It automatically increases the amount of data",
+                option_c:
+                    "It removes the need for analysis",
+                option_d:
+                    "It guarantees that every prediction will be correct",
+                correct_answer: "A",
+                competency_id: 2
+            }
+        ];
+
+        for (const q of questions) {
+
+            await fetch(
+                `${API_BASE_URL}/api/assessments/${assessmentId}/questions`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
                     },
-                    25
-                );
-        
-        
-            /*
-               Store final assessment score.
-            */
-        
-            localStorage.setItem(
-                "techspark_assessment_score",
-                percentage
+                    body: JSON.stringify(q)
+                }
             );
-        
-        
-            localStorage.setItem(
-                "quizScore",
-                percentage
+        }
+
+        /* Get questions from backend */
+
+        const questionResponse = await fetch(
+            `${API_BASE_URL}/api/assessments/${assessmentId}/questions`
+        );
+
+        const questionData =
+            await questionResponse.json();
+
+        backendQuestions =
+            questionData.questions || [];
+
+        renderBackendQuestions();
+
+    } catch (error) {
+
+        console.error(
+            "Assessment initialization error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the assessment server. Please make sure Flask is running."
+        );
+    }
+}
+
+
+/* =========================================================
+   RENDER BACKEND QUESTIONS
+========================================================= */
+
+function renderBackendQuestions() {
+
+    if (!backendQuestions.length) {
+        return;
+    }
+
+    questionCards.forEach(card => {
+        card.remove();
+    });
+
+    const container =
+        document.querySelector(".assessment-container");
+
+    const actions =
+        document.getElementById("questionActions");
+
+    backendQuestions.forEach((q, index) => {
+
+        const card =
+            document.createElement("section");
+
+        card.className =
+            "question-card";
+
+        if (index === 0) {
+            card.classList.add("active");
+        }
+
+        card.dataset.question =
+            index + 1;
+
+        card.innerHTML = `
+
+            <div class="question-number">
+                QUESTION ${String(index + 1).padStart(2, "0")}
+            </div>
+
+            <h2>${escapeHtml(q.question_text)}</h2>
+
+            <div class="options">
+
+                ${createOption(q, "A", q.option_a)}
+                ${createOption(q, "B", q.option_b)}
+                ${createOption(q, "C", q.option_c)}
+                ${createOption(q, "D", q.option_d)}
+
+            </div>
+        `;
+
+        container.insertBefore(card, actions);
+
+    });
+
+    showQuestion(0);
+}
+
+
+/* =========================================================
+   CREATE OPTION
+========================================================= */
+
+function createOption(question, letter, text) {
+
+    return `
+        <label class="option">
+
+            <input
+                type="radio"
+                name="q${question.id}"
+                value="${letter}"
+            >
+
+            <span class="option-text">
+                ${escapeHtml(text)}
+            </span>
+
+        </label>
+    `;
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(value) {
+
+    const div = document.createElement("div");
+
+    div.textContent = value || "";
+
+    return div.innerHTML;
+}
+
+
+/* =========================================================
+   SHOW QUESTION
+========================================================= */
+
+function showQuestion(index) {
+
+    const questions =
+        document.querySelectorAll(".question-card");
+
+    if (!questions.length) {
+        return;
+    }
+
+    questions.forEach((question, i) => {
+
+        question.classList.toggle(
+            "active",
+            i === index
+        );
+
+    });
+
+    const percentage =
+        Math.round(
+            ((index + 1) / questions.length) * 100
+        );
+
+    progressFill.style.width =
+        percentage + "%";
+
+    progressText.textContent =
+        "Question " +
+        (index + 1) +
+        " of " +
+        questions.length;
+
+    progressPercent.textContent =
+        percentage + "%";
+
+    previousBtn.style.visibility =
+        index === 0
+            ? "hidden"
+            : "visible";
+
+    nextBtn.textContent =
+        index === questions.length - 1
+            ? "Finish Assessment"
+            : "Next →";
+
+    warning.style.display =
+        "none";
+}
+
+
+/* =========================================================
+   GET SELECTED ANSWER
+========================================================= */
+
+function getSelectedAnswer() {
+
+    const questions =
+        document.querySelectorAll(".question-card");
+
+    const current =
+        questions[currentQuestion];
+
+    if (!current) {
+        return null;
+    }
+
+    return current.querySelector(
+        'input[type="radio"]:checked'
+    );
+}
+
+
+/* =========================================================
+   SAVE ANSWER
+========================================================= */
+
+function saveCurrentAnswer() {
+
+    const selected =
+        getSelectedAnswer();
+
+    if (!selected) {
+        return false;
+    }
+
+    const question =
+        backendQuestions[currentQuestion];
+
+    answers[question.id] =
+        selected.value;
+
+    return true;
+}
+
+
+/* =========================================================
+   NEXT BUTTON
+========================================================= */
+
+nextBtn.addEventListener(
+    "click",
+    function() {
+
+        if (!saveCurrentAnswer()) {
+
+            warning.style.display =
+                "block";
+
+            warning.style.animation =
+                "none";
+
+            void warning.offsetWidth;
+
+            warning.style.animation =
+                "shake .35s ease";
+
+            return;
+        }
+
+        const questions =
+            document.querySelectorAll(
+                ".question-card"
             );
-        
-        
-            /*
-               Store weak topic.
-            */
-        
+
+        if (
+            currentQuestion <
+            questions.length - 1
+        ) {
+
+            currentQuestion++;
+
+            showQuestion(
+                currentQuestion
+            );
+
+        } else {
+
+            finishAssessment();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   PREVIOUS BUTTON
+========================================================= */
+
+previousBtn.addEventListener(
+    "click",
+    function() {
+
+        if (currentQuestion > 0) {
+
+            currentQuestion--;
+
+            showQuestion(
+                currentQuestion
+            );
+
+            const question =
+                backendQuestions[currentQuestion];
+
+            const previousAnswer =
+                answers[question.id];
+
+            if (previousAnswer) {
+
+                const radio =
+                    document.querySelector(
+                        `input[name="q${question.id}"][value="${previousAnswer}"]`
+                    );
+
+                if (radio) {
+                    radio.checked = true;
+                    radio.closest(".option")
+                        .classList.add("selected");
+                }
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   OPTION SELECTION
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const option =
+            event.target.closest(".option");
+
+        if (!option) {
+            return;
+        }
+
+        const card =
+            option.closest(".question-card");
+
+        if (!card) {
+            return;
+        }
+
+        card.querySelectorAll(".option")
+            .forEach(item => {
+                item.classList.remove("selected");
+            });
+
+        option.classList.add("selected");
+
+        const radio =
+            option.querySelector("input");
+
+        radio.checked = true;
+
+        warning.style.display =
+            "none";
+    }
+);
+
+
+/* =========================================================
+   FINISH ASSESSMENT
+========================================================= */
+
+async function finishAssessment() {
+
+    saveCurrentAnswer();
+
+    questionCards.forEach(
+        question => {
+            question.style.display =
+                "none";
+        }
+    );
+
+    document.querySelectorAll(
+        ".question-card"
+    ).forEach(
+        question => {
+            question.style.display =
+                "none";
+        }
+    );
+
+    instructionCard.style.display =
+        "none";
+
+    questionActions.style.display =
+        "none";
+
+    warning.style.display =
+        "none";
+
+    analyzingCard.classList.add(
+        "active"
+    );
+
+    progressFill.style.width =
+        "100%";
+
+    progressText.textContent =
+        "Analyzing Results";
+
+    progressPercent.textContent =
+        "100%";
+
+    const messages = [
+        "Checking competency areas...",
+        "Identifying knowledge gaps...",
+        "Analyzing topic performance...",
+        "Preparing personalized recommendations..."
+    ];
+
+    let messageIndex = 0;
+
+    const interval =
+        setInterval(
+            function() {
+
+                analyzingText.textContent =
+                    messages[messageIndex];
+
+                messageIndex++;
+
+                if (
+                    messageIndex >=
+                    messages.length
+                ) {
+
+                    clearInterval(interval);
+
+                }
+
+            },
+            500
+        );
+
+
+    try {
+
+        const formattedAnswers =
+            backendQuestions.map(
+                question => ({
+                    question_id:
+                        question.id,
+
+                    selected_answer:
+                        answers[question.id] || ""
+                })
+            );
+
+        const response =
+            await fetch(
+                `${API_BASE_URL}/api/assessments/${assessmentId}/submit`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        answers:
+                            formattedAnswers
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+            throw new Error(
+                data.message ||
+                "Assessment submission failed"
+            );
+        }
+
+        /* Save backend result */
+
+        localStorage.setItem(
+            "techspark_assessment_score",
+            data.score
+        );
+
+        localStorage.setItem(
+            "quizScore",
+            data.score
+        );
+
+        localStorage.setItem(
+            "assessmentResult",
+            JSON.stringify(data)
+        );
+
+        /* Find strongest gap */
+
+        if (
+            data.competency_updates &&
+            data.competency_updates.length
+        ) {
+
+            const weakest =
+                data.competency_updates
+                    .slice()
+                    .sort(
+                        (a, b) =>
+                            a.score - b.score
+                    )[0];
+
+            localStorage.setItem(
+                "weakCompetencyId",
+                weakest.competency_id
+            );
+
             localStorage.setItem(
                 "weakTopic",
-                "Missing Values"
+                "Data Cleaning"
             );
-        
         }
-        
-        
-        // ============================================================
-        // START
-        // ============================================================
-        
-        showQuestion(0);
-        
-        </script>
+
+        setTimeout(
+            function() {
+
+                clearInterval(interval);
+
+                analyzingCard.classList.remove(
+                    "active"
+                );
+
+                showResult(
+                    data.score
+                );
+
+            },
+            1800
+        );
+
+    } catch (error) {
+
+        clearInterval(interval);
+
+        console.error(
+            "Assessment submission error:",
+            error
+        );
+
+        analyzingCard.classList.remove(
+            "active"
+        );
+
+        alert(
+            "Assessment submission failed: " +
+            error.message
+        );
+
+    }
+}
+
+
+/* =========================================================
+   SHOW RESULT
+========================================================= */
+
+function showResult(percentage) {
+
+    resultCard.classList.add(
+        "active"
+    );
+
+    scoreNumber.textContent =
+        "0%";
+
+    const degrees =
+        percentage * 3.6;
+
+    scoreCircle.style.setProperty(
+        "--score-degree",
+        degrees + "deg"
+    );
+
+    let current = 0;
+
+    const counter =
+        setInterval(
+            function() {
+
+                current++;
+
+                scoreNumber.textContent =
+                    current + "%";
+
+                if (
+                    current >= percentage
+                ) {
+
+                    clearInterval(counter);
+
+                }
+
+            },
+            20
+        );
+
+    localStorage.setItem(
+        "techspark_assessment_score",
+        percentage
+    );
+
+    localStorage.setItem(
+        "quizScore",
+        percentage
+    );
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+initializeAssessment();
+
+</script>
