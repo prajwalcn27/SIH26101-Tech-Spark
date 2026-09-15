@@ -1416,7 +1416,7 @@
 
     function goDashboard() {
 
-        window.location.href = "dashboard.html";
+        window.location.href = "/pages/admin/dashboard.html";
 
     }
 
@@ -1708,6 +1708,20 @@
 
         });
 
+        // Persist generated quiz approval state.
+        const saved = localStorage.getItem("techSparkGeneratedQuiz");
+        if (saved) {
+            try {
+                const quiz = JSON.parse(saved);
+                if (quiz.title === selectedQuiz) {
+                    quiz.status = "approved";
+                    localStorage.setItem("techSparkGeneratedQuiz", JSON.stringify(quiz));
+                }
+            } catch (e) {
+                console.warn("Could not save generated quiz approval:", e);
+            }
+        }
+
         closeModal();
 
     }
@@ -1771,14 +1785,300 @@
     }
 
 
-    /* GENERATE QUIZ */
+    /* AI QUIZ GENERATION */
 
-    function generateQuiz() {
+    const API_BASE = "http://127.0.0.1:5000";
 
-        showToast(
-            "AI quiz generation started. Connect Gemini API in backend for real generation."
-        );
+    async function generateQuiz() {
+        const button = document.querySelector('button[onclick="generateQuiz()"]');
+        const originalText = button ? button.innerHTML : "+ Generate Quiz";
 
+        try {
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = "⏳ Generating...";
+            }
+
+            showToast("Loading approved learning material...");
+
+            // Get available materials from the backend.
+            let materials = [];
+            try {
+                const materialResponse = await fetch(`${API_BASE}/materials`);
+                if (materialResponse.ok) {
+                    const materialData = await materialResponse.json();
+                    materials = Array.isArray(materialData)
+                        ? materialData
+                        : (materialData.materials || materialData.data || []);
+                }
+            } catch (error) {
+                console.warn("Could not load /materials:", error);
+            }
+
+            // Prefer an approved material, then the first available material.
+            const approved = materials.filter(m =>
+                String(m.status || m.verification_status || "").toLowerCase() === "approved"
+            );
+            const material = approved[0] || materials[0];
+
+            // Keep the prototype usable even if /materials is temporarily unavailable.
+            const materialFile =
+                material?.file ||
+                material?.filename ||
+                material?.file_name ||
+                localStorage.getItem("selectedLearningFile") ||
+                "Data_Cleaning.pdf";
+
+            const materialTitle =
+                material?.title ||
+                material?.name ||
+                material?.material_title ||
+                localStorage.getItem("selectedLearningMaterial") ||
+                materialFile.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+
+            const weakTopic =
+                localStorage.getItem("selectedLearningTopic") ||
+                localStorage.getItem("weakTopic") ||
+                "Data Cleaning";
+
+            showToast("AI is generating questions from the learning material...");
+
+            const response = await fetch(`${API_BASE}/ai/learning-cycle`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    weak_topics: [weakTopic],
+                    num_questions: 5,
+                    material_file: materialFile,
+                    material_title: materialTitle
+                })
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(
+                    data.error ||
+                    data.message ||
+                    `Backend returned HTTP ${response.status}`
+                );
+            }
+
+            const cycle = data.learning_cycle || data;
+            const quiz = cycle.targeted_quiz || data.targeted_quiz || {};
+
+            // Keep the complete backend response available to the prototype.
+            localStorage.setItem(
+                "techSparkLastAIResponse",
+                JSON.stringify(data)
+            );
+
+            const generatedQuestions =
+                Array.isArray(quiz.questions)
+                    ? quiz.questions
+                    : (Array.isArray(quiz) ? quiz : []);
+
+            if (!generatedQuestions.length) {
+                throw new Error("The AI backend returned no quiz questions.");
+            }
+
+            // Backend QuizManager can return options as an object:
+            // { A: "...", B: "...", C: "...", D: "..." }
+            // Gemini may also return options as an array or option objects.
+            // Normalize all supported formats into four display options.
+            const questions = generatedQuestions.map((item, index) => {
+                let options = [];
+
+                if (Array.isArray(item.options)) {
+                    options = item.options.map(option => {
+                        if (typeof option === "string") return option;
+                        return option?.label || option?.text || option?.value || "";
+                    });
+                } else if (item.options && typeof item.options === "object") {
+                    options = ["A", "B", "C", "D"].map(letter => {
+                        const option = item.options[letter];
+                        if (typeof option === "string") return option;
+                        return option?.label || option?.text || option?.value || "";
+                    });
+                }
+
+                // Accept alternate backend field names too.
+                if (options.length !== 4 && Array.isArray(item.choices)) {
+                    options = item.choices.map(choice =>
+                        typeof choice === "string"
+                            ? choice
+                            : (choice?.label || choice?.text || choice?.value || "")
+                    );
+                }
+
+                return {
+                    id: item.id || `ai_${index + 1}`,
+                    q: item.question || item.q || item.question_text || `Question ${index + 1}`,
+                    options: options.slice(0, 4),
+                    correct_answer:
+                        item.correct_answer ||
+                        item.correctAnswer ||
+                        item.answer ||
+                        "A",
+                    topic: item.topic || weakTopic,
+                    explanation: item.explanation || ""
+                };
+            }).filter(item =>
+                item.q &&
+                item.options.length === 4 &&
+                item.options.every(option => String(option).trim())
+            );
+
+            if (!questions.length) {
+                throw new Error("AI generated questions were not in the expected format.");
+            }
+
+            // Save the generated quiz so the employee quiz page can use it.
+            const generatedQuiz = {
+                id: "ai-" + Date.now(),
+                title: `${materialTitle} - AI Generated Quiz`,
+                materialFile: materialFile,
+                materialTitle: materialTitle,
+                topic: weakTopic,
+                status: "review",
+                questions: questions,
+                generatedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem(
+                "techSparkGeneratedQuiz",
+                JSON.stringify(generatedQuiz)
+            );
+
+            // Show the generated questions immediately.
+            selectedQuiz = generatedQuiz.title;
+            document.getElementById("modalTitle").textContent = generatedQuiz.title;
+
+            const container = document.getElementById("questionsContainer");
+            container.innerHTML = "";
+
+            questions.forEach((item, index) => {
+                const question = document.createElement("div");
+                question.className = "question";
+
+                question.innerHTML = `
+                    <div class="question-number">QUESTION ${index + 1}</div>
+                    <p>${escapeQuizText(item.q)}</p>
+                    <div class="options">
+                        ${item.options.map((option, i) =>
+                            `<div class="option">
+                                ${String.fromCharCode(65 + i)}. ${escapeQuizText(option)}
+                            </div>`
+                        ).join("")}
+                    </div>
+                `;
+
+                container.appendChild(question);
+            });
+
+            document.getElementById("previewModal").classList.add("show");
+
+            // Add the generated quiz to the management list.
+            addGeneratedQuizCard(generatedQuiz);
+
+            showToast(`✓ ${questions.length} AI questions generated successfully.`);
+
+        } catch (error) {
+            console.error("Quiz generation error:", error);
+            showToast("❌ " + error.message);
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+    }
+
+    function escapeQuizText(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function addGeneratedQuizCard(quiz) {
+        const list = document.getElementById("quizList");
+
+        // Prevent duplicate cards for the same generated quiz.
+        const existing = Array.from(list.querySelectorAll(".quiz-card"))
+            .find(card => card.dataset.title === quiz.title);
+
+        if (existing) {
+            existing.remove();
+        }
+
+        const card = document.createElement("div");
+        card.className = "quiz-card";
+        card.dataset.title = quiz.title;
+        card.dataset.status = "review";
+
+        card.innerHTML = `
+            <div class="quiz-main">
+                <div class="quiz-title">${escapeQuizText(quiz.title)}</div>
+                <div class="quiz-meta">
+                    <span class="pill orange">Pending Review</span>
+                    <span class="pill">${quiz.questions.length} Questions</span>
+                    <span class="pill">${escapeQuizText(quiz.topic)}</span>
+                    <span class="pill">AI Generated</span>
+                </div>
+            </div>
+            <div class="quiz-actions">
+                <button class="btn btn-outline"
+                    onclick="previewGeneratedQuiz()">
+                    Preview
+                </button>
+                <button class="btn btn-primary"
+                    onclick="approveQuiz(this)">
+                    Approve
+                </button>
+            </div>
+        `;
+
+        list.prepend(card);
+    }
+
+    function previewGeneratedQuiz() {
+        const saved = localStorage.getItem("techSparkGeneratedQuiz");
+
+        if (!saved) {
+            showToast("No generated AI quiz is available.");
+            return;
+        }
+
+        const quiz = JSON.parse(saved);
+        selectedQuiz = quiz.title;
+        document.getElementById("modalTitle").textContent = quiz.title;
+
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+
+        quiz.questions.forEach((item, index) => {
+            const question = document.createElement("div");
+            question.className = "question";
+            question.innerHTML = `
+                <div class="question-number">QUESTION ${index + 1}</div>
+                <p>${escapeQuizText(item.q)}</p>
+                <div class="options">
+                    ${item.options.map((option, i) =>
+                        `<div class="option">
+                            ${String.fromCharCode(65 + i)}. ${escapeQuizText(option)}
+                        </div>`
+                    ).join("")}
+                </div>
+            `;
+            container.appendChild(question);
+        });
+
+        document.getElementById("previewModal").classList.add("show");
     }
 
 

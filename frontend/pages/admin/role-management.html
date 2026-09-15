@@ -799,6 +799,15 @@ footer{
     }
 }
 </style>
+<style>
+#roleList:empty{min-height:180px;}
+.role-item{animation:roleAppear .22s ease both;}
+@keyframes roleAppear{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
+
 </head>
 
 <body>
@@ -1818,688 +1827,399 @@ footer{
 </footer>
 
 
-<script>
 
-/* =====================================================
-   DASHBOARD
-===================================================== */
+<script>
+const ROLE_STORAGE_KEY = "techSparkRoles";
+const BUILT_IN_ROLES = [
+  {
+    name:"Statistical Officer",
+    description:"Responsible for statistical analysis, data interpretation and official reporting.",
+    level:"Advanced",
+    competencies:["Statistical Analysis","Data Interpretation","Data Quality","Report Preparation"],
+    employees:42
+  },
+  {
+    name:"Data Analyst",
+    description:"Analyses datasets and supports data-driven decision making.",
+    level:"Advanced",
+    competencies:["Data Management","Data Cleaning","Data Visualization","Statistical Computing"],
+    employees:36
+  },
+  {
+    name:"Data Entry Operator",
+    description:"Maintains accurate data entry and basic data quality standards.",
+    level:"Intermediate",
+    competencies:["Data Entry","Data Validation","Data Quality"],
+    employees:58
+  },
+  {
+    name:"Survey Officer",
+    description:"Supports survey planning, data collection and survey quality management.",
+    level:"Intermediate",
+    competencies:["Survey Methodology","Data Collection","Data Quality"],
+    employees:29
+  },
+  {
+    name:"Senior Statistical Officer",
+    description:"Leads statistical analysis, interpretation, quality review and reporting.",
+    level:"Expert",
+    competencies:["Advanced Statistics","Data Interpretation","Quality Assurance","Leadership"],
+    employees:18
+  },
+  {
+    name:"Data Quality Specialist",
+    description:"Focuses on validation, consistency, accuracy and quality assurance.",
+    level:"Advanced",
+    competencies:["Data Validation","Data Cleaning","Quality Assurance","Error Detection"],
+    employees:15
+  }
+];
+
+let selectedLevel = "Intermediate";
+let competencies = [];
+let editingIndex = -1;
+
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[ch]));
+}
+
+function getSavedRoles(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(ROLE_STORAGE_KEY) || "null");
+    return Array.isArray(saved) ? saved : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function getRoles(){
+  const saved = getSavedRoles();
+  const map = new Map();
+
+  BUILT_IN_ROLES.forEach(role => map.set(role.name.toLowerCase(), {...role}));
+  saved.forEach(role => {
+    if(role && role.name){
+      map.set(String(role.name).toLowerCase(), {
+        name:String(role.name),
+        description:String(role.description || "New employee role"),
+        level:String(role.level || "Intermediate"),
+        competencies:Array.isArray(role.competencies) ? role.competencies : [],
+        employees:Number(role.employees || 0)
+      });
+    }
+  });
+
+  return Array.from(map.values());
+}
+
+function saveRoles(roles){
+  localStorage.setItem(ROLE_STORAGE_KEY, JSON.stringify(roles));
+}
+
+function renderRoles(){
+  const list = document.getElementById("roleList");
+  const search = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+  const roles = getRoles().filter(role =>
+    role.name.toLowerCase().includes(search) ||
+    role.description.toLowerCase().includes(search) ||
+    role.competencies.some(c => String(c).toLowerCase().includes(search))
+  );
+
+  list.innerHTML = "";
+
+  if(!roles.length){
+    list.innerHTML = `
+      <div style="grid-column:1/-1;padding:45px;text-align:center;color:#6d7f75;">
+        <div style="font-size:35px;margin-bottom:10px;">🔎</div>
+        <strong>No roles found</strong>
+        <p style="font-size:12px;margin-top:6px;">Try another search or create a new role.</p>
+      </div>`;
+    updateRoleCount(0);
+    return;
+  }
+
+  roles.forEach(role => {
+    const card = document.createElement("div");
+    card.className = "role-item";
+    card.dataset.role = role.name;
+
+    const competencyHTML = role.competencies.length
+      ? role.competencies.map(c => `<span class="competency">${escapeHTML(c)}</span>`).join("")
+      : `<span class="competency">To be defined</span>`;
+
+    card.innerHTML = `
+      <div class="role-header">
+        <div>
+          <div class="role-name">${escapeHTML(role.name)}</div>
+          <div class="role-description">${escapeHTML(role.description || "New employee role")}</div>
+        </div>
+        <div class="employee-count">${Number(role.employees || 0)} Employees</div>
+      </div>
+
+      <div class="competency-title">Required Competencies</div>
+      <div class="competencies">${competencyHTML}</div>
+
+      <div class="role-footer">
+        <div class="level">
+          Expected Level:
+          <strong>${escapeHTML(role.level)}</strong>
+        </div>
+
+        <div class="role-actions">
+          <button class="small-btn" title="Edit role"
+                  onclick="editRoleByName(${JSON.stringify(role.name)})">✏</button>
+          <button class="small-btn" title="View role"
+                  onclick="viewRole(${JSON.stringify(role.name)})">👁</button>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+
+  updateRoleCount(getRoles().length);
+  updateCompetencyStats();
+}
+
+function updateRoleCount(count){
+  document.getElementById("roleCount").textContent =
+    typeof count === "number" ? count : getRoles().length;
+}
+
+function updateCompetencyStats(){
+  const roles = getRoles();
+  const all = new Set();
+  let totalLevel = 0;
+  let levelCount = 0;
+
+  roles.forEach(role => {
+    (role.competencies || []).forEach(c => all.add(c.toLowerCase()));
+    const score = {Beginner:40, Intermediate:60, Advanced:80, Expert:95}[role.level];
+    if(score){ totalLevel += score; levelCount++; }
+  });
+
+  const statCards = document.querySelectorAll(".info-card strong");
+  if(statCards[1]) statCards[1].textContent = all.size || 0;
+  if(statCards[2]) statCards[2].textContent =
+    levelCount ? Math.round(totalLevel / levelCount) + "%" : "0%";
+}
 
 function goDashboard(){
-
-    window.location.href =
-        "dashboard.html";
-
+  window.location.href = "/pages/admin/dashboard.html";
 }
 
+function openRoleModal(index = -1){
+  editingIndex = index;
+  competencies = [];
+  selectedLevel = "Intermediate";
 
-/* =====================================================
-   SEARCH ROLES
-===================================================== */
+  if(index >= 0){
+    const roles = getRoles();
+    const role = roles[index];
+    if(!role) return;
 
-document
-    .getElementById("searchInput")
-    .addEventListener(
-        "input",
-        function(){
+    document.getElementById("roleName").value = role.name;
+    document.getElementById("roleDescription").value = role.description || "";
+    selectedLevel = role.level || "Intermediate";
+    competencies = [...(role.competencies || [])];
+    document.querySelector(".modal-header h2").textContent = "Edit Role";
+    document.querySelector(".save-btn").textContent = "Save Changes →";
+  }else{
+    document.getElementById("roleForm").reset();
+    document.querySelector(".modal-header h2").textContent = "Create New Role";
+    document.querySelector(".save-btn").textContent = "Create Role →";
+  }
 
-            const search =
-                this.value
-                .toLowerCase()
-                .trim();
+  document.querySelectorAll(".level-option").forEach(option =>
+    option.classList.toggle("selected", option.dataset.level === selectedLevel)
+  );
 
-
-            document
-                .querySelectorAll(".role-item")
-                .forEach(function(role){
-
-                    const name =
-                        role.dataset.role
-                        .toLowerCase();
-
-
-                    role.style.display =
-                        name.includes(search)
-                        ? ""
-                        : "none";
-
-                });
-
-        }
-    );
-
-
-/* =====================================================
-   CREATE ROLE MODAL
-===================================================== */
-
-function openRoleModal(){
-
-    document
-        .getElementById("roleModal")
-        .style.display = "flex";
-
+  renderCompetencies();
+  document.getElementById("roleModal").style.display = "flex";
+  setTimeout(() => document.getElementById("roleName").focus(), 50);
 }
-
 
 function closeRoleModal(){
-
-    document
-        .getElementById("roleModal")
-        .style.display = "none";
-
+  document.getElementById("roleModal").style.display = "none";
+  editingIndex = -1;
+  competencies = [];
 }
-
-
-/* =====================================================
-   LEVEL
-===================================================== */
-
-let selectedLevel =
-    "Intermediate";
-
 
 function selectLevel(element){
-
-    document
-        .querySelectorAll(".level-option")
-        .forEach(function(option){
-
-            option.classList.remove(
-                "selected"
-            );
-
-        });
-
-
-    element.classList.add("selected");
-
-
-    selectedLevel =
-        element.dataset.level;
-
+  document.querySelectorAll(".level-option").forEach(option =>
+    option.classList.remove("selected")
+  );
+  element.classList.add("selected");
+  selectedLevel = element.dataset.level;
 }
-
-
-/* =====================================================
-   COMPETENCIES
-===================================================== */
-
-let competencies = [];
-
 
 function addCompetency(){
+  const input = document.getElementById("competencyInput");
+  const value = input.value.trim();
 
-    const input =
-        document.getElementById(
-            "competencyInput"
-        );
+  if(!value) return;
 
+  if(competencies.some(c => c.toLowerCase() === value.toLowerCase())){
+    showToast("⚠ Competency already added.");
+    input.select();
+    return;
+  }
 
-    const value =
-        input.value.trim();
-
-
-    if(!value){
-
-        return;
-
-    }
-
-
-    if(
-        competencies
-            .map(x => x.toLowerCase())
-            .includes(value.toLowerCase())
-    ){
-
-        input.value = "";
-
-        return;
-
-    }
-
-
-    competencies.push(value);
-
-    input.value = "";
-
-    renderCompetencies();
-
+  competencies.push(value);
+  input.value = "";
+  renderCompetencies();
+  input.focus();
 }
-
 
 function renderCompetencies(){
+  const container = document.getElementById("selectedCompetencies");
+  container.innerHTML = "";
 
-    const container =
-        document.getElementById(
-            "selectedCompetencies"
-        );
-
-
-    container.innerHTML = "";
-
-
-    competencies.forEach(
-        function(item,index){
-
-            const tag =
-                document.createElement("div");
-
-            tag.className =
-                "selected-tag";
-
-
-            tag.innerHTML = `
-
-                ${item}
-
-                <button
-                    type="button"
-                    onclick="removeCompetency(${index})">
-
-                    ×
-
-                </button>
-
-            `;
-
-
-            container.appendChild(tag);
-
-        }
-    );
-
+  competencies.forEach((item,index) => {
+    const tag = document.createElement("div");
+    tag.className = "selected-tag";
+    tag.innerHTML = `${escapeHTML(item)}
+      <button type="button" onclick="removeCompetency(${index})">×</button>`;
+    container.appendChild(tag);
+  });
 }
-
 
 function removeCompetency(index){
-
-    competencies.splice(
-        index,
-        1
-    );
-
-    renderCompetencies();
-
+  competencies.splice(index,1);
+  renderCompetencies();
 }
 
-
-/* =====================================================
-   CREATE ROLE
-===================================================== */
-
-document
-    .getElementById("roleForm")
-    .addEventListener(
-        "submit",
-        function(event){
-
-            event.preventDefault();
-
-
-            const name =
-                document
-                .getElementById("roleName")
-                .value
-                .trim();
-
-
-            const description =
-                document
-                .getElementById("roleDescription")
-                .value
-                .trim();
-
-
-            if(!name){
-
-                return;
-
-            }
-
-
-            /* Create role card */
-
-            const roleList =
-                document.getElementById(
-                    "roleList"
-                );
-
-
-            const card =
-                document.createElement("div");
-
-
-            card.className =
-                "role-item";
-
-
-            card.dataset.role =
-                name;
-
-
-            let competencyHTML =
-                "";
-
-
-            if(competencies.length === 0){
-
-                competencyHTML =
-                    `<span class="competency">
-                        To be defined
-                    </span>`;
-
-            }else{
-
-                competencies.forEach(
-                    function(item){
-
-                        competencyHTML +=
-                            `
-                            <span class="competency">
-                                ${item}
-                            </span>
-                            `;
-
-                    }
-                );
-
-            }
-
-
-            card.innerHTML = `
-
-                <div class="role-header">
-
-                    <div>
-
-                        <div class="role-name">
-                            ${name}
-                        </div>
-
-                        <div class="role-description">
-                            ${description || "New employee role"}
-                        </div>
-
-                    </div>
-
-                    <div class="employee-count">
-                        0 Employees
-                    </div>
-
-                </div>
-
-
-                <div class="competency-title">
-                    Required Competencies
-                </div>
-
-
-                <div class="competencies">
-
-                    ${competencyHTML}
-
-                </div>
-
-
-                <div class="role-footer">
-
-                    <div class="level">
-
-                        Expected Level:
-
-                        <strong>
-                            ${selectedLevel}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="role-actions">
-
-                        <button
-                            class="small-btn"
-                            onclick="editRole('${name}')">
-
-                            ✏
-
-                        </button>
-
-                        <button
-                            class="small-btn"
-                            onclick="viewRole('${name}')">
-
-                            👁
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `;
-
-
-            roleList.prepend(card);
-
-
-            /* Save to localStorage */
-
-            const roles =
-                JSON.parse(
-                    localStorage.getItem(
-                        "techSparkRoles"
-                    ) || "[]"
-                );
-
-
-            roles.push({
-
-                name:name,
-
-                description:description,
-
-                level:selectedLevel,
-
-                competencies:[
-                    ...competencies
-                ]
-
-            });
-
-
-            localStorage.setItem(
-                "techSparkRoles",
-                JSON.stringify(roles)
-            );
-
-
-            closeRoleModal();
-
-
-            document
-                .getElementById("roleForm")
-                .reset();
-
-
-            competencies = [];
-
-            selectedLevel =
-                "Intermediate";
-
-
-            renderCompetencies();
-
-
-            document
-                .querySelectorAll(".level-option")
-                .forEach(function(option){
-
-                    option.classList.remove(
-                        "selected"
-                    );
-
-                });
-
-
-            document
-                .querySelector(
-                    '[data-level="Intermediate"]'
-                )
-                .classList.add(
-                    "selected"
-                );
-
-
-            updateRoleCount();
-
-
-            showToast(
-                "✓ Role created successfully!"
-            );
-
-        }
-    );
-
-
-/* =====================================================
-   ROLE COUNT
-===================================================== */
-
-function updateRoleCount(){
-
-    const count =
-        document
-        .querySelectorAll(".role-item")
-        .length;
-
-
-    document.getElementById(
-        "roleCount"
-    ).textContent = count;
-
+function submitRole(event){
+  event.preventDefault();
+
+  const name = document.getElementById("roleName").value.trim();
+  const description = document.getElementById("roleDescription").value.trim();
+
+  if(!name){
+    showToast("⚠ Please enter a role name.");
+    return;
+  }
+
+  const roles = getRoles();
+
+  const duplicateIndex = roles.findIndex((r,i) =>
+    r.name.toLowerCase() === name.toLowerCase() && i !== editingIndex
+  );
+
+  if(duplicateIndex !== -1){
+    showToast("⚠ A role with this name already exists.");
+    return;
+  }
+
+  const role = {
+    name,
+    description: description || "New employee role",
+    level: selectedLevel,
+    competencies: [...competencies],
+    employees: editingIndex >= 0 ? Number(roles[editingIndex].employees || 0) : 0
+  };
+
+  if(editingIndex >= 0){
+    roles[editingIndex] = role;
+    showToast("✓ Role updated successfully!");
+  }else{
+    roles.unshift(role);
+    showToast("✓ Role created successfully!");
+  }
+
+  saveRoles(roles);
+  closeRoleModal();
+  renderRoles();
 }
 
-
-/* =====================================================
-   VIEW ROLE
-===================================================== */
-
-function viewRole(name){
-
-    const role =
-        document.querySelector(
-            `[data-role="${name}"]`
-        );
-
-
-    if(!role){
-
-        return;
-
-    }
-
-
-    const competencies =
-        role.querySelector(
-            ".competencies"
-        ).innerHTML;
-
-
-    const level =
-        role.querySelector(
-            ".level"
-        ).innerHTML;
-
-
-    document.getElementById(
-        "roleDetails"
-    ).innerHTML = `
-
-        <div
-            style="
-                padding:20px;
-                background:#f5faf7;
-                border-radius:15px;
-                margin-bottom:15px;
-            ">
-
-            <h3 style="margin-bottom:7px;">
-                ${name}
-            </h3>
-
-            <p
-                style="
-                    color:#6d7f75;
-                    font-size:12px;
-                    line-height:1.6;
-                ">
-
-                Role configuration and
-                competency requirements.
-
-            </p>
-
-        </div>
-
-
-        <div
-            style="
-                margin-bottom:15px;
-            ">
-
-            <strong
-                style="
-                    display:block;
-                    font-size:12px;
-                    color:#18a957;
-                    margin-bottom:10px;
-                ">
-
-                REQUIRED COMPETENCIES
-
-            </strong>
-
-            <div
-                class="competencies">
-
-                ${competencies}
-
-            </div>
-
-        </div>
-
-
-        <div
-            style="
-                padding:15px;
-                background:#eafff2;
-                border-radius:12px;
-                font-size:12px;
-            ">
-
-            ${level}
-
-        </div>
-
-    `;
-
-
-    document.getElementById(
-        "viewModal"
-    ).style.display = "flex";
-
+function editRoleByName(name){
+  const roles = getRoles();
+  const index = roles.findIndex(r => r.name === name);
+  if(index === -1) return;
+  openRoleModal(index);
 }
-
-
-function closeViewModal(){
-
-    document.getElementById(
-        "viewModal"
-    ).style.display = "none";
-
-}
-
-
-/* =====================================================
-   EDIT ROLE
-===================================================== */
 
 function editRole(name){
-
-    alert(
-        "Edit role: " +
-        name +
-        "\n\nThis will be connected to the Flask API later."
-    );
-
+  editRoleByName(name);
 }
 
+function viewRole(name){
+  const role = getRoles().find(r => r.name === name);
+  if(!role) return;
 
-/* =====================================================
-   TOAST
-===================================================== */
+  const competencyHTML = role.competencies.length
+    ? role.competencies.map(c => `<span class="competency">${escapeHTML(c)}</span>`).join("")
+    : `<span class="competency">To be defined</span>`;
+
+  document.getElementById("roleDetails").innerHTML = `
+    <div style="padding:20px;background:#f5faf7;border-radius:15px;margin-bottom:15px;">
+      <h3 style="margin-bottom:7px;">${escapeHTML(role.name)}</h3>
+      <p style="color:#6d7f75;font-size:12px;line-height:1.6;">
+        ${escapeHTML(role.description)}
+      </p>
+    </div>
+
+    <div style="margin-bottom:15px;">
+      <strong style="display:block;font-size:12px;color:#18a957;margin-bottom:10px;">
+        REQUIRED COMPETENCIES
+      </strong>
+      <div class="competencies">${competencyHTML}</div>
+    </div>
+
+    <div style="padding:15px;background:#eafff2;border-radius:12px;font-size:12px;">
+      <strong>Expected Level:</strong> ${escapeHTML(role.level)}
+      <br>
+      <strong>Employees:</strong> ${Number(role.employees || 0)}
+    </div>`;
+
+  document.getElementById("viewModal").style.display = "flex";
+}
+
+function closeViewModal(){
+  document.getElementById("viewModal").style.display = "none";
+}
 
 function showToast(message){
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-
-    toast.textContent =
-        message;
-
-
-    toast.style.display =
-        "block";
-
-
-    setTimeout(
-        function(){
-
-            toast.style.display =
-                "none";
-
-        },
-        3000
-    );
-
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.display = "block";
+  clearTimeout(window.techSparkToastTimer);
+  window.techSparkToastTimer = setTimeout(() => {
+    toast.style.display = "none";
+  }, 3000);
 }
 
+document.getElementById("searchInput").addEventListener("input", renderRoles);
 
-/* =====================================================
-   CLICK OUTSIDE MODAL
-===================================================== */
+document.getElementById("roleForm").addEventListener("submit", submitRole);
 
-window.addEventListener(
-    "click",
-    function(event){
+document.getElementById("competencyInput").addEventListener("keydown", e => {
+  if(e.key === "Enter"){
+    e.preventDefault();
+    addCompetency();
+  }
+});
 
-        const roleModal =
-            document.getElementById(
-                "roleModal"
-            );
+window.addEventListener("click", event => {
+  const roleModal = document.getElementById("roleModal");
+  const viewModal = document.getElementById("viewModal");
 
+  if(event.target === roleModal) closeRoleModal();
+  if(event.target === viewModal) closeViewModal();
+});
 
-        const viewModal =
-            document.getElementById(
-                "viewModal"
-            );
+window.addEventListener("keydown", event => {
+  if(event.key === "Escape"){
+    closeRoleModal();
+    closeViewModal();
+  }
+});
 
-
-        if(event.target === roleModal){
-
-            closeRoleModal();
-
-        }
-
-
-        if(event.target === viewModal){
-
-            closeViewModal();
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   INITIALIZE
-===================================================== */
-
-window.addEventListener(
-    "DOMContentLoaded",
-    function(){
-
-        updateRoleCount();
-
-    }
-);
-
+window.addEventListener("DOMContentLoaded", () => {
+  renderRoles();
+});
 </script>
+
 
 </body>
 </html>

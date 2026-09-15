@@ -782,7 +782,15 @@ footer{
     }
 
 }
+
+<style>
+#employeeTable tr{animation:employeeRowIn .2s ease both;}
+@keyframes employeeRowIn{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
 </style>
+
 </head>
 
 <body>
@@ -2001,514 +2009,362 @@ footer{
 </footer>
 
 
+
 <script>
+const EMPLOYEE_KEY = "techSparkEmployees";
 
-/* =====================================================
-   DASHBOARD
-===================================================== */
+const DEMO_EMPLOYEES = [
+  {id:"EMP001",name:"Ananya Rao",email:"ananya.rao@example.com",role:"Statistical Officer",competency:"Statistical Analysis",score:82,status:"Active"},
+  {id:"EMP002",name:"Rahul Kumar",email:"rahul.kumar@example.com",role:"Data Analyst",competency:"Data Management",score:64,status:"Active"},
+  {id:"EMP003",name:"Priya Sharma",email:"priya.sharma@example.com",role:"Survey Officer",competency:"Survey Methodology",score:71,status:"Active"},
+  {id:"EMP004",name:"Vikram Singh",email:"vikram.singh@example.com",role:"Data Entry Operator",competency:"Data Management",score:49,status:"Needs Support"},
+  {id:"EMP005",name:"Meena Joseph",email:"meena.joseph@example.com",role:"Senior Statistical Officer",competency:"Data Interpretation",score:91,status:"Active"}
+];
 
-function goDashboard(){
+let editingEmployeeIndex = -1;
 
-    window.location.href =
-        "dashboard.html";
-
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
 }
 
+function getSavedEmployees(){
+  try{
+    const value = JSON.parse(localStorage.getItem(EMPLOYEE_KEY) || "[]");
+    return Array.isArray(value) ? value : [];
+  }catch(e){
+    return [];
+  }
+}
 
-/* =====================================================
-   SEARCH
-===================================================== */
+function getEmployees(){
+  const saved = getSavedEmployees();
+  const map = new Map();
 
-const searchInput =
-    document.getElementById(
-        "searchInput"
-    );
-
-
-searchInput.addEventListener(
-    "input",
-    function(){
-
-        const search =
-            this.value
-            .toLowerCase()
-            .trim();
-
-        const rows =
-            document.querySelectorAll(
-                "#employeeTable tr"
-            );
-
-        let visible = 0;
-
-
-        rows.forEach(function(row){
-
-            const name =
-                row.dataset.name
-                .toLowerCase();
-
-            const email =
-                row.dataset.email
-                .toLowerCase();
-
-            if(
-                name.includes(search) ||
-                email.includes(search)
-            ){
-
-                row.style.display = "";
-
-                visible++;
-
-            }else{
-
-                row.style.display = "none";
-
-            }
-
-        });
-
-
-        document.getElementById(
-            "noResults"
-        ).style.display =
-            visible === 0
-            ? "block"
-            : "none";
-
+  DEMO_EMPLOYEES.forEach(e => map.set(e.id, {...e}));
+  saved.forEach(e => {
+    if(e && e.id){
+      map.set(String(e.id), {
+        id:String(e.id),
+        name:String(e.name || ""),
+        email:String(e.email || ""),
+        role:String(e.role || ""),
+        competency:String(e.competency || ""),
+        score:e.score === "Not assessed" || e.score == null ? null : Number(e.score),
+        status:String(e.status || "Active")
+      });
     }
-);
+  });
 
+  return Array.from(map.values());
+}
 
-/* =====================================================
-   ADD EMPLOYEE
-===================================================== */
+function saveAllEmployees(employees){
+  const demoIds = new Set(DEMO_EMPLOYEES.map(e => e.id));
+  const custom = employees.filter(e => !demoIds.has(e.id));
+  localStorage.setItem(EMPLOYEE_KEY, JSON.stringify(custom));
+}
+
+function getInitials(name){
+  return String(name || "")
+    .trim().split(/\s+/)
+    .filter(Boolean).map(x => x[0]).join("").substring(0,2).toUpperCase();
+}
+
+function getScore(employee){
+  if(employee.score === null || employee.score === undefined || employee.score === "" || Number.isNaN(Number(employee.score))){
+    return null;
+  }
+  return Math.max(0, Math.min(100, Number(employee.score)));
+}
+
+function getStatus(employee){
+  const score = getScore(employee);
+  if(employee.status === "Inactive") return "Inactive";
+  if(score !== null && score < 60) return "Needs Support";
+  return employee.status || "Active";
+}
+
+function renderEmployees(){
+  const tbody = document.getElementById("employeeTable");
+  const search = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+  const employees = getEmployees();
+
+  const filtered = employees.filter(e =>
+    [e.id,e.name,e.email,e.role,e.competency].some(v =>
+      String(v || "").toLowerCase().includes(search)
+    )
+  );
+
+  tbody.innerHTML = "";
+
+  filtered.forEach(employee => {
+    const score = getScore(employee);
+    const status = getStatus(employee);
+    const scoreText = score === null ? "Not assessed" : Math.round(score) + "%";
+    const width = score === null ? 0 : score;
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>
+        <div class="employee">
+          <div class="avatar">${escapeHTML(getInitials(employee.name))}</div>
+          <div>
+            <div class="employee-name">${escapeHTML(employee.name)}</div>
+            <div class="employee-email">${escapeHTML(employee.email)}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="role">${escapeHTML(employee.role)}</span></td>
+      <td>${escapeHTML(employee.competency)}</td>
+      <td>
+        <div class="competency">
+          <div class="competency-top">
+            <span>Overall</span>
+            <strong>${escapeHTML(scoreText)}</strong>
+          </div>
+          <div class="mini-bar">
+            <div class="mini-fill" style="width:${width}%"></div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <span class="status ${status === "Active" ? "active" : "inactive"}">
+          ${escapeHTML(status)}
+        </span>
+      </td>
+      <td>
+        <div class="actions">
+          <button class="action-btn" title="View profile"
+            onclick="viewEmployeeById(${JSON.stringify(employee.id)})">👁</button>
+          <button class="action-btn" title="Edit employee"
+            onclick="editEmployee(${JSON.stringify(employee.id)})">✏</button>
+        </div>
+      </td>`;
+    tbody.appendChild(row);
+  });
+
+  document.getElementById("noResults").style.display =
+    filtered.length ? "none" : "block";
+
+  updateStats(employees);
+}
+
+function updateStats(employees){
+  const total = employees.length;
+  const active = employees.filter(e => getStatus(e) === "Active").length;
+  const scored = employees.map(getScore).filter(s => s !== null);
+  const average = scored.length
+    ? Math.round(scored.reduce((a,b) => a+b,0) / scored.length)
+    : 0;
+  const gaps = employees.filter(e => {
+    const score = getScore(e);
+    return score !== null && score < 60;
+  }).length;
+
+  const numbers = document.querySelectorAll(".stat-number");
+  if(numbers[0]) numbers[0].textContent = total;
+  if(numbers[1]) numbers[1].textContent = active;
+  if(numbers[2]) numbers[2].textContent = average + "%";
+  if(numbers[3]) numbers[3].textContent = gaps;
+}
+
+function populateRoles(){
+  const select = document.getElementById("employeeRole");
+  if(!select) return;
+
+  let roles = [];
+  try{
+    roles = JSON.parse(localStorage.getItem("techSparkRoles") || "[]");
+  }catch(e){}
+
+  const names = [
+    ...DEMO_EMPLOYEES.map(e => e.role),
+    ...(Array.isArray(roles) ? roles.map(r => r.name) : [])
+  ];
+
+  [...new Set(names)].filter(Boolean).forEach(name => {
+    if(![...select.options].some(o => o.value === name)){
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      select.appendChild(option);
+    }
+  });
+}
 
 function openAddEmployee(){
-
-    document.getElementById(
-        "employeeModal"
-    ).style.display = "flex";
-
+  editingEmployeeIndex = -1;
+  document.getElementById("employeeForm").reset();
+  document.querySelector("#employeeModal .modal-header h2").textContent = "Add New Employee";
+  document.querySelector("#employeeForm .save-btn").textContent = "Create Employee →";
+  document.getElementById("employeeModal").style.display = "flex";
 }
-
 
 function closeEmployeeModal(){
-
-    document.getElementById(
-        "employeeModal"
-    ).style.display = "none";
-
+  document.getElementById("employeeModal").style.display = "none";
+  editingEmployeeIndex = -1;
 }
 
-
-/* =====================================================
-   CREATE EMPLOYEE
-===================================================== */
-
-document
-    .getElementById("employeeForm")
-    .addEventListener(
-        "submit",
-        function(event){
-
-            event.preventDefault();
-
-
-            const firstName =
-                document.getElementById(
-                    "firstName"
-                ).value.trim();
-
-
-            const lastName =
-                document.getElementById(
-                    "lastName"
-                ).value.trim();
-
-
-            const email =
-                document.getElementById(
-                    "email"
-                ).value.trim();
-
-
-            const role =
-                document.getElementById(
-                    "employeeRole"
-                ).value;
-
-
-            const competency =
-                document.getElementById(
-                    "employeeCompetency"
-                ).value;
-
-
-            const employeeId =
-                document.getElementById(
-                    "employeeId"
-                ).value.trim();
-
-
-            const fullName =
-                firstName + " " + lastName;
-
-
-            const initials =
-                (
-                    firstName.charAt(0) +
-                    lastName.charAt(0)
-                ).toUpperCase();
-
-
-            /* Create table row */
-
-            const tbody =
-                document.getElementById(
-                    "employeeTable"
-                );
-
-
-            const row =
-                document.createElement("tr");
-
-
-            row.dataset.name =
-                fullName;
-
-            row.dataset.email =
-                email;
-
-
-            row.innerHTML = `
-
-                <td>
-
-                    <div class="employee">
-
-                        <div class="avatar">
-                            ${initials}
-                        </div>
-
-                        <div>
-
-                            <div class="employee-name">
-                                ${fullName}
-                            </div>
-
-                            <div class="employee-email">
-                                ${email}
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </td>
-
-
-                <td>
-
-                    <span class="role">
-                        ${role}
-                    </span>
-
-                </td>
-
-
-                <td>
-                    ${competency}
-                </td>
-
-
-                <td>
-
-                    <div class="competency">
-
-                        <div class="competency-top">
-
-                            <span>
-                                Overall
-                            </span>
-
-                            <strong>
-                                New
-                            </strong>
-
-                        </div>
-
-                        <div class="mini-bar">
-
-                            <div
-                                class="mini-fill"
-                                style="width:0%">
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </td>
-
-
-                <td>
-
-                    <span class="status active">
-                        Active
-                    </span>
-
-                </td>
-
-
-                <td>
-
-                    <div class="actions">
-
-                        <button
-                            class="action-btn"
-                            onclick="viewEmployee(
-                                '${fullName}',
-                                '${email}',
-                                '${role}',
-                                '${competency}',
-                                'Not assessed'
-                            )">
-
-                            👁
-
-                        </button>
-
-                        <button
-                            class="action-btn"
-                            onclick="editEmployee('${fullName}')">
-
-                            ✏
-
-                        </button>
-
-                    </div>
-
-                </td>
-
-            `;
-
-
-            tbody.prepend(row);
-
-
-            /* Save locally */
-
-            saveEmployee({
-
-                id:employeeId,
-
-                name:fullName,
-
-                email:email,
-
-                role:role,
-
-                competency:competency
-
-            });
-
-
-            closeEmployeeModal();
-
-
-            document
-                .getElementById("employeeForm")
-                .reset();
-
-
-            showToast(
-                "✓ Employee created successfully!"
-            );
-
-        }
-    );
-
-
-/* =====================================================
-   SAVE EMPLOYEE LOCAL STORAGE
-===================================================== */
-
-function saveEmployee(employee){
-
-    const employees =
-        JSON.parse(
-            localStorage.getItem(
-                "techSparkEmployees"
-            ) || "[]"
-        );
-
-
-    employees.push(employee);
-
-
-    localStorage.setItem(
-        "techSparkEmployees",
-        JSON.stringify(employees)
-    );
-
-}
-
-
-/* =====================================================
-   VIEW EMPLOYEE
-===================================================== */
-
-function viewEmployee(
-    name,
+function submitEmployee(event){
+  event.preventDefault();
+
+  const firstName = document.getElementById("firstName").value.trim();
+  const lastName = document.getElementById("lastName").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const employeeId = document.getElementById("employeeId").value.trim();
+  const role = document.getElementById("employeeRole").value;
+  const competency = document.getElementById("employeeCompetency").value;
+
+  if(!firstName || !lastName || !email || !employeeId || !role || !competency){
+    showToast("⚠ Please complete all required fields.");
+    return;
+  }
+
+  const employees = getEmployees();
+
+  const duplicateId = employees.findIndex((e,i) =>
+    String(e.id).toLowerCase() === employeeId.toLowerCase() &&
+    i !== editingEmployeeIndex
+  );
+
+  const duplicateEmail = employees.findIndex((e,i) =>
+    String(e.email).toLowerCase() === email.toLowerCase() &&
+    i !== editingEmployeeIndex
+  );
+
+  if(duplicateId !== -1){
+    showToast("⚠ Employee ID already exists.");
+    return;
+  }
+
+  if(duplicateEmail !== -1){
+    showToast("⚠ Email already exists.");
+    return;
+  }
+
+  const old = editingEmployeeIndex >= 0 ? employees[editingEmployeeIndex] : null;
+
+  const employee = {
+    id:employeeId,
+    name:firstName + " " + lastName,
     email,
     role,
     competency,
-    score
-){
+    score:old ? old.score : null,
+    status:old ? old.status : "Active"
+  };
 
-    document.getElementById(
-        "profileName"
-    ).textContent = name;
+  if(editingEmployeeIndex >= 0){
+    employees[editingEmployeeIndex] = employee;
+    showToast("✓ Employee updated successfully!");
+  }else{
+    employees.push(employee);
+    showToast("✓ Employee created successfully!");
+  }
 
-
-    document.getElementById(
-        "profileEmail"
-    ).textContent = email;
-
-
-    document.getElementById(
-        "profileRole"
-    ).textContent = role;
-
-
-    document.getElementById(
-        "profileCompetency"
-    ).textContent = competency;
-
-
-    document.getElementById(
-        "profileScore"
-    ).textContent = score;
-
-
-    const parts =
-        name.split(" ");
-
-
-    const initials =
-        parts
-        .map(function(part){
-            return part.charAt(0);
-        })
-        .join("")
-        .substring(0,2)
-        .toUpperCase();
-
-
-    document.getElementById(
-        "profileAvatar"
-    ).textContent = initials;
-
-
-    document.getElementById(
-        "profileModal"
-    ).style.display = "flex";
-
+  saveAllEmployees(employees);
+  closeEmployeeModal();
+  renderEmployees();
 }
 
+function editEmployee(id){
+  const employees = getEmployees();
+  const index = employees.findIndex(e => String(e.id) === String(id));
+  if(index === -1) return;
+
+  const employee = employees[index];
+  const parts = employee.name.trim().split(/\s+/);
+  const first = parts.shift() || "";
+  const last = parts.join(" ");
+
+  document.getElementById("firstName").value = first;
+  document.getElementById("lastName").value = last;
+  document.getElementById("email").value = employee.email;
+  document.getElementById("employeeId").value = employee.id;
+  document.getElementById("employeeRole").value = employee.role;
+  document.getElementById("employeeCompetency").value = employee.competency;
+
+  editingEmployeeIndex = index;
+  document.querySelector("#employeeModal .modal-header h2").textContent = "Edit Employee";
+  document.querySelector("#employeeForm .save-btn").textContent = "Save Changes →";
+  document.getElementById("employeeModal").style.display = "flex";
+}
+
+function viewEmployeeById(id){
+  const employee = getEmployees().find(e => String(e.id) === String(id));
+  if(!employee) return;
+
+  const score = getScore(employee);
+  viewEmployee(
+    employee.name,
+    employee.email,
+    employee.role,
+    employee.competency,
+    score === null ? "Not assessed" : Math.round(score) + "%",
+    getStatus(employee),
+    employee.id
+  );
+}
+
+function viewEmployee(name,email,role,competency,score,status="Active",id=""){
+  document.getElementById("profileName").textContent = name;
+  document.getElementById("profileEmail").textContent = email;
+  document.getElementById("profileRole").textContent = role;
+  document.getElementById("profileCompetency").textContent = competency;
+  document.getElementById("profileScore").textContent = score;
+  document.getElementById("profileAvatar").textContent = getInitials(name);
+
+  const statusElements = document.querySelectorAll("#profileModal .profile-line strong");
+  if(statusElements[1]) statusElements[1].textContent = status;
+
+  const gap = score !== "Not assessed" && Number(String(score).replace("%","")) < 60
+    ? "Priority support recommended"
+    : "Available";
+
+  if(statusElements[2]) statusElements[2].textContent = gap;
+
+  document.getElementById("profileModal").style.display = "flex";
+}
 
 function closeProfile(){
-
-    document.getElementById(
-        "profileModal"
-    ).style.display = "none";
-
+  document.getElementById("profileModal").style.display = "none";
 }
-
-
-/* =====================================================
-   EDIT EMPLOYEE
-===================================================== */
-
-function editEmployee(name){
-
-    alert(
-        "Edit employee: " +
-        name +
-        "\n\nThis will be connected to the backend API later."
-    );
-
-}
-
-
-/* =====================================================
-   TOAST
-===================================================== */
 
 function showToast(message){
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-
-    toast.textContent =
-        message;
-
-
-    toast.style.display =
-        "block";
-
-
-    setTimeout(function(){
-
-        toast.style.display =
-            "none";
-
-    },3000);
-
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.display = "block";
+  clearTimeout(window.techSparkToast);
+  window.techSparkToast = setTimeout(() => toast.style.display = "none", 3000);
 }
 
+function goDashboard(){
+  window.location.href = "/pages/admin/dashboard.html";
+}
 
-/* =====================================================
-   CLOSE MODALS WHEN CLICKING OUTSIDE
-===================================================== */
+document.getElementById("searchInput").addEventListener("input", renderEmployees);
+document.getElementById("employeeForm").addEventListener("submit", submitEmployee);
 
-window.addEventListener(
-    "click",
-    function(event){
+window.addEventListener("click", event => {
+  if(event.target === document.getElementById("employeeModal")) closeEmployeeModal();
+  if(event.target === document.getElementById("profileModal")) closeProfile();
+});
 
-        const employeeModal =
-            document.getElementById(
-                "employeeModal"
-            );
+window.addEventListener("keydown", event => {
+  if(event.key === "Escape"){
+    closeEmployeeModal();
+    closeProfile();
+  }
+});
 
-        const profileModal =
-            document.getElementById(
-                "profileModal"
-            );
-
-
-        if(event.target === employeeModal){
-
-            closeEmployeeModal();
-
-        }
-
-
-        if(event.target === profileModal){
-
-            closeProfile();
-
-        }
-
-    }
-);
-
+window.addEventListener("DOMContentLoaded", () => {
+  populateRoles();
+  renderEmployees();
+});
 </script>
+
 
 </body>
 </html>
